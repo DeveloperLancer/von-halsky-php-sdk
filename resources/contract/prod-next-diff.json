@@ -1,0 +1,107 @@
+{
+    "from": {
+        "contractVersion": "1.5.11",
+        "sha256": "efa9827f60e7cf7b2c84d005380d5038461b8c183cce99867c8f8b782c3d3091"
+    },
+    "operationChanges": [],
+    "schemaChanges": [
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "AddressState"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "BatchOffersProposal"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "Building"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "City"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "DepositPositions"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "Dimension"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "Ean"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "Flat"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "GpsrInfo"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "Images"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "ManufacturerProductNumber"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "name": "Money"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "ProductInfo"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "ProductInfoProposal"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "ShippingTime"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "Street"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "StringIdentifier"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "validation",
+            "name": "UnmodifiableStringIdentifier"
+        }
+    ],
+    "summary": {
+        "operationChanges": 0,
+        "schemaChanges": 18
+    },
+    "to": {
+        "contractVersion": "1.6.0-gokint-867-SNAPSHOT",
+        "sha256": "17d6d838295913ef4219186b8200848dee9f51b68f4a86af9553052cdb0a51a2"
+    }
+}

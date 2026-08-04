@@ -1,0 +1,232 @@
+{
+    "announcedProductionDate": "2026-08-18",
+    "nextContractVersion": "1.6.0-gokint-867-SNAPSHOT",
+    "releaseVersion": "1.6.0",
+    "rules": [
+        {
+            "constraint": "numeric",
+            "id": "VAL-001",
+            "maximum": { "inclusive": true, "value": 10000 },
+            "minimum": { "inclusive": true, "value": 1 },
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Dimension.width",
+            "unit": "millimetre"
+        },
+        {
+            "constraint": "numeric",
+            "id": "VAL-002",
+            "maximum": { "inclusive": true, "value": 10000 },
+            "minimum": { "inclusive": true, "value": 1 },
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Dimension.height",
+            "unit": "millimetre"
+        },
+        {
+            "constraint": "numeric",
+            "id": "VAL-003",
+            "maximum": { "inclusive": true, "value": 10000 },
+            "minimum": { "inclusive": true, "value": 1 },
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Dimension.length",
+            "unit": "millimetre"
+        },
+        {
+            "constraint": "numeric",
+            "id": "VAL-004",
+            "maximum": { "inclusive": true, "value": 1000000 },
+            "minimum": { "inclusive": true, "value": 1 },
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Dimension.weight",
+            "unit": "gram"
+        },
+        {
+            "constraint": "numeric",
+            "id": "VAL-005",
+            "maximum": { "inclusive": true, "value": 999999.99 },
+            "minimum": { "inclusive": true, "value": 0.01 },
+            "multipleOf": 0.01,
+            "status": "official-next-announcement",
+            "target": "Money.amount",
+            "unit": "currency-unit"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-006",
+            "maximum": { "inclusive": true, "value": 255 },
+            "minimum": { "inclusive": true, "value": 2 },
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Street",
+            "unit": "characters"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-007",
+            "maximum": { "inclusive": true, "value": 255 },
+            "minimum": { "inclusive": true, "value": 2 },
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "City",
+            "unit": "characters"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-008",
+            "maximum": { "inclusive": true, "value": 10 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Building",
+            "unit": "characters"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-009",
+            "maximum": { "inclusive": true, "value": 10 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Flat",
+            "unit": "characters"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-010",
+            "maximum": { "inclusive": true, "value": 100 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "AddressState",
+            "unit": "characters"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-011",
+            "maximum": { "inclusive": true, "value": 14 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Ean",
+            "unit": "characters"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-012",
+            "maximum": { "inclusive": true, "value": 255 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "StringIdentifier",
+            "unit": "characters"
+        },
+        {
+            "constraint": "length",
+            "id": "VAL-013",
+            "maximum": { "inclusive": true, "value": 255 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "ManufacturerProductNumber",
+            "unit": "characters"
+        },
+        {
+            "constraint": "items",
+            "id": "VAL-014",
+            "maximum": { "inclusive": true, "value": 20 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "Offer.images",
+            "unit": "items"
+        },
+        {
+            "constraint": "items",
+            "id": "VAL-015",
+            "maximum": { "inclusive": true, "value": 20 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "GpsrInfo.manuals",
+            "unit": "items"
+        },
+        {
+            "constraint": "items",
+            "id": "VAL-016",
+            "maximum": { "inclusive": true, "value": 20 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "ProductInfo.attributes",
+            "unit": "items"
+        },
+        {
+            "constraint": "items",
+            "id": "VAL-017",
+            "maximum": { "inclusive": true, "value": 20 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "ProductInfoProposal.attributes",
+            "unit": "items"
+        },
+        {
+            "constraint": "items",
+            "id": "VAL-018",
+            "maximum": { "inclusive": true, "value": 10 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "DepositPositions",
+            "unit": "items"
+        },
+        {
+            "constraint": "numeric",
+            "id": "VAL-019",
+            "maximum": { "inclusive": true, "value": 60 },
+            "minimum": { "inclusive": true, "value": 0 },
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "ShippingTime.daysToShip",
+            "unit": "days"
+        },
+        {
+            "constraint": "items",
+            "id": "VAL-020",
+            "maximum": { "inclusive": true, "value": 500 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-next-announcement",
+            "target": "POST /v1/organizations/{organizationId}/offers/batch request body",
+            "unit": "offers"
+        },
+        {
+            "constraint": "rounding",
+            "details": {
+                "mode": "mathematical",
+                "scale": 2
+            },
+            "id": "VAL-021",
+            "maximum": null,
+            "minimum": null,
+            "multipleOf": null,
+            "sourceOverride": {
+                "contractVersion": "1.6.0-gokint-867-SNAPSHOT",
+                "url": "https://inpsa-api-portal.inpost-group.com/gokart-api-next.html"
+            },
+            "status": "official-next-contract",
+            "target": "Money.amount",
+            "unit": "decimal-places"
+        }
+    ],
+    "source": {
+        "checkedAt": "2026-08-04",
+        "defaultForRulesWithoutSourceOverride": true,
+        "productionStatus": "scheduled-not-verified",
+        "releaseVersion": "1.6.0",
+        "url": "https://inpsa-api-portal.inpost-group.com/pl/API-Changelog-Next.html"
+    }
+}

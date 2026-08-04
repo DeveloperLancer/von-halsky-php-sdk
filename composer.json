@@ -1,0 +1,97 @@
+{
+    "name": "dev-lancer/von-halsky-php-sdk",
+    "description": "Independent PHP SDK for the InPost Von Halsky API",
+    "keywords": [
+        "api",
+        "inpost",
+        "sdk",
+        "von-halsky"
+    ],
+    "homepage": "https://github.com/DeveloperLancer/von-halsky-php-sdk",
+    "license": "MIT",
+    "type": "library",
+    "support": {
+        "issues": "https://github.com/DeveloperLancer/von-halsky-php-sdk/issues",
+        "source": "https://github.com/DeveloperLancer/von-halsky-php-sdk"
+    },
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "nyholm/psr7": "^1.8",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^1.1 || ^2.0",
+        "symfony/http-client": "^6.4 || ^7.4 || ^8.1"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpdocumentor/phpdocumentor": "^3.10",
+        "phpstan/phpstan": "^2.2.3",
+        "phpstan/phpstan-phpunit": "^2.0.18",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "DevLancer\\VonHalsky\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DevLancer\\VonHalsky\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {},
+        "platform": {
+            "php": "8.1.33"
+        },
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "Use Guzzle as the PSR-18 HTTP client through GuzzleHttpClientFactory."
+    },
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/.idea",
+            "/build",
+            "/plan",
+            "/tests",
+            "/var",
+            "/vendor",
+            "/.editorconfig",
+            "/.gitattributes",
+            "/.php-cs-fixer.dist.php",
+            "/composer.lock",
+            "/phpdoc.dist.xml",
+            "/phpstan-max.neon.dist",
+            "/phpstan.neon.dist",
+            "/phpunit.xml.dist"
+        ]
+    },
+    "scripts": {
+        "validate-project": [
+            "@composer validate --strict",
+            "@composer dump-autoload --optimize --strict-psr"
+        ],
+        "contract-check": "@php tools/contract/validate-contract-data.php resources/contract",
+        "test": "phpunit --exclude-group stage",
+        "test-stage": "phpunit --group stage",
+        "phpstan": "phpstan analyse --no-progress --memory-limit=1G -c phpstan.neon.dist",
+        "phpstan:max": "phpstan analyse --no-progress --memory-limit=1G -c phpstan-max.neon.dist",
+        "cs-check": "php-cs-fixer check --diff --using-cache=no",
+        "cs-fix": "php-cs-fixer fix",
+        "docs-check": "@php tools/quality/check-documentation.php",
+        "docs-build": "@php vendor/phpdocumentor/phpdocumentor/bin/phpdoc run -c phpdoc.dist.xml",
+        "quality": [
+            "@validate-project",
+            "@contract-check",
+            "@cs-check",
+            "@phpstan",
+            "@test",
+            "@docs-check"
+        ]
+    }
+}

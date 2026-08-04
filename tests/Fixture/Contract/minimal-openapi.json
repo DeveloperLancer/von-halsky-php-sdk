@@ -1,0 +1,22 @@
+{
+    "info": {
+        "title": "Synthetic contract fixture",
+        "version": "0.0.0-test"
+    },
+    "openapi": "3.0.3",
+    "paths": {
+        "/v1/categories": {
+            "get": {
+                "operationId": "getSyntheticCategoriesV1",
+                "responses": {
+                    "200": {
+                        "description": "Synthetic success response"
+                    }
+                },
+                "tags": [
+                    "Categories"
+                ]
+            }
+        }
+    }
+}

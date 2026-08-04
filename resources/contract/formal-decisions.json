@@ -1,0 +1,35 @@
+{
+    "decisions": [
+        {
+            "decision": "Publish the Composer package as dev-lancer/von-halsky-php-sdk.",
+            "id": "FORMAL-001",
+            "owner": "Project owner",
+            "status": "confirmed-by-project-owner"
+        },
+        {
+            "decision": "Release SDK source code under the MIT license already present in LICENSE.",
+            "id": "FORMAL-002",
+            "owner": "Project owner",
+            "status": "adopted"
+        },
+        {
+            "decision": "Describe the package as independent and not an official InPost product; formal trademark review remains pending.",
+            "id": "FORMAL-003",
+            "owner": "SDK maintainers",
+            "status": "safe-default-pending-formal-review"
+        },
+        {
+            "decision": "Do not commit full official OpenAPI documents or official examples until redistribution rights are confirmed.",
+            "id": "FORMAL-004",
+            "owner": "SDK maintainers",
+            "status": "safe-default-pending-formal-review"
+        },
+        {
+            "decision": "Use only official InPost materials and Stage evidence as behavioral sources; unofficial SDKs are excluded.",
+            "id": "FORMAL-005",
+            "owner": "SDK maintainers",
+            "status": "adopted"
+        }
+    ],
+    "schemaVersion": 1
+}

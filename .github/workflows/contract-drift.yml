@@ -1,0 +1,59 @@
+name: Contract drift
+
+on:
+    schedule:
+        - cron: "17 6 * * 1"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: contract-drift
+    cancel-in-progress: false
+
+jobs:
+    compare:
+        name: Compare official Prod and Next contracts
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+            - name: Set up PHP 8.1
+              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              with:
+                  php-version: "8.1"
+                  extensions: json, openssl
+                  coverage: none
+            - name: Create temporary workspace
+              run: mkdir -p build/contract-drift
+            - name: Fetch and extract official Redoc contracts
+              run: |
+                  php tools/contract/extract-openapi.php https://inpsa-api-portal.inpost-group.com/gokart-api.html build/contract-drift/prod.json
+                  php tools/contract/extract-openapi.php https://inpsa-api-portal.inpost-group.com/gokart-api-next.html build/contract-drift/next.json
+            - name: Build derived diff
+              run: php tools/contract/diff-openapi.php build/contract-drift/prod.json build/contract-drift/next.json build/contract-drift/prod-next-diff.json
+            - name: Compare normalized hashes with lock
+              id: drift
+              continue-on-error: true
+              run: php tools/contract/check-drift.php build/contract-drift/prod.json build/contract-drift/next.json resources/contract/contract-lock.json build/contract-drift/drift-report.json
+            - name: Add report to workflow summary
+              if: always() && hashFiles('build/contract-drift/drift-report.json') != ''
+              run: |
+                  echo '## Contract drift report' >> "$GITHUB_STEP_SUMMARY"
+                  echo '```json' >> "$GITHUB_STEP_SUMMARY"
+                  cat build/contract-drift/drift-report.json >> "$GITHUB_STEP_SUMMARY"
+                  echo '```' >> "$GITHUB_STEP_SUMMARY"
+            - name: Upload derived reports
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: contract-drift-report
+                  path: |
+                      build/contract-drift/drift-report.json
+                      build/contract-drift/prod-next-diff.json
+                  if-no-files-found: warn
+                  retention-days: 14
+            - name: Fail on detected drift
+              if: steps.drift.outcome != 'success'
+              run: exit 1

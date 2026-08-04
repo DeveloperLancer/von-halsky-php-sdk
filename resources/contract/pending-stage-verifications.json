@@ -1,0 +1,143 @@
+{
+    "allowedStatuses": [
+        "documented",
+        "pending-stage",
+        "verified-stage",
+        "rejected-stage"
+    ],
+    "environment": {
+        "apiBaseUrl": "https://stage-api.inpost-group.com/inpsa",
+        "credentialsAvailable": false,
+        "plannedVariables": [
+            "VON_HALSKY_STAGE_ACCESS_TOKEN",
+            "VON_HALSKY_STAGE_CLIENT_ID",
+            "VON_HALSKY_STAGE_CLIENT_SECRET",
+            "VON_HALSKY_STAGE_REFRESH_TOKEN",
+            "VON_HALSKY_STAGE_ORGANIZATION_ID",
+            "VON_HALSKY_STAGE_LEAF_CATEGORY_ID",
+            "VON_HALSKY_STAGE_PRODUCT_EAN",
+            "VON_HALSKY_STAGE_ALLOW_WRITES"
+        ],
+        "safeguards": {
+            "defaultAllowWrites": false,
+            "productionHostnameDenied": true,
+            "testGroup": "stage"
+        }
+    },
+    "items": [
+        {
+            "blocks": ["1.0.0", "phase-03-oauth-integration"],
+            "evidence": null,
+            "id": "STAGE-001",
+            "owner": "SDK maintainers",
+            "priority": "critical",
+            "status": "pending-stage",
+            "title": "Authorization Code with PKCE for an integrator"
+        },
+        {
+            "blocks": ["1.0.0", "phase-03-oauth-integration"],
+            "evidence": null,
+            "id": "STAGE-002",
+            "owner": "SDK maintainers",
+            "priority": "critical",
+            "status": "pending-stage",
+            "title": "Client Credentials for a merchant"
+        },
+        {
+            "blocks": ["1.0.0", "phase-03-token-refresh"],
+            "evidence": null,
+            "id": "STAGE-003",
+            "owner": "SDK maintainers",
+            "priority": "critical",
+            "status": "pending-stage",
+            "title": "Refresh token rotation and reuse of the previous token"
+        },
+        {
+            "blocks": ["1.0.0", "phase-03-authorization"],
+            "evidence": null,
+            "id": "STAGE-004",
+            "owner": "SDK maintainers",
+            "priority": "critical",
+            "status": "pending-stage",
+            "title": "Scopes and organization access boundaries"
+        },
+        {
+            "blocks": ["phase-08-rate-limiting"],
+            "evidence": null,
+            "id": "STAGE-005",
+            "owner": "SDK maintainers",
+            "priority": "high",
+            "status": "pending-stage",
+            "title": "X-RateLimit-Reset unit and Retry-After format"
+        },
+        {
+            "blocks": ["1.0.0", "phase-08-async"],
+            "evidence": null,
+            "id": "STAGE-006",
+            "owner": "SDK maintainers",
+            "priority": "critical",
+            "status": "pending-stage",
+            "title": "Correlation of HTTP 201, command ID, event, and final offer"
+        },
+        {
+            "blocks": ["phase-08-async"],
+            "evidence": null,
+            "id": "STAGE-007",
+            "owner": "SDK maintainers",
+            "priority": "high",
+            "status": "pending-stage",
+            "title": "untilId semantics, event ordering, and 72-hour boundary"
+        },
+        {
+            "blocks": ["phase-08-async"],
+            "evidence": null,
+            "id": "STAGE-008",
+            "owner": "SDK maintainers",
+            "priority": "high",
+            "status": "pending-stage",
+            "title": "24-hour command retention"
+        },
+        {
+            "blocks": ["phase-06-attachments"],
+            "evidence": null,
+            "id": "STAGE-009",
+            "owner": "SDK maintainers",
+            "priority": "high",
+            "status": "pending-stage",
+            "title": "Attachment MIME types, limits, and streaming"
+        },
+        {
+            "blocks": ["1.0.0", "phase-04-errors"],
+            "evidence": null,
+            "id": "STAGE-010",
+            "owner": "SDK maintainers",
+            "priority": "critical",
+            "status": "pending-stage",
+            "title": "application/problem+json behavior for representative 4xx responses"
+        },
+        {
+            "blocks": ["phase-07-post-sale"],
+            "evidence": null,
+            "id": "STAGE-011",
+            "owner": "SDK maintainers",
+            "priority": "high",
+            "status": "pending-stage",
+            "title": "Availability of return, refund, and claim data"
+        },
+        {
+            "blocks": ["1.0.0", "phase-08-retry"],
+            "evidence": null,
+            "id": "STAGE-012",
+            "owner": "SDK maintainers",
+            "priority": "critical",
+            "status": "pending-stage",
+            "title": "Idempotency guarantees or their absence for write operations"
+        }
+    ],
+    "reporting": {
+        "evidenceMustBeAnonymized": true,
+        "recordExecutedAt": true,
+        "secretsAndPiiForbidden": true
+    },
+    "schemaVersion": 1
+}

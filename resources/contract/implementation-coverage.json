@@ -1,0 +1,177 @@
+{
+    "contractVersion": "1.5.11",
+    "implementedOperations": [
+        {
+            "operationId": "getCategoriesV1",
+            "publicMethod": "CategoriesResource::list()"
+        },
+        {
+            "operationId": "getCategoriesByIdV1",
+            "publicMethod": "CategoriesResource::get()"
+        },
+        {
+            "operationId": "getCategoriesAttributesByCategoryIdV1",
+            "publicMethod": "CategoriesResource::attributes()"
+        },
+        {
+            "operationId": "getOrganizationsV1",
+            "publicMethod": "OrganizationsResource::list()"
+        },
+        {
+            "operationId": "getOffersDepositTypesV1",
+            "publicMethod": "OffersResource::depositTypes()"
+        },
+        {
+            "operationId": "getOffersV1",
+            "publicMethod": "OffersResource::list()"
+        },
+        {
+            "operationId": "postOffersV1",
+            "publicMethod": "OffersResource::create()"
+        },
+        {
+            "operationId": "postBatchOffersV1",
+            "publicMethod": "OffersResource::createBatch()"
+        },
+        {
+            "operationId": "getOffersCommandsByIdV1",
+            "publicMethod": "OffersResource::command()"
+        },
+        {
+            "operationId": "getOffersEventsV1",
+            "publicMethod": "OffersResource::events()"
+        },
+        {
+            "operationId": "getOffersHintV1",
+            "publicMethod": "OffersResource::hints()"
+        },
+        {
+            "operationId": "patchUpdateOfferPricesBatchV1",
+            "publicMethod": "OffersResource::updatePrices()"
+        },
+        {
+            "operationId": "patchUpdateOfferStocksBatchV1",
+            "publicMethod": "OffersResource::updateStocks()"
+        },
+        {
+            "operationId": "getOffersByIdV1",
+            "publicMethod": "OffersResource::get()"
+        },
+        {
+            "operationId": "patchOffersByIdV1",
+            "publicMethod": "OffersResource::patch()"
+        },
+        {
+            "operationId": "getOffersAttachmentsByOfferIdV1",
+            "publicMethod": "AttachmentsResource::list()"
+        },
+        {
+            "operationId": "postOffersAttachmentsByOfferIdV1",
+            "publicMethod": "AttachmentsResource::upload()"
+        },
+        {
+            "operationId": "deleteOffersAttachmentsByOfferIdAndAttachmentIdV1",
+            "publicMethod": "AttachmentsResource::delete()"
+        },
+        {
+            "operationId": "getOffersAttachmentsByOfferIdAndAttachmentIdV1",
+            "publicMethod": "AttachmentsResource::download()"
+        },
+        {
+            "operationId": "patchOfferAttributesByIdV1",
+            "publicMethod": "OffersResource::updateAttributes()"
+        },
+        {
+            "operationId": "postOffersCloseByOfferIdV1",
+            "publicMethod": "OffersResource::close()"
+        },
+        {
+            "operationId": "postOffersReopenByOfferIdV1",
+            "publicMethod": "OffersResource::reopen()"
+        },
+        {
+            "operationId": "getOrdersClaimTypesDictionaryV1",
+            "publicMethod": "ClaimsResource::types()"
+        },
+        {
+            "operationId": "getOrdersDeliveryMethodsV1",
+            "publicMethod": "DeprecatedResource::deliveryMethods()"
+        },
+        {
+            "operationId": "getClaimsForOrganizationV1",
+            "publicMethod": "ClaimsResource::list()"
+        },
+        {
+            "operationId": "getOrdersV1",
+            "publicMethod": "OrdersResource::list()"
+        },
+        {
+            "operationId": "getOrdersCommandsByIdV1",
+            "publicMethod": "OrdersResource::command()"
+        },
+        {
+            "operationId": "getOrdersEventsV1",
+            "publicMethod": "OrdersResource::events()"
+        },
+        {
+            "operationId": "getOrdersByIdV1",
+            "publicMethod": "OrdersResource::get()"
+        },
+        {
+            "operationId": "postOrdersAcceptByIdV1",
+            "publicMethod": "OrdersResource::accept()"
+        },
+        {
+            "operationId": "getClaimByIdV1",
+            "publicMethod": "ClaimsResource::get()"
+        },
+        {
+            "operationId": "partialRefundClaimV1",
+            "publicMethod": "ClaimsResource::partialRefund()"
+        },
+        {
+            "operationId": "refundClaimV1",
+            "publicMethod": "ClaimsResource::refund()"
+        },
+        {
+            "operationId": "rejectClaimV1",
+            "publicMethod": "ClaimsResource::reject()"
+        },
+        {
+            "operationId": "postOrdersRefundByOrderIdV1",
+            "publicMethod": "OrdersResource::refund()"
+        },
+        {
+            "operationId": "postOrdersRefuseByIdV1",
+            "publicMethod": "DeprecatedResource::refuseOrder()"
+        },
+        {
+            "operationId": "getReturnsByOrderIdV1",
+            "publicMethod": "ReturnsResource::forOrder()"
+        },
+        {
+            "operationId": "getReturnsForOrganizationV1",
+            "publicMethod": "ReturnsResource::list()"
+        },
+        {
+            "operationId": "getReturnByIdV1",
+            "publicMethod": "ReturnsResource::get()"
+        },
+        {
+            "operationId": "acceptReturnV1",
+            "publicMethod": "ReturnsResource::accept()"
+        },
+        {
+            "operationId": "rejectReturnV1",
+            "publicMethod": "ReturnsResource::reject()"
+        },
+        {
+            "operationId": "getOrdersDeliveryMethodsV2",
+            "publicMethod": "OrdersResource::deliveryMethods()"
+        }
+    ],
+    "summary": {
+        "implemented": 42,
+        "total": 42
+    }
+}

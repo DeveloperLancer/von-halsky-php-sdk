@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor configVersion="3">
+    <title>Von Halsky PHP SDK</title>
+    <paths>
+        <output>build/docs/api</output>
+        <cache>build/docs/cache</cache>
+    </paths>
+    <version number="develop">
+        <folder>default</folder>
+        <api format="php">
+            <source dsn=".">
+                <path>src</path>
+            </source>
+            <extensions>
+                <extension>php</extension>
+            </extensions>
+            <visibility>public</visibility>
+            <default-package-name>DevLancer\VonHalsky</default-package-name>
+            <include-source>true</include-source>
+        </api>
+    </version>
+</phpdocumentor>
