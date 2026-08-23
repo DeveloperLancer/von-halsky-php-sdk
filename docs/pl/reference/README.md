@@ -9,6 +9,5 @@ Pełna polska referencja publicznych metod zasobów SDK. Każda strona zawiera z
 - [Orders](./orders/README.md) — 7 metod
 - [Returns](./returns/README.md) — 5 metod
 - [Claims](./claims/README.md) — 6 metod
-- [Deprecated](./deprecated/README.md) — 2 metody
 
-Łącznie: 42 operacje.
+Łącznie: 40 aktualnych operacji.

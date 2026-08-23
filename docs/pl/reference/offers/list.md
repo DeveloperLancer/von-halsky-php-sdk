@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\OfferListOptions;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$strona = $shop->offers()->list(new OfferListOptions(limit: 30, sort: ['-updatedAt']))->data;
+$page = $shop->offers()->list(new OfferListOptions(limit: 30, sort: ['-updatedAt']))->data;
 ```

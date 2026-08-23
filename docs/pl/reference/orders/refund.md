@@ -24,5 +24,5 @@ use DevLancer\VonHalsky\ValueObject\Money;
 use DevLancer\VonHalsky\ValueObject\OrderId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$wynik = $shop->orders()->refund(OrderId::fromString('order-id'), new RefundRequest(Money::fromDecimal('12.34')))->data;
+$result = $shop->orders()->refund(OrderId::fromString('order-id'), new RefundRequest(Money::fromDecimal('12.34')))->data;
 ```

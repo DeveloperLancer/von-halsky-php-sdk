@@ -10,7 +10,7 @@ Reads the current global v2 delivery-method dictionary.
 
 ## Behavior and limits
 
-Use this instead of the deprecated v1 delivery dictionary. API and transport errors use [shared handling](../../responses-and-errors.md).
+API and transport errors use [shared handling](../../responses-and-errors.md).
 
 ## Example
 

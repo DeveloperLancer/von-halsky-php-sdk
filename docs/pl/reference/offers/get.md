@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$oferta = $shop->offers()->get(OfferId::fromString('offer-id'))->data;
+$offer = $shop->offers()->get(OfferId::fromString('offer-id'))->data;
 ```

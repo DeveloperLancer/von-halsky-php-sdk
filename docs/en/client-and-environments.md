@@ -57,7 +57,7 @@ For another PSR-18 implementation, construct `HttpClientDependencies` with a PSR
 
 ## Organization scope
 
-`organizations()`, `categories()`, offer deposit types, order delivery methods, and claim types are global. All calls that act on a merchant’s offers, attachments, orders, returns, claims, or deprecated order refusal require an `OrganizationContext`.
+`organizations()`, `categories()`, offer deposit types, order delivery methods, and claim types are global. All calls that act on a merchant’s offers, attachments, orders, returns, or claims require an `OrganizationContext`.
 
 ```php
 <?php

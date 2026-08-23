@@ -25,7 +25,7 @@ See the [catalogue and offers guide](../docs/en/catalogue-and-offers.md) for pro
 
 - [`orders-sync.php`](./orders-sync.php) — synchronize paid and unpaid Stage orders from a UTC watermark without printing customer data.
 
-See the [orders and post-sale guide](../docs/en/orders-and-post-sale.md) for privacy, ShipX boundaries, returns, refunds, claims, and deprecated migration.
+See the [orders and post-sale guide](../docs/en/orders-and-post-sale.md) for privacy, ShipX boundaries, returns, refunds, and claims.
 
 ## Reliability
 

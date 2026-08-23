@@ -44,7 +44,7 @@ Event feeds are useful change hints, not the only source of truth. A robust cons
 4. Periodically compares application state with authoritative offer or order lists.
 5. Stops advancing the checkpoint and performs a full reconciliation after downtime, an unknown event, or a suspected retention gap.
 
-The repository contains candidate command and event retention durations that are still marked for Stage verification. They are not runtime guarantees and are intentionally omitted here.
+Do not assume a fixed command or event-retention duration. Until the API provider confirms one as a guarantee, design synchronization to reconcile state periodically with resource lists.
 
 ## Coordinate rate limits and diagnostics
 

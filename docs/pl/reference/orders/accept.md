@@ -1,16 +1,16 @@
 # `OrdersResource::accept()`
 
-Wysyła polecenie akceptacji zamówienia.
+Wysyła żądanie akceptacji zamówienia.
 
 ## Użycie
 
 - Zakres: organizacja.
 - Sygnatura: `accept(OrderId $orderId, ?ResponseLanguage $language = null): ApiResponse<OrderCommand>`.
-- Wynik: przyjęte polecenie zamówienia.
+- Wynik: `OrderCommand`.
 
 ## Zachowanie
 
-Zmiana może być asynchroniczna. Zapisz ID polecenia i sprawdź później `command()` lub zdarzenia. POST nie jest automatycznie ponawiany; po niejednoznacznym błędzie sieciowym najpierw odczytaj stan zamówienia.
+Zmiana może być asynchroniczna. Zapisz `commandId` i sprawdź później `command()` lub zdarzenia. POST nie jest automatycznie ponawiany; po niejednoznacznym błędzie sieciowym najpierw odczytaj stan zamówienia.
 
 ## Przykład
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\OrderId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$polecenie = $shop->orders()->accept(OrderId::fromString('order-id'))->data;
+$command = $shop->orders()->accept(OrderId::fromString('order-id'))->data;
 ```

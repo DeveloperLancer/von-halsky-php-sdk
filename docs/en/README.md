@@ -65,7 +65,3 @@ Set transport boundaries, use the explicitly bounded GET retry only once, persis
 - [All resource operations](./reference/README.md)
 - [Runnable examples](../../examples/README.md)
 - [Generated PHP API reference](./api-reference.md)
-
-## Keeping docs accurate
-
-Update the English and Polish guides plus the relevant operation pages in the same change as a public SDK behavior. `composer docs-check` validates both language trees, local links, reference coverage, and PHP syntax; examples must be credential-free and safe to copy.

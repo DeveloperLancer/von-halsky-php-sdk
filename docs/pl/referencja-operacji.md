@@ -1,6 +1,6 @@
 # Polska mapa operacji
 
-Ta strona opisuje po polsku wszystkie 42 metody zasobów SDK. Link w ostatniej kolumnie prowadzi do pełnej polskiej strony referencyjnej z przykładem PHP, parametrami i ograniczeniami.
+Ta strona opisuje po polsku wszystkie 40 aktualnych metod zasobów SDK. Link w ostatniej kolumnie prowadzi do pełnej polskiej strony referencyjnej z przykładem PHP, parametrami i ograniczeniami.
 
 Wszystkie udane wywołania zwracają `ApiResponse<T>`. Zasoby globalne są dostępne z `$client`; zasoby organizacji z `$shop = $client->forOrganization($organizationId)`.
 
@@ -13,7 +13,7 @@ Wszystkie udane wywołania zwracają `ApiResponse<T>`. Zasoby globalne są dost�
 | `categories()->get()` | globalny, `Category` | Jedna kategoria i ograniczone potomstwo. | [PL](./reference/categories/get.md) |
 | `categories()->attributes()` | globalny, `list<AttributeDefinition>` | Definicje atrybutów wymaganych/opcjonalnych dla kategorii. | [PL](./reference/categories/attributes.md) |
 
-`ProductProposal` wymaga kategorii-liścia. Wywołaj `requireLeaf()` lub przekaż `CategoryId` wcześniej potwierdzony przez katalog.
+`ProductProposal` wymaga `leaf category`. Wywołaj `requireLeaf()` lub przekaż `CategoryId` wcześniej potwierdzony przez katalog jako kategorię bez podkategorii.
 
 ## Oferty
 
@@ -30,11 +30,11 @@ Wszystkie udane wywołania zwracają `ApiResponse<T>`. Zasoby globalne są dost�
 | `$shop->offers()->updateAttributes()` | organizacja, `CommandHandle` | Uporządkowane operacje dodania, aktualizacji i usunięcia atrybutów. | [PL](./reference/offers/update-attributes.md) |
 | `$shop->offers()->close()` | organizacja, `CommandHandle` | Asynchroniczne zamknięcie oferty. | [PL](./reference/offers/close.md) |
 | `$shop->offers()->reopen()` | organizacja, `CommandHandle` | Asynchroniczne ponowne otwarcie oferty. | [PL](./reference/offers/reopen.md) |
-| `$shop->offers()->command()` | organizacja, `CommandDetails` | Jednorazowy odczyt stanu polecenia oferty. | [PL](./reference/offers/command.md) |
+| `$shop->offers()->command()` | organizacja, `CommandDetails` | Jednorazowy odczyt stanu `command` oferty. | [PL](./reference/offers/command.md) |
 | `$shop->offers()->events()` | organizacja, `list<OfferEvent>` | Jedna strona zdarzeń, od najnowszych. | [PL](./reference/offers/events.md) |
 | `$shop->offers()->hints()` | organizacja, `PageResult<ProductHint>` | Sugestie na podstawie EAN, MPN lub nazwy. | [PL](./reference/offers/hints.md) |
 
-`create()`, aktualizacje i operacje cyklu życia zwracają polecenie, a nie końcowy stan. Zapisz ID i odczytaj później `command()` lub zdarzenia. Metody zapisujące nie są automatycznie ponawiane.
+`create()`, aktualizacje i operacje cyklu życia zwracają `CommandHandle`, a nie końcowy stan. Zapisz `commandId` i odczytaj później `command()` lub zdarzenia. Metody zapisujące nie są automatycznie ponawiane.
 
 ## Załączniki
 
@@ -54,12 +54,12 @@ SDK nie buforuje całego pliku ani nie zamyka strumieni za aplikację.
 | `orders()->deliveryMethods()` | globalny, `list<DeliveryMethod>` | Aktualny słownik metod dostawy v2. | [PL](./reference/orders/delivery-methods.md) |
 | `$shop->orders()->list()` | organizacja, `PageResult<OrderDetails>` | Jedna strona zamówień, opcjonalnie od znacznika czasu UTC. | [PL](./reference/orders/list.md) |
 | `$shop->orders()->get()` | organizacja, `OrderDetails` | Jedno zamówienie; obsługuj je jak dane potencjalnie osobowe. | [PL](./reference/orders/get.md) |
-| `$shop->orders()->accept()` | organizacja, `OrderCommand` | Przyjęcie zamówienia przez polecenie. | [PL](./reference/orders/accept.md) |
-| `$shop->orders()->command()` | organizacja, `OrderCommand` | Jednorazowy odczyt polecenia zamówienia. | [PL](./reference/orders/command.md) |
+| `$shop->orders()->accept()` | organizacja, `OrderCommand` | Przyjęcie zamówienia przez `command`. | [PL](./reference/orders/accept.md) |
+| `$shop->orders()->command()` | organizacja, `OrderCommand` | Jednorazowy odczyt `command` zamówienia. | [PL](./reference/orders/command.md) |
 | `$shop->orders()->events()` | organizacja, `list<OrderEvent>` | Jedna strona zdarzeń od najnowszych. | [PL](./reference/orders/events.md) |
 | `$shop->orders()->refund()` | organizacja, `RefundResult` | Pełny zwrot płatności bez DTO lub dokładny częściowy z `RefundRequest`. | [PL](./reference/orders/refund.md) |
 
-## Zwroty
+## Returns (zwroty towarów)
 
 | Metoda | Zakres i wynik | Opis | Szczegóły |
 |---|---|---|---|
@@ -71,7 +71,7 @@ SDK nie buforuje całego pliku ani nie zamyka strumieni za aplikację.
 
 Akceptacja i odrzucenie zmieniają stan zewnętrzny, dlatego nie są automatycznie ponawiane.
 
-## Reklamacje
+## Claims (reklamacje)
 
 | Metoda | Zakres i wynik | Opis | Szczegóły |
 |---|---|---|---|
@@ -83,12 +83,3 @@ Akceptacja i odrzucenie zmieniają stan zewnętrzny, dlatego nie są automatyczn
 | `$shop->claims()->refund()` | organizacja, `ActionResult` | Zwrot płatności w reklamacji. | [PL](./reference/claims/refund.md) |
 
 Akcje reklamacyjne mogą mieć konsekwencje finansowe i dla klienta. Przed wywołaniem zweryfikuj stan reklamacji, uprawnienia aplikacji i uzasadnienie biznesowe.
-
-## Operacje przestarzałe
-
-| Metoda | Zakres i wynik | Opis | Szczegóły |
-|---|---|---|---|
-| `deprecated()->deliveryMethods()` | globalny, `list<string>` | Stare kody metod dostawy v1; użyj słownika v2. | [PL](./reference/deprecated/delivery-methods.md) |
-| `$shop->deprecated()->refuseOrder()` | organizacja, `OrderCommand` | Stare odrzucenie zamówienia v1 bez znanego następcy. | [PL](./reference/deprecated/refuse-order.md) |
-
-Obie metody są planowane do usunięcia w SDK 2.0. Nowy kod nie powinien korzystać z nich, chyba że konieczna jest zgodność z istniejącą integracją.

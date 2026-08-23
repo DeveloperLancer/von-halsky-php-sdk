@@ -11,7 +11,7 @@ Przegląda ograniczone globalne drzewo kategorii.
 
 ## Zachowanie
 
-`children` zawiera tylko dane z tej odpowiedzi i nie powoduje kolejnych żądań. `requireLeaf()` odrzuca kategorię niebędącą liściem, zgłaszając lokalny `InvalidRequestException`. Sam `CategoryId` nie pozwala SDK potwierdzić, czy kategoria jest liściem.
+`children` zawiera tylko dane z tej odpowiedzi i nie powoduje kolejnych żądań. `requireLeaf()` odrzuca `Category`, który nie jest `leaf category`, zgłaszając lokalny `InvalidRequestException`. Sam `CategoryId` nie pozwala SDK potwierdzić, czy wskazuje kategorię bez podkategorii.
 
 ## Przykład
 
@@ -23,5 +23,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\CategoryTreeOptions;
 
 /** @var \DevLancer\VonHalsky\VonHalskyClient $client */
-$drzewo = $client->categories()->list(new CategoryTreeOptions(depth: 4))->data;
+$tree = $client->categories()->list(new CategoryTreeOptions(depth: 4))->data;
 ```

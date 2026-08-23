@@ -22,5 +22,5 @@ declare(strict_types=1);
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
 /** @var \DevLancer\VonHalsky\ValueObject\OrderId $orderId */
 /** @var \DevLancer\VonHalsky\ValueObject\ClaimId $claimId */
-$wynik = $shop->claims()->refund($orderId, $claimId)->data;
+$result = $shop->claims()->refund($orderId, $claimId)->data;
 ```

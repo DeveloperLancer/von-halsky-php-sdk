@@ -24,5 +24,5 @@ use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$komendy = $shop->offers()->updateStocks([new OfferStockUpdate(OfferId::fromString('offer-id'), new Stock(25))])->data;
+$commands = $shop->offers()->updateStocks([new OfferStockUpdate(OfferId::fromString('offer-id'), new Stock(25))])->data;
 ```

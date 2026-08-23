@@ -1,6 +1,6 @@
 # `OffersResource::command()`
 
-Odczytuje pojedynczy wynik polecenia oferty.
+Odczytuje pojedynczy wynik `command` oferty.
 
 ## Użycie
 
@@ -10,7 +10,7 @@ Odczytuje pojedynczy wynik polecenia oferty.
 
 ## Zachowanie
 
-To pojedyncze żądanie. Harmonogram kolejnych prób, trwały zapis ID i zasady retencji wyniku należą do aplikacji. Czas dostępności polecenia wymaga potwierdzenia w Stage.
+To pojedyncze żądanie. Harmonogram kolejnych prób, trwały zapis `commandId` i zasady retencji wyniku należą do aplikacji. Nie zakładaj stałego czasu dostępności wyniku: nie jest on potwierdzoną gwarancją API.
 
 ## Przykład
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\CommandId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$szczegoly = $shop->offers()->command(CommandId::fromString('command-id'))->data;
+$details = $shop->offers()->command(CommandId::fromString('command-id'))->data;
 ```

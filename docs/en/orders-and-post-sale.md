@@ -24,7 +24,7 @@ $page = $shop->orders()->list(new OrderListOptions(
 
 A production synchronizer should persist a run boundary, last durable offset or watermark, and its own processing status in one transaction. Re-read an overlap window or run periodic full reconciliation to cover equal timestamps, concurrent updates, and crash recovery. Exact overlap size is an application decision and should be tested against Stage behavior.
 
-Order and offer event feeds are newest-first. `untilId` asks for events older than that ID and excludes it and newer records; it is not a forward cursor. Keep both the last event ID and checkpoint time, deduplicate event IDs, and use authoritative lists after any suspected retention gap. The repository records retention durations as pending Stage verification, so do not encode a numeric guarantee from this documentation.
+Order and offer event feeds are newest-first. `untilId` asks for events older than that ID and excludes it and newer records; it is not a forward cursor. Keep both the last event ID and checkpoint time, deduplicate event IDs, and use authoritative lists after any suspected retention gap. Do not assume a fixed event-retention duration: it is not a confirmed API guarantee.
 
 ## Commands and refunds
 
@@ -51,5 +51,3 @@ The SDK does not implement ShipX shipment creation, labels, manifests, or tracki
 Returns support list, per-order list, detail, accept, and reject operations. Claims support a global type dictionary, organization list and detail operations, and reject, partial-refund, and refund actions. Known claim states in this SDK are `APPROVED`, `REJECTED`, and `RESOLUTION_IN_PROGRESS`; response models preserve an unknown future state, while list filters remain raw strings and can still be rejected by the server.
 
 Post-sale actions are customer-visible and can be financial. Before each call, fetch current details, apply authorization and business checks in the application, record the actor and reason in an audit trail, and avoid automatic replay. See [returns](./reference/returns/README.md) and [claims](./reference/claims/README.md).
-
-Legacy v1 order methods are isolated in [deprecated operations](./reference/deprecated/README.md) and planned for SDK 2.0 removal.

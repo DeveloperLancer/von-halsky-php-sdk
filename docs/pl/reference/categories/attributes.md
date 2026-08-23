@@ -10,7 +10,7 @@ Zwraca definicje atrybutów dla kategorii.
 
 ## Zachowanie
 
-Przed utworzeniem oferty używaj kategorii-liścia. Nieznane wartości enumów są zachowywane, aby nowa wartość serwera nie zablokowała hydratacji.
+Przed utworzeniem oferty używaj `leaf category`. Nieznane wartości enumów są zachowywane, aby nowa wartość serwera nie zablokowała hydratacji.
 
 ## Przykład
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\CategoryId;
 
 /** @var \DevLancer\VonHalsky\VonHalskyClient $client */
-$atrybuty = $client->categories()->attributes(CategoryId::fromString('leaf-category-id'))->data;
+$attributes = $client->categories()->attributes(CategoryId::fromString('leaf-category-id'))->data;
 ```

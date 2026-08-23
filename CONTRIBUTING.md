@@ -19,6 +19,7 @@ Generate the supplementary phpDocumentor API output with `composer docs-build`. 
 - Add tests for behavior and contract changes.
 - Add `declare(strict_types=1)` to every project PHP file.
 - Document every public symbol and update user documentation with public behavior.
+- For a public SDK behavior, update the English and Polish guides and every relevant operation page in the same change. Run `composer docs-check` to validate documentation coverage, local links, and PHP example syntax.
 - Update the changelog for public API or compatibility changes.
 - Keep full official OpenAPI documents under ignored `var/contract/`.
 - Never commit credentials, tokens, private keys, personal data, production payloads, or recorded authenticated traffic.

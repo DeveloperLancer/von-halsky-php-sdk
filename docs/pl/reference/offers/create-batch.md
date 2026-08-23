@@ -1,6 +1,6 @@
 # `OffersResource::createBatch()`
 
-Wysyła paczkę komend utworzenia ofert.
+Wysyła paczkę żądań utworzenia ofert.
 
 ## Użycie
 
@@ -10,7 +10,7 @@ Wysyła paczkę komend utworzenia ofert.
 
 ## Zachowanie
 
-`BatchCreateOffersRequest` waliduje rozmiar lokalnie. Każdy wynik jest komendą do późniejszego sprawdzenia; POST nie jest ponawiany.
+`BatchCreateOffersRequest` waliduje rozmiar lokalnie. Każdy wynik jest `CommandHandle` do późniejszego sprawdzenia; POST nie jest ponawiany.
 
 ## Przykład
 
@@ -23,5 +23,5 @@ use DevLancer\VonHalsky\Model\Offer\BatchCreateOffersRequest;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
 /** @var \DevLancer\VonHalsky\Model\Offer\CreateOfferRequest $request */
-$komendy = $shop->offers()->createBatch(new BatchCreateOffersRequest([$request]))->data;
+$commands = $shop->offers()->createBatch(new BatchCreateOffersRequest([$request]))->data;
 ```

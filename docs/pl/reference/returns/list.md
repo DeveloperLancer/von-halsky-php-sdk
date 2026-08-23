@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\ReturnListOptions;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$strona = $shop->returns()->list(new ReturnListOptions(statuses: ['ACCEPTED']))->data;
+$page = $shop->returns()->list(new ReturnListOptions(statuses: ['ACCEPTED']))->data;
 ```

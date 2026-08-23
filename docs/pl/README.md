@@ -1,12 +1,14 @@
-# Dokumentacja SDK Von Halsky po polsku
+# Dokumentacja SDK Von Halsky
 
-To jest polska, śledzona w Git wersja dokumentacji SDK. Opisuje te same publiczne zachowania co [wersja angielska](../en/README.md); obie wersje należy aktualizować razem ze zmianą publicznego API.
+Przewodniki opisują typy PHP i zachowanie zaimplementowane w tym SDK, a nie są kopią zewnętrznego HTTP API. Dla każdej metody zasobu dostępna jest też osobna strona [referencji operacji](./reference/README.md).
 
-Przewodniki są przeznaczone dla programistów PHP znających Composer i podstawy HTTP API. Zacznij od przewodnika opisującego cały proces integracji, a do referencji przejdź, gdy znasz już potrzebną metodę zasobu.
+Dokumentacja jest dostępna również [po angielsku](../en/README.md).
 
 ## Ścieżki czytania
 
 ### Pierwsza integracja
+
+Zainstaluj pakiet, utwórz klienta z istniejącym tokenem, odczytaj organizacje i wybierz niezmienny kontekst organizacji.
 
 1. [Instalacja i pierwszy klient](./instalacja.md)
 2. [Klient, środowiska i kontekst organizacji](./klient-i-srodowiska.md)
@@ -20,12 +22,12 @@ Przewodniki są przeznaczone dla programistów PHP znających Composer i podstaw
 ### Katalog i oferty
 
 1. [Katalog, oferty i załączniki](./katalog-i-oferty.md)
-2. [Polska pełna referencja operacji](./reference/README.md)
+2. [Pełna referencja operacji](./reference/README.md)
 
 ### Zamówienia i obsługa posprzedażowa
 
 1. [Zamówienia i obsługa posprzedażowa](./zamowienia-i-posprzedaz.md)
-2. [Polska pełna referencja operacji](./reference/README.md)
+2. [Pełna referencja operacji](./reference/README.md)
 
 ### Niezawodność produkcyjna
 
@@ -47,11 +49,7 @@ Przewodniki są przeznaczone dla programistów PHP znających Composer i podstaw
 
 ## Pełna referencja
 
-[Polska referencja](./reference/README.md) ma osobną stronę z opisem, sygnaturą, wynikiem i przykładem dla każdej z 42 metod. [Mapa operacji](./referencja-operacji.md) pozostaje skróconą ściągą.
+[Referencja operacji](./reference/README.md) ma osobną stronę z opisem, sygnaturą, wynikiem i przykładem dla każdej z 40 aktualnych metod. [Mapa operacji](./referencja-operacji.md) pozostaje skróconą ściągą.
 
 - [Przykłady uruchamialne](../../examples/README.md)
 - [Generowana referencja klas PHP](./referencja-php.md)
-
-## Utrzymanie dokumentacji
-
-Zmiana publicznego API wymaga równoczesnej aktualizacji obu wersji językowych i odpowiednich stron operacji. `composer docs-check` sprawdza kompletność referencji, linki lokalne i składnię przykładów PHP.

@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\ProductHintOptions;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$podpowiedzi = $shop->offers()->hints(new ProductHintOptions(name: 'Example product'))->data;
+$hints = $shop->offers()->hints(new ProductHintOptions(name: 'Example product'))->data;
 ```

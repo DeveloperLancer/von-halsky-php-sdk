@@ -14,10 +14,10 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Environment\Environment;
 
 $stage = Environment::stage();
-$produkcja = Environment::production();
+$production = Environment::production();
 ```
 
-Każda fabryka dostarcza jeden spójny zestaw adresów API, autoryzacji i tokenów. `Environment::custom()` służy do lokalnego serwera testowego lub jawnie skonfigurowanego serwera pośredniczącego. Wymaga bezwzględnych adresów HTTPS, z wyjątkiem lokalnego adresu pętli zwrotnej; dane użytkownika w URL, zapytania i fragmenty są odrzucane.
+Każda fabryka dostarcza jeden spójny zestaw adresów API, autoryzacji i tokenów. `Environment::custom()` służy do lokalnego serwera testowego lub jawnie skonfigurowanego serwera pośredniczącego. Wymaga bezwzględnych adresów HTTPS, z wyjątkiem lokalnego loopback URI; dane użytkownika w URL, zapytania i fragmenty są odrzucane.
 
 ```php
 <?php
@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Environment\Environment;
 
-$lokalne = Environment::custom(
+$local = Environment::custom(
     id: 'local-contract-test',
     apiBaseUrl: 'http://127.0.0.1:8080/inpsa',
     authorizationUrl: 'http://127.0.0.1:8080/oauth2/authorize',
@@ -49,9 +49,9 @@ use DevLancer\VonHalsky\Auth\TokenProviderInterface;
 use DevLancer\VonHalsky\Environment\Environment;
 use DevLancer\VonHalsky\VonHalskyClient;
 
-/** @var TokenProviderInterface $dostawcaTokenow */
-$klient = VonHalskyClient::create(
-    $dostawcaTokenow,
+/** @var TokenProviderInterface $tokenProvider */
+$client = VonHalskyClient::create(
+    $tokenProvider,
     Environment::stage(),
     timeout: 15.0,
 );
@@ -70,10 +70,10 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
 
-/** @var \DevLancer\VonHalsky\VonHalskyClient $klient */
-$sklep = $klient->forOrganization(OrganizationId::fromString('organization-id'));
-$oferty = $sklep->offers();
-$zamowienia = $sklep->orders();
+/** @var \DevLancer\VonHalsky\VonHalskyClient $client */
+$shop = $client->forOrganization(OrganizationId::fromString('organization-id'));
+$offers = $shop->offers();
+$orders = $shop->orders();
 ```
 
 `forOrganization()` zwraca nowy obiekt i nie zmienia klienta. Możesz równolegle utrzymywać osobne konteksty organizacji, ale przed każdym wyborem sprawdź, czy bieżący podmiot ma do niej dostęp. Wywołanie metody wymagającej organizacji na globalnym zasobie `OffersResource`, `OrdersResource` lub `ClaimsResource` kończy się lokalnym `InvalidRequestException` przed wysłaniem żądania.

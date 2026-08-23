@@ -1,6 +1,6 @@
 # `OrdersResource::command()`
 
-Odczytuje stan jednego polecenia zamówienia.
+Odczytuje stan jednego `command` zamówienia.
 
 ## Użycie
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\CommandId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$polecenie = $shop->orders()->command(CommandId::fromString('command-id'))->data;
+$command = $shop->orders()->command(CommandId::fromString('command-id'))->data;
 ```

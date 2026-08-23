@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\ReturnId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$wynik = $shop->returns()->accept(ReturnId::fromString('return-id'))->data;
+$result = $shop->returns()->accept(ReturnId::fromString('return-id'))->data;
 ```

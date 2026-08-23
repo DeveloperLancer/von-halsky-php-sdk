@@ -24,9 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Complete offer and offer-attachment resources covering 18 additional production operations (22 of 42 total).
 - Typed product, GPSR, price, stock, batch, merge-patch, attribute-operation, command, event, hint, and attachment models.
 - Stream-first multipart uploads and downloads with explicit caller ownership, plus an opt-in Stage offer lifecycle suite.
-- Complete order, return, refund, and claim resources covering the final 20 production operations (42 of 42 total).
+- Complete order, return, refund, and claim resources covering 18 current production operations (40 supported operations total).
 - Typed order events/commands, UTC list filters, precise refund requests, post-sale actions, delivery methods v2, and recursive PII redaction.
-- Explicit `deprecated()` facade for delivery methods v1 and order refusal v1, with a documented SDK 2.0 removal plan.
 - Phase 8 reliability primitives: explicitly enabled, short GET-only retry with jitter, elapsed-time limits, `Retry-After` support, and double-retry detection.
 - One-call command and event endpoint access while leaving polling state, checkpoint age, scheduling, and persistence to the application.
 - Correlation IDs and rate-limit metadata returned to the application without SDK logging, tracing, metrics, or request markers.

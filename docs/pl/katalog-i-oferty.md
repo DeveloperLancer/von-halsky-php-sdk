@@ -1,6 +1,6 @@
 # Katalog, oferty i załączniki
 
-Katalog jest globalny, natomiast oferty i załączniki należą do organizacji. Bezpieczny przebieg wygląda następująco: wybierz organizację, znajdź kategorię-liść, pobierz atrybuty, zweryfikuj propozycję produktu, wyślij polecenie utworzenia oferty, a wynik obserwuj poza pierwotnym żądaniem aplikacji internetowej.
+Katalog jest globalny, natomiast oferty i załączniki należą do organizacji. Bezpieczny przebieg wygląda następująco: wybierz organizację, znajdź `leaf category` (kategorię bez podkategorii), pobierz atrybuty, zweryfikuj propozycję produktu, wyślij żądanie utworzenia oferty, a wynik obserwuj poza pierwotnym żądaniem aplikacji internetowej.
 
 ## Odczyt katalogu
 
@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Request\CategoryTreeOptions;
 
-/** @var \DevLancer\VonHalsky\VonHalskyClient $klient */
-$kategorie = $klient->categories()->list(
+/** @var \DevLancer\VonHalsky\VonHalskyClient $client */
+$categories = $client->categories()->list(
     new CategoryTreeOptions(depth: 4),
 )->data;
 ```
 
-Przekazanie pobranego obiektu `Category` do `ProductProposal` uruchamia `Category::requireLeaf()` i lokalnie odrzuca znaną kategorię niebędącą liściem. Sam `CategoryId` nie pozwala tego stwierdzić, dlatego SDK ufa wywołującemu, a serwer pozostaje źródłem rozstrzygającym. Przy tworzeniu produktu preferuj świeżo pobraną kategorię. Nieznane wartości wyliczeń odpowiedzi są zachowywane; opisuje to przewodnik [odpowiedzi i błędy](./odpowiedzi-i-bledy.md).
+Przekazanie pobranego obiektu `Category` do `ProductProposal` uruchamia `Category::requireLeaf()` i lokalnie odrzuca znany obiekt, który nie jest `leaf category`. Sam `CategoryId` nie pozwala tego stwierdzić, dlatego SDK ufa wywołującemu, a serwer pozostaje źródłem rozstrzygającym. Przy tworzeniu produktu preferuj świeżo pobraną kategorię. Nieznane wartości wyliczeń odpowiedzi są zachowywane; opisuje to przewodnik [odpowiedzi i błędy](./odpowiedzi-i-bledy.md).
 
 ## Budowa poprawnej oferty
 
@@ -54,14 +54,14 @@ use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\ValueObject\Ean;
 use DevLancer\VonHalsky\ValueObject\Money;
 
-/** @var \DevLancer\VonHalsky\Model\Category\Category $kategoriaLisc */
-/** @var \DevLancer\VonHalsky\OrganizationContext $sklep */
-$wynik = $sklep->offers()->create(new CreateOfferRequest(
+/** @var \DevLancer\VonHalsky\Model\Category\Category $leafCategory */
+/** @var \DevLancer\VonHalsky\OrganizationContext $shop */
+$response = $shop->offers()->create(new CreateOfferRequest(
     product: new ProductProposal(
-        name: 'Przykładowy produkt',
-        description: 'Bezpieczny opis przykładowy.',
-        brand: 'Przykład',
-        categoryId: $kategoriaLisc,
+        name: 'Example product',
+        description: 'A safe example description.',
+        brand: 'Example',
+        categoryId: $leafCategory,
         ean: new Ean('5901234123457'),
     ),
     stock: new Stock(10),
@@ -70,16 +70,16 @@ $wynik = $sklep->offers()->create(new CreateOfferRequest(
     daysToShip: 2,
 ));
 
-$idPolecenia = $wynik->data->commandId;
+$commandId = $response->data->commandId;
 ```
 
-HTTP 201 potwierdza przyjęcie polecenia, a nie dostępność oferty. Zapisz ID polecenia i czas przyjęcia w tym samym trwałym rekordzie procesu, po czym pozwól zadaniu okresowemu wywołać `command()` albo odebrać `events()`. Nie utrzymuj otwartego żądania internetowego podczas sprawdzania wyniku.
+HTTP 201 potwierdza przyjęcie `CommandHandle`, a nie dostępność oferty. Zapisz `commandId` i czas przyjęcia w tym samym trwałym rekordzie procesu, po czym pozwól zadaniu okresowemu wywołać `command()` albo odebrać `events()`. Nie utrzymuj otwartego żądania internetowego podczas sprawdzania wyniku.
 
 ## Świadome aktualizowanie ofert
 
-Do grupowych zmian cen i stanów używaj odpowiednich obiektów danych, do semantyki merge patch — `PatchOfferRequest` z `OptionalValue`, a do atrybutów — uporządkowanych operacji `UpsertAttribute` i `RemoveAttribute`. Udane synchroniczne `patch()` oraz przyjęte polecenie asynchroniczne mają inne znaczenie; typ wyniku podają strony [referencji ofert](./reference/offers/README.md).
+Do grupowych zmian cen i stanów używaj odpowiednich obiektów danych, do semantyki merge patch — `PatchOfferRequest` z `OptionalValue`, a do atrybutów — uporządkowanych operacji `UpsertAttribute` i `RemoveAttribute`. Udane synchroniczne `patch()` oraz przyjęty `CommandHandle` mają inne znaczenie; typ wyniku podają strony [referencji ofert](./reference/offers/README.md).
 
-Tworzenie, aktualizacja, zamknięcie, ponowne otwarcie, wysyłanie i usuwanie zmieniają stan zewnętrzny. SDK nie ponawia ich automatycznie. W Stage uruchamiaj je wyłącznie po jawnym włączeniu operacji zapisu, na danych syntetycznych, i zapisuj własny identyfikator polecenia lub audytu. Po niejednoznacznym błędzie transportu najpierw uzgodnij stan, a dopiero potem rozważ kolejne żądanie zapisu.
+Tworzenie, aktualizacja, zamknięcie, ponowne otwarcie, wysyłanie i usuwanie zmieniają stan zewnętrzny. SDK nie ponawia ich automatycznie. W Stage uruchamiaj je wyłącznie po jawnym włączeniu operacji zapisu, na danych syntetycznych, i zapisuj własny `commandId` lub identyfikator audytu. Po niejednoznacznym błędzie transportu najpierw uzgodnij stan, a dopiero potem rozważ kolejne żądanie zapisu.
 
 ## Odpowiedzialność za strumienie załączników
 
@@ -90,14 +90,14 @@ Tworzenie, aktualizacja, zamknięcie, ponowne otwarcie, wysyłanie i usuwanie zm
 
 declare(strict_types=1);
 
-/** @var \Psr\Http\Message\StreamInterface $strumien */
+/** @var \Psr\Http\Message\StreamInterface $stream */
 try {
-    $plik = $sklep->attachments()->download($idOferty, $idZalacznika)->data;
-    $strumien = $plik->stream;
+    $download = $shop->attachments()->download($offerId, $attachmentId)->data;
+    $stream = $download->stream;
     // Kopiuj porcjami do miejsca należącego do aplikacji.
 } finally {
-    if (isset($strumien)) {
-        $strumien->close();
+    if (isset($stream)) {
+        $stream->close();
     }
 }
 ```

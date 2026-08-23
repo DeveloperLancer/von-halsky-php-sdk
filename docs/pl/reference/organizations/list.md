@@ -21,5 +21,5 @@ Wybierz ID organizacji jawnie przed pracą na ofertach lub zamówieniach. Pola m
 declare(strict_types=1);
 
 /** @var \DevLancer\VonHalsky\VonHalskyClient $client */
-$organizacje = $client->organizations()->list()->data;
+$organizations = $client->organizations()->list()->data;
 ```

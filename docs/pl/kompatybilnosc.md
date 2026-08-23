@@ -8,6 +8,6 @@ Composer dopuszcza Symfony HttpClient `6.4`, `7.4` i `8.1`. Guzzle jest opcjonal
 
 ## Bazowa wersja API
 
-Implementacja oraz referencja 42 operacji są zgodne z bazą kontraktu przechowywaną w repozytorium. Nie oznacza to gwarancji dostępności przyszłej wersji API ani obietnicy wydania nieopublikowanej wersji SDK.
+Implementacja oraz referencja 40 aktualnych operacji są zgodne z bieżącym podzbiorem bazy kontraktu przechowywanej w repozytorium. Dwie przestarzałe operacje upstream celowo nie są obsługiwane. Nie oznacza to gwarancji dostępności przyszłej wersji API ani obietnicy wydania nieopublikowanej wersji SDK.
 
 Do rozwoju i kontrolowanych testów używaj Stage. Sekrety, tokeny, adresy, magazyny i dane organizacji dla Stage oraz Production muszą pozostać rozdzielone.

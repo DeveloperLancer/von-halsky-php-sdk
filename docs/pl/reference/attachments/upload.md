@@ -25,7 +25,7 @@ use DevLancer\VonHalsky\ValueObject\OfferId;
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
 /** @var \Psr\Http\Message\StreamInterface $stream */
 try {
-    $komenda = $shop->attachments()->upload(OfferId::fromString('offer-id'), AttachmentType::MANUAL, 'manual.pdf', 'application/pdf', $stream)->data;
+    $command = $shop->attachments()->upload(OfferId::fromString('offer-id'), AttachmentType::MANUAL, 'manual.pdf', 'application/pdf', $stream)->data;
 } finally {
     $stream->close();
 }

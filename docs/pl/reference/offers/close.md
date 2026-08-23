@@ -1,12 +1,12 @@
 # `OffersResource::close()`
 
-Wysyła polecenie zamknięcia oferty.
+Wysyła żądanie zamknięcia oferty.
 
 ## Użycie
 
 - Zakres: organizacja.
 - Sygnatura: `close(OfferId $offerId, ?ResponseLanguage $language = null): ApiResponse<CommandHandle>`.
-- Wynik: przyjęte polecenie.
+- Wynik: `CommandHandle`.
 
 ## Zachowanie
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$polecenie = $shop->offers()->close(OfferId::fromString('offer-id'))->data;
+$command = $shop->offers()->close(OfferId::fromString('offer-id'))->data;
 ```

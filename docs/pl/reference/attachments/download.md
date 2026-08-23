@@ -23,12 +23,12 @@ use DevLancer\VonHalsky\ValueObject\AttachmentId;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$pobrany = $shop->attachments()->download(OfferId::fromString('offer-id'), AttachmentId::fromString('attachment-id'))->data;
+$download = $shop->attachments()->download(OfferId::fromString('offer-id'), AttachmentId::fromString('attachment-id'))->data;
 try {
-    while (!$pobrany->stream->eof()) {
-        $chunk = $pobrany->stream->read(8192);
+    while (!$download->stream->eof()) {
+        $chunk = $download->stream->read(8192);
     }
 } finally {
-    $pobrany->stream->close();
+    $download->stream->close();
 }
 ```

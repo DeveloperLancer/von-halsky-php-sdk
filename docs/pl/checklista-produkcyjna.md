@@ -18,9 +18,9 @@ Przejdź przez tę listę przed wysłaniem ruchu produkcyjnego. Obejmuje obowią
 
 ## Zmiana stanu i operacje asynchroniczne
 
-- Nie uznawaj HTTP 201 ani 202 za zakończenie operacji biznesowej; zapisuj ID polecenia i czas jego przyjęcia.
-- Sprawdzanie komend i pobieranie zdarzeń uruchamiaj w ograniczonych zadaniach tła, a nie w długo działającym żądaniu WWW.
-- Uzgadnianie danych wykonuj idempotentnie, a stronę lub punkt kontrolny zapisuj transakcyjnie razem ze zmienianym stanem.
+- Nie uznawaj HTTP 201 ani 202 za zakończenie operacji biznesowej; zapisuj `commandId` i czas przyjęcia.
+- Odczyt statusu przez `command()` i pobieranie zdarzeń uruchamiaj w ograniczonych zadaniach tła, a nie w długo działającym żądaniu WWW.
+- Uzgadnianie danych wykonuj idempotentnie, a stronę lub `checkpoint` zapisuj transakcyjnie razem ze zmienianym stanem.
 - Dla każdego POST, PATCH i DELETE zapewnij autoryzację, audyt oraz ochronę przed duplikatem; SDK nigdy nie ponawia tych metod.
 
 ## Dane i strumienie

@@ -6,7 +6,7 @@ This is not an official InPost product and is not affiliated with or endorsed by
 
 ## Status
 
-The SDK implements the complete public resource surface recorded in this repository: 42 operations across organizations, categories, offers, attachments, orders, returns, claims, and an explicitly isolated deprecated API. It is not yet published on Packagist, so the repository is a development snapshot rather than a release promise.
+The SDK implements 40 current operations across organizations, categories, offers, attachments, orders, returns, and claims. It intentionally excludes two deprecated upstream operations. It is not yet published on Packagist, so the repository is a development snapshot rather than a release promise.
 
 ## Requirements
 

@@ -24,5 +24,5 @@ use DevLancer\VonHalsky\Model\OptionalValue;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$oferta = $shop->offers()->patch(OfferId::fromString('offer-id'), new PatchOfferRequest(stock: OptionalValue::null()))->data;
+$offer = $shop->offers()->patch(OfferId::fromString('offer-id'), new PatchOfferRequest(stock: OptionalValue::null()))->data;
 ```

@@ -20,5 +20,5 @@ To jedyna metoda reklamacji bez organizacji.
 declare(strict_types=1);
 
 /** @var \DevLancer\VonHalsky\VonHalskyClient $client */
-$typy = $client->claims()->types()->data;
+$types = $client->claims()->types()->data;
 ```

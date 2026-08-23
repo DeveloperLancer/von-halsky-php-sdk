@@ -1,16 +1,16 @@
 # `OffersResource::reopen()`
 
-Wysyła komendę ponownego otwarcia oferty.
+Wysyła żądanie ponownego otwarcia oferty.
 
 ## Użycie
 
 - Zakres: organizacja.
 - Sygnatura: `reopen(OfferId $offerId, ?ResponseLanguage $language = null): ApiResponse<CommandHandle>`.
-- Wynik: przyjęta komenda.
+- Wynik: `CommandHandle`.
 
 ## Zachowanie
 
-Komenda jest asynchroniczna; jej stan sprawdza się później. POST nie jest automatycznie ponawiany.
+`CommandHandle` jest asynchroniczny; jego stan sprawdza się później. POST nie jest automatycznie ponawiany.
 
 ## Przykład
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$komenda = $shop->offers()->reopen(OfferId::fromString('offer-id'))->data;
+$command = $shop->offers()->reopen(OfferId::fromString('offer-id'))->data;
 ```

@@ -10,7 +10,7 @@ Pobiera jedną najnowszą stronę zdarzeń zamówień.
 
 ## Zachowanie
 
-`untilId` wyklucza wskazane zdarzenie i nowsze; nie jest kursorem skierowanym w przyszłość. Po luce retencji pobierz listę i uzgodnij stan. Dokładny czas retencji wymaga weryfikacji w Stage.
+`untilId` wyklucza wskazane zdarzenie i nowsze; nie jest kursorem skierowanym w przyszłość. Po luce retencji pobierz listę i uzgodnij stan. Nie zakładaj stałego czasu retencji: nie jest on potwierdzoną gwarancją API.
 
 ## Przykład
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\OrderEventsOptions;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$zdarzenia = $shop->orders()->events(new OrderEventsOptions(limit: 100))->data;
+$events = $shop->orders()->events(new OrderEventsOptions(limit: 100))->data;
 ```

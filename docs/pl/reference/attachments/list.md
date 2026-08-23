@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$zalaczniki = $shop->attachments()->list(OfferId::fromString('offer-id'))->data;
+$attachments = $shop->attachments()->list(OfferId::fromString('offer-id'))->data;
 ```

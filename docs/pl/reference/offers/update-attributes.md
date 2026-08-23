@@ -24,5 +24,5 @@ use DevLancer\VonHalsky\Model\Offer\RemoveAttribute;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$komenda = $shop->offers()->updateAttributes(OfferId::fromString('offer-id'), new OfferAttributesPatch([new RemoveAttribute('attribute-id')]))->data;
+$command = $shop->offers()->updateAttributes(OfferId::fromString('offer-id'), new OfferAttributesPatch([new RemoveAttribute('attribute-id')]))->data;
 ```

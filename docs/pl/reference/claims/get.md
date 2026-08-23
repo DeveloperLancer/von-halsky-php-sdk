@@ -23,5 +23,5 @@ use DevLancer\VonHalsky\ValueObject\ClaimId;
 use DevLancer\VonHalsky\ValueObject\OrderId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$reklamacja = $shop->claims()->get(OrderId::fromString('order-id'), ClaimId::fromString('claim-id'))->data;
+$claim = $shop->claims()->get(OrderId::fromString('order-id'), ClaimId::fromString('claim-id'))->data;
 ```

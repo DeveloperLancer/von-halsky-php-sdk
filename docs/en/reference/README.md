@@ -11,6 +11,5 @@ Every page below describes one public resource operation. Examples assume that t
 - [Orders](./orders/README.md) — 7 operations
 - [Returns](./returns/README.md) — 5 operations
 - [Claims](./claims/README.md) — 6 operations
-- [Deprecated](./deprecated/README.md) — 2 operations
 
-The reference covers 42 public resource operations. Do not call a resource’s constructor directly; get it from `VonHalskyClient` or `OrganizationContext`.
+The reference covers 40 current public resource operations. Do not call a resource’s constructor directly; get it from `VonHalskyClient` or `OrganizationContext`.

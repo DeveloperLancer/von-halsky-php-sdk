@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\OrderId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$strona = $shop->returns()->forOrder(OrderId::fromString('order-id'))->data;
+$page = $shop->returns()->forOrder(OrderId::fromString('order-id'))->data;
 ```

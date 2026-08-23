@@ -20,5 +20,5 @@ To aktualny odpowiednik starego słownika v1. Nie wymaga kontekstu organizacji.
 declare(strict_types=1);
 
 /** @var \DevLancer\VonHalsky\VonHalskyClient $client */
-$metody = $client->orders()->deliveryMethods()->data;
+$deliveryMethods = $client->orders()->deliveryMethods()->data;
 ```

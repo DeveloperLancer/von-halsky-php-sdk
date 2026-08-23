@@ -7,12 +7,12 @@ Każda udana metoda zasobu zwraca `ApiResponse<T>`. Wynik domenowy znajduje się
 
 declare(strict_types=1);
 
-/** @var \DevLancer\VonHalsky\Resource\OrganizationsResource $organizacje */
-$odpowiedz = $organizacje->list();
+/** @var \DevLancer\VonHalsky\Resource\OrganizationsResource $organizations */
+$response = $organizations->list();
 
-$elementy = $odpowiedz->data;
-$status = $odpowiedz->statusCode;
-$identyfikatorKorelacji = $odpowiedz->correlationId;
+$items = $response->data;
+$status = $response->statusCode;
+$correlationId = $response->correlationId;
 ```
 
 Pola odpowiedzi mają osobne zastosowania:
@@ -38,7 +38,7 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\ValueObject\Money;
 
-$cena = Money::fromDecimal('49.90'); // Wynik: 49.90 PLN.
+$price = Money::fromDecimal('49.90'); // Wynik: 49.90 PLN.
 ```
 
 `Money` przyjmuje wartości od `0.01` do `999999.99`, z najwyżej dwiema cyframi po separatorze, i domyślnie używa PLN. Obiekty żądań sprawdzają potwierdzone ograniczenia przed komunikacją z siecią i zgłaszają `InvalidRequestException` ze ścieżką pola. Walidacja lokalna daje szybszą informację, ale nie zastępuje aktualnych reguł biznesowych serwera.
@@ -56,16 +56,16 @@ Metody listujące zwracają `ApiResponse<PageResult<T>>`. SDK celowo pobiera jed
 
 declare(strict_types=1);
 
-/** @var \DevLancer\VonHalsky\Pagination\PageResult $strona */
-foreach ($strona->items as $element) {
+/** @var \DevLancer\VonHalsky\Pagination\PageResult $page */
+foreach ($page->items as $item) {
     // Zapisz element w sposób idempotentny.
 }
 
-$przetworzonoDo = $strona->page->offset + count($strona->items);
-$jestNastepna = $strona->items !== [] && $przetworzonoDo < $strona->page->total;
+$processedUntil = $page->page->offset + count($page->items);
+$hasNext = $page->items !== [] && $processedUntil < $page->page->total;
 ```
 
-Nie opieraj pętli wyłącznie na warunku `count($items) === $requestedLimit`: limit zwrócony przez serwer może być inny, pusta strona musi zakończyć pętlę, a równoległe zmiany mogą przesuwać zbiór oparty na przesunięciu. Zapisz stronę przed przesunięciem punktu kontrolnego, usuwaj duplikaty po stabilnym ID i okresowo uzgadniaj dane z autorytatywną listą. Strumienie zdarzeń są ograniczonymi czasowo listami od najnowszego elementu, a nie pełną historią ani kursorem skierowanym w przyszłość.
+Nie opieraj pętli wyłącznie na warunku `count($items) === $requestedLimit`: limit zwrócony przez serwer może być inny, pusta strona musi zakończyć pętlę, a równoległe zmiany mogą przesuwać zbiór oparty na `offset`. Zapisz stronę przed przesunięciem `checkpoint`, usuwaj duplikaty po stabilnym ID i okresowo uzgadniaj dane z autorytatywną listą. Strumienie zdarzeń są ograniczonymi czasowo listami od najnowszego elementu, a nie pełną historią ani kursorem skierowanym w przyszłość.
 
 ## Model wyjątków
 
@@ -94,12 +94,12 @@ use DevLancer\VonHalsky\Exception\InvalidRequestException;
 use DevLancer\VonHalsky\Exception\RateLimitException;
 
 try {
-    $odpowiedz = $sklep->offers()->get($idOferty);
-} catch (InvalidRequestException $blad) {
+    $response = $shop->offers()->get($offerId);
+} catch (InvalidRequestException $exception) {
     // Odrzuć lub popraw dane lokalne.
-} catch (RateLimitException $blad) {
-    // Zaplanuj późniejszy odczyt na podstawie $blad->rateLimit; unikaj ciasnej pętli.
-} catch (ApiException $blad) {
+} catch (RateLimitException $exception) {
+    // Zaplanuj późniejszy odczyt na podstawie $exception->rateLimit; unikaj ciasnej pętli.
+} catch (ApiException $exception) {
     // Loguj wyłącznie zatwierdzone pola, np. statusCode, operationId i correlationId.
 }
 ```

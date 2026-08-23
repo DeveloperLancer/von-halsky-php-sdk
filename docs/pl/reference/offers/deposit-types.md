@@ -20,5 +20,5 @@ To jedyna metoda ofert bez organizacji. Pozostałe wymagają kontekstu organizac
 declare(strict_types=1);
 
 /** @var \DevLancer\VonHalsky\VonHalskyClient $client */
-$depozyty = $client->offers()->depositTypes()->data;
+$depositTypes = $client->offers()->depositTypes()->data;
 ```

@@ -10,7 +10,7 @@ Pobiera jedną stronę zdarzeń ofert, od najnowszych.
 
 ## Zachowanie
 
-`untilId` wyklucza wskazane zdarzenie i nowsze. Nie jest kursorem skierowanym w przyszłość; po luce retencji trzeba uzgodnić dane z listą ofert. Dokładny czas retencji wymaga weryfikacji w Stage.
+`untilId` wyklucza wskazane zdarzenie i nowsze. Nie jest kursorem skierowanym w przyszłość; po luce retencji trzeba uzgodnić dane z listą ofert. Nie zakładaj stałego czasu retencji: nie jest on potwierdzoną gwarancją API.
 
 ## Przykład
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\OfferEventsOptions;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$zdarzenia = $shop->offers()->events(new OfferEventsOptions(limit: 100))->data;
+$events = $shop->offers()->events(new OfferEventsOptions(limit: 100))->data;
 ```

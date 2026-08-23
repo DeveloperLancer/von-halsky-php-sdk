@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Auth\OAuthScope;
 
-$zakresTylkoDoOdczytu = [
+$readOnlyScopes = [
     OAuthScope::OpenId,
     OAuthScope::CategoriesRead,
     OAuthScope::OffersRead,
@@ -35,29 +35,29 @@ use DevLancer\VonHalsky\Auth\OAuthScope;
 use DevLancer\VonHalsky\Environment\Environment;
 use DevLancer\VonHalsky\Http\SymfonyHttpClientFactory;
 
-$srodowisko = Environment::stage();
+$environment = Environment::stage();
 $http = SymfonyHttpClientFactory::create();
 $oauth = new OAuthClient(
-    $srodowisko,
+    $environment,
     $http->httpClient,
     $http->requestFactory,
     $http->streamFactory,
 );
 
-$zadanie = $oauth->createAuthorizationRequest(
+$authorizationRequest = $oauth->createAuthorizationRequest(
     clientId: 'client-id',
     redirectUri: 'https://app.example.invalid/oauth/callback',
     scopes: [OAuthScope::OpenId, OAuthScope::OrdersRead],
 );
 
 // Zapisz te wartości po stronie serwera przed przekierowaniem przeglądarki.
-$adresAutoryzacji = $zadanie->authorizationUrl;
-$oczekiwanyStan = $zadanie->state;
-$weryfikatorKodu = $zadanie->codeVerifier;
-$oczekiwanyRedirectUri = $zadanie->redirectUri;
+$authorizationUrl = $authorizationRequest->authorizationUrl;
+$expectedState = $authorizationRequest->state;
+$codeVerifier = $authorizationRequest->codeVerifier;
+$expectedRedirectUri = $authorizationRequest->redirectUri;
 ```
 
-Po powrocie użytkownika najpierw obsłuż parametr błędu od dostawcy, następnie pobierz i jednorazowo zużyj zapisany rekord. Przed wymianą kodu sprawdź obie wartości wywołania zwrotnego:
+Po powrocie użytkownika do callbacka najpierw obsłuż parametr błędu od dostawcy, następnie pobierz i jednorazowo zużyj zapisany rekord. Przed wymianą kodu sprawdź obie wartości callbacka:
 
 ```php
 <?php
@@ -67,22 +67,22 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Auth\OAuthClient;
 
 OAuthClient::assertAuthorizationCallback(
-    expectedState: $oczekiwanyStan,
-    receivedState: $otrzymanyStan,
-    expectedRedirectUri: $oczekiwanyRedirectUri,
-    receivedRedirectUri: $otrzymanyRedirectUri,
+    expectedState: $expectedState,
+    receivedState: $receivedState,
+    expectedRedirectUri: $expectedRedirectUri,
+    receivedRedirectUri: $receivedRedirectUri,
 );
 
-$tokeny = $oauth->exchangeAuthorizationCode(
+$tokens = $oauth->exchangeAuthorizationCode(
     clientId: $clientId,
-    authorizationCode: $kodAutoryzacyjny,
-    redirectUri: $oczekiwanyRedirectUri,
-    codeVerifier: $weryfikatorKodu,
-    clientSecret: $sekretKlienta, // Pomiń, jeśli zarejestrowany klient go nie wymaga.
+    authorizationCode: $authorizationCode,
+    redirectUri: $expectedRedirectUri,
+    codeVerifier: $codeVerifier,
+    clientSecret: $clientSecret, // Pomiń, jeśli zarejestrowany klient go nie wymaga.
 );
 ```
 
-SDK zawsze używa PKCE `S256` i wymaga HTTPS dla URI przekierowania; HTTP jest dozwolone jedynie dla adresów pętli zwrotnej używanych lokalnie. Routing, wygaśnięcie sesji, ochrona przed ponownym użyciem kodu, obsługa błędu wywołania zwrotnego i przypisanie tokenów do właściwego sprzedawcy należą do aplikacji.
+SDK zawsze używa PKCE `S256` i wymaga HTTPS dla redirect URI; HTTP jest dozwolone jedynie dla lokalnego loopback URI. Routing, wygaśnięcie sesji, ochrona przed ponownym użyciem kodu, obsługa błędu callbacka i przypisanie tokenów do właściwego sprzedawcy należą do aplikacji.
 
 ## Client Credentials
 
@@ -95,9 +95,9 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Auth\OAuthScope;
 
-$tokeny = $oauth->requestClientCredentialsToken(
+$tokens = $oauth->requestClientCredentialsToken(
     clientId: $clientId,
-    clientSecret: $sekretKlienta,
+    clientSecret: $clientSecret,
     scopes: [OAuthScope::OffersRead, OAuthScope::OrdersRead],
 );
 ```
@@ -119,21 +119,21 @@ use DevLancer\VonHalsky\Auth\RefreshingTokenProvider;
 use DevLancer\VonHalsky\Auth\SystemClock;
 use DevLancer\VonHalsky\Auth\TokenContext;
 
-$kontekst = TokenContext::forEnvironment(
-    environment: $srodowisko,
+$context = TokenContext::forEnvironment(
+    environment: $environment,
     clientId: $clientId,
     subject: 'merchant-account-id',
     organizationId: 'organization-id',
 );
 
-$magazynTokenow->save($kontekst, $tokeny);
+$tokenStore->save($context, $tokens);
 
-$dostawcaTokenow = new RefreshingTokenProvider(
-    context: $kontekst,
-    store: $magazynTokenow,
-    lock: $blokada,
+$tokenProvider = new RefreshingTokenProvider(
+    context: $context,
+    store: $tokenStore,
+    lock: $lock,
     oauthClient: $oauth,
-    clientSecret: $sekretKlienta,
+    clientSecret: $clientSecret,
     clock: new SystemClock(),
 );
 ```

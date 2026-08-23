@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\OrderId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$zamowienie = $shop->orders()->get(OrderId::fromString('order-id'))->data;
+$order = $shop->orders()->get(OrderId::fromString('order-id'))->data;
 ```

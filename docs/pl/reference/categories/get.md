@@ -11,7 +11,7 @@ Zwraca wybraną kategorię oraz ograniczone potomstwo.
 
 ## Zachowanie
 
-Udana odpowiedź musi zawierać obiekt; puste body powoduje `ResponseMappingException`. Użyj kategorii-liścia w `ProductProposal`.
+Udana odpowiedź musi zawierać obiekt; puste body powoduje `ResponseMappingException`. Użyj `leaf category` w `ProductProposal`.
 
 ## Przykład
 
@@ -23,5 +23,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\CategoryId;
 
 /** @var \DevLancer\VonHalsky\VonHalskyClient $client */
-$kategoria = $client->categories()->get(CategoryId::fromString('category-id'))->data;
+$category = $client->categories()->get(CategoryId::fromString('category-id'))->data;
 ```

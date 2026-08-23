@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\ClaimListOptions;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$strona = $shop->claims()->list(new ClaimListOptions(states: ['RESOLUTION_IN_PROGRESS'], limit: 30))->data;
+$page = $shop->claims()->list(new ClaimListOptions(states: ['RESOLUTION_IN_PROGRESS'], limit: 30))->data;
 ```

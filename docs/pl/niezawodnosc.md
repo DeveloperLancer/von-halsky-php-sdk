@@ -28,11 +28,11 @@ $http = SymfonyHttpClientFactory::create()->withRetry(new RetryPolicy(
 
 SDK nigdy automatycznie nie powtarza POST, PATCH ani DELETE. Dla zmian stanu zapisz zamiar przed wysłaniem, dodaj własny identyfikator audytowy lub klucz idempotencji tam, gdzie kontrakt serwera go obsługuje, a po niejednoznacznym błędzie transportu najpierw uzgodnij stan zewnętrzny.
 
-## Polecenia asynchroniczne poza żądaniem internetowym
+## Operacje asynchroniczne poza żądaniem internetowym
 
-HTTP 201 lub 202 może oznaczać przyjęcie polecenia asynchronicznego, a nie jego zakończenie. Zapisz ID polecenia, ID organizacji, rodzaj operacji, czas przyjęcia i własny identyfikator biznesowy. Zakończ obsługę żądania użytkownika, po czym pozwól kolejce lub harmonogramowi wykonywać ograniczone sprawdzenia `command()` albo odbierać zdarzenia.
+HTTP 201 lub 202 może oznaczać przyjęcie asynchronicznego `CommandHandle`, a nie zakończenie operacji. Zapisz `commandId`, ID organizacji, rodzaj operacji, czas przyjęcia i własny identyfikator biznesowy. Zakończ obsługę żądania użytkownika, po czym pozwól kolejce lub harmonogramowi wykonywać ograniczone sprawdzenia `command()` albo odbierać zdarzenia.
 
-W aplikacji utrzymuj tabelę stanów końcowych zamiast uznawać każdy nieznany stan za błąd. Ustal termin graniczny, po którym polecenie trafia do uzgodnienia lub ręcznej analizy. SDK celowo nie usypia procesu, nie sprawdza cyklicznie, nie wybiera odstępów i nie gwarantuje czasu dostępności wyniku; każda wartość liczbowa retencji wymaga wcześniejszej weryfikacji z bieżącym Stage.
+W aplikacji utrzymuj tabelę stanów końcowych zamiast uznawać każdy nieznany stan za błąd. Ustal termin graniczny, po którym wynik asynchronicznej operacji trafia do uzgodnienia lub ręcznej analizy. SDK celowo nie usypia procesu, nie sprawdza cyklicznie, nie wybiera odstępów i nie gwarantuje czasu dostępności wyniku; nie zakładaj stałego czasu retencji bez potwierdzonej gwarancji API.
 
 ## Odtwarzanie konsumenta zdarzeń
 
@@ -44,7 +44,7 @@ Strumień zdarzeń jest wskazówką o zmianach, a nie jedynym źródłem prawdy.
 4. Okresowo porównuje stan aplikacji z autorytatywnymi listami ofert lub zamówień.
 5. Po przestoju, nieznanym zdarzeniu albo podejrzeniu luki zatrzymuje przesuwanie punktu i wykonuje pełne uzgodnienie.
 
-Repozytorium zawiera przewidywane czasy retencji poleceń i zdarzeń, które nadal oczekują na weryfikację w Stage. Nie są gwarancją działania i celowo nie podajemy ich tutaj.
+Nie zakładaj stałego czasu retencji poleceń ani zdarzeń. Dopóki dostawca API nie potwierdzi go jako gwarancji, projektuj synchronizację tak, aby okresowo uzgadniała stan z listami zasobów.
 
 ## Koordynacja limitów i diagnostyka
 

@@ -10,7 +10,7 @@ Wysyła zbiorczą aktualizację cen ofert.
 
 ## Zachowanie
 
-Pusta lista powoduje `InvalidRequestException`. Wyniki są poleceniami, a PATCH nie jest automatycznie ponawiany.
+Pusta lista powoduje `InvalidRequestException`. Wyniki są `CommandHandle`, a PATCH nie jest automatycznie ponawiany.
 
 ## Przykład
 
@@ -24,5 +24,5 @@ use DevLancer\VonHalsky\ValueObject\Money;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$komendy = $shop->offers()->updatePrices([new OfferPriceUpdate(OfferId::fromString('offer-id'), Money::fromDecimal('44.99'))])->data;
+$commands = $shop->offers()->updatePrices([new OfferPriceUpdate(OfferId::fromString('offer-id'), Money::fromDecimal('44.99'))])->data;
 ```

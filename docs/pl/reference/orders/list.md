@@ -6,7 +6,7 @@ Zwraca jedną stronę zamówień organizacji.
 
 - Zakres: organizacja.
 - Sygnatura: `list(?OrderListOptions $options = null): ApiResponse<PageResult<OrderDetails>>`.
-- Parametry: statusy, statusy płatności, limit `0–30`, przesunięcie, sortowanie, znacznik czasu UTC i język.
+- Parametry: statusy, statusy płatności, limit `0–30`, `offset`, sortowanie, znacznik czasu UTC i język.
 
 ## Zachowanie
 
@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\Request\OrderListOptions;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$strona = $shop->orders()->list(new OrderListOptions(paymentStatuses: ['PAID'], limit: 30))->data;
+$page = $shop->orders()->list(new OrderListOptions(paymentStatuses: ['PAID'], limit: 30))->data;
 ```

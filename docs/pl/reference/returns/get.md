@@ -22,5 +22,5 @@ declare(strict_types=1);
 use DevLancer\VonHalsky\ValueObject\ReturnId;
 
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
-$zwrot = $shop->returns()->get(ReturnId::fromString('return-id'))->data;
+$return = $shop->returns()->get(ReturnId::fromString('return-id'))->data;
 ```
