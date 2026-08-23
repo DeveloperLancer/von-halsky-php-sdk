@@ -1,6 +1,5 @@
 {
-    "announcedProductionDate": "2026-08-18",
-    "nextContractVersion": "1.6.0-gokint-867-SNAPSHOT",
+    "productionContractVersion": "1.6.2",
     "releaseVersion": "1.6.0",
     "rules": [
         {
@@ -9,7 +8,7 @@
             "maximum": { "inclusive": true, "value": 10000 },
             "minimum": { "inclusive": true, "value": 1 },
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Dimension.width",
             "unit": "millimetre"
         },
@@ -19,7 +18,7 @@
             "maximum": { "inclusive": true, "value": 10000 },
             "minimum": { "inclusive": true, "value": 1 },
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Dimension.height",
             "unit": "millimetre"
         },
@@ -29,7 +28,7 @@
             "maximum": { "inclusive": true, "value": 10000 },
             "minimum": { "inclusive": true, "value": 1 },
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Dimension.length",
             "unit": "millimetre"
         },
@@ -39,7 +38,7 @@
             "maximum": { "inclusive": true, "value": 1000000 },
             "minimum": { "inclusive": true, "value": 1 },
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Dimension.weight",
             "unit": "gram"
         },
@@ -49,7 +48,7 @@
             "maximum": { "inclusive": true, "value": 999999.99 },
             "minimum": { "inclusive": true, "value": 0.01 },
             "multipleOf": 0.01,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Money.amount",
             "unit": "currency-unit"
         },
@@ -59,7 +58,7 @@
             "maximum": { "inclusive": true, "value": 255 },
             "minimum": { "inclusive": true, "value": 2 },
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Street",
             "unit": "characters"
         },
@@ -69,7 +68,7 @@
             "maximum": { "inclusive": true, "value": 255 },
             "minimum": { "inclusive": true, "value": 2 },
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "City",
             "unit": "characters"
         },
@@ -79,7 +78,7 @@
             "maximum": { "inclusive": true, "value": 10 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Building",
             "unit": "characters"
         },
@@ -89,7 +88,7 @@
             "maximum": { "inclusive": true, "value": 10 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Flat",
             "unit": "characters"
         },
@@ -99,7 +98,7 @@
             "maximum": { "inclusive": true, "value": 100 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "AddressState",
             "unit": "characters"
         },
@@ -109,7 +108,7 @@
             "maximum": { "inclusive": true, "value": 14 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Ean",
             "unit": "characters"
         },
@@ -119,7 +118,7 @@
             "maximum": { "inclusive": true, "value": 255 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "StringIdentifier",
             "unit": "characters"
         },
@@ -129,7 +128,7 @@
             "maximum": { "inclusive": true, "value": 255 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "ManufacturerProductNumber",
             "unit": "characters"
         },
@@ -139,7 +138,7 @@
             "maximum": { "inclusive": true, "value": 20 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "Offer.images",
             "unit": "items"
         },
@@ -149,38 +148,28 @@
             "maximum": { "inclusive": true, "value": 20 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "GpsrInfo.manuals",
             "unit": "items"
         },
         {
             "constraint": "items",
             "id": "VAL-016",
-            "maximum": { "inclusive": true, "value": 20 },
+            "maximum": { "inclusive": true, "value": 120 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "ProductInfo.attributes",
             "unit": "items"
         },
         {
             "constraint": "items",
             "id": "VAL-017",
-            "maximum": { "inclusive": true, "value": 20 },
+            "maximum": { "inclusive": true, "value": 120 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "ProductInfoProposal.attributes",
-            "unit": "items"
-        },
-        {
-            "constraint": "items",
-            "id": "VAL-018",
-            "maximum": { "inclusive": true, "value": 10 },
-            "minimum": null,
-            "multipleOf": null,
-            "status": "official-next-announcement",
-            "target": "DepositPositions",
             "unit": "items"
         },
         {
@@ -189,7 +178,7 @@
             "maximum": { "inclusive": true, "value": 60 },
             "minimum": { "inclusive": true, "value": 0 },
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "ShippingTime.daysToShip",
             "unit": "days"
         },
@@ -199,7 +188,7 @@
             "maximum": { "inclusive": true, "value": 500 },
             "minimum": null,
             "multipleOf": null,
-            "status": "official-next-announcement",
+            "status": "official-production-contract",
             "target": "POST /v1/organizations/{organizationId}/offers/batch request body",
             "unit": "offers"
         },
@@ -213,20 +202,16 @@
             "maximum": null,
             "minimum": null,
             "multipleOf": null,
-            "sourceOverride": {
-                "contractVersion": "1.6.0-gokint-867-SNAPSHOT",
-                "url": "https://inpsa-api-portal.inpost-group.com/gokart-api-next.html"
-            },
-            "status": "official-next-contract",
+            "status": "official-production-contract",
             "target": "Money.amount",
             "unit": "decimal-places"
         }
     ],
     "source": {
-        "checkedAt": "2026-08-04",
+        "checkedAt": "2026-08-23",
         "defaultForRulesWithoutSourceOverride": true,
-        "productionStatus": "scheduled-not-verified",
-        "releaseVersion": "1.6.0",
-        "url": "https://inpsa-api-portal.inpost-group.com/pl/API-Changelog-Next.html"
+        "productionStatus": "verified-by-production-contract",
+        "releaseVersion": "1.6.2",
+        "url": "https://inpsa-api-portal.inpost-group.com/gokart-api.html"
     }
 }

@@ -1,15 +1,14 @@
 {
-    "checkedAt": "2026-08-04",
-    "nextContractVersion": "1.6.0-gokint-867-SNAPSHOT",
+    "checkedAt": "2026-08-23",
+    "nextContractVersion": "1.6.0-SNAPSHOT-release-1-6-SNAPSHOT",
     "nextRelease": {
-        "plannedProductionDate": "2026-08-18",
-        "status": "announced-not-production-verified",
-        "version": "1.6.0"
+        "status": "monitoring-only",
+        "version": "1.6.0-SNAPSHOT-release-1-6-SNAPSHOT"
     },
-    "nextSha256": "17d6d838295913ef4219186b8200848dee9f51b68f4a86af9553052cdb0a51a2",
+    "nextSha256": "7eddb8c34e9f33ae79cd66c49cb73c63d6ce6df3c7753a8b29c62a27bede86d7",
     "openApiVersion": "3.0.3",
-    "productionContractVersion": "1.5.11",
-    "productionSha256": "efa9827f60e7cf7b2c84d005380d5038461b8c183cce99867c8f8b782c3d3091",
+    "productionContractVersion": "1.6.2",
+    "productionSha256": "1e159cf4b75eb65788e31161706ea7b5a8506acc475e247a007a99f2fbd4a059",
     "redistribution": {
         "fullOpenApiCommitted": false,
         "owner": "SDK maintainers",
@@ -18,49 +17,49 @@
     },
     "sources": [
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Documentation entry point",
             "type": "portal",
             "url": "https://inpsa-api-portal.inpost-group.com/"
         },
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Production OpenAPI baseline",
             "type": "openapi-redoc",
             "url": "https://inpsa-api-portal.inpost-group.com/gokart-api.html"
         },
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Upcoming OpenAPI comparison",
             "type": "openapi-redoc",
             "url": "https://inpsa-api-portal.inpost-group.com/gokart-api-next.html"
         },
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Integration behavior",
             "type": "guide",
             "url": "https://inpsa-api-portal.inpost-group.com/pl/InPost-Von-Halsky-Integration-Guidelines.html"
         },
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Environment and OAuth configuration",
             "type": "configuration",
             "url": "https://inpsa-api-portal.inpost-group.com/pl/InPost-Von-Halsky-Integration-Configuration.html"
         },
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Documented integration clarifications",
             "type": "faq",
             "url": "https://inpsa-api-portal.inpost-group.com/pl/FAQ.html"
         },
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Production release history",
             "type": "changelog",
             "url": "https://inpsa-api-portal.inpost-group.com/pl/API-Changelog.html"
         },
         {
-            "checkedAt": "2026-08-04",
+            "checkedAt": "2026-08-23",
             "purpose": "Upcoming release and validation changes",
             "type": "changelog-next",
             "url": "https://inpsa-api-portal.inpost-group.com/pl/API-Changelog-Next.html"

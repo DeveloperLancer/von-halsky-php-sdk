@@ -13,7 +13,7 @@ use RuntimeException;
 #[CoversNothing]
 final class ContractArtifactsTest extends TestCase
 {
-    private const PRODUCTION_HASH = 'efa9827f60e7cf7b2c84d005380d5038461b8c183cce99867c8f8b782c3d3091';
+    private const PRODUCTION_HASH = '1e159cf4b75eb65788e31161706ea7b5a8506acc475e247a007a99f2fbd4a059';
 
     #[Test]
     public function lockReferencesOnlyOfficialSourcesAndLocalDerivatives(): void
@@ -21,7 +21,7 @@ final class ContractArtifactsTest extends TestCase
         $lock = self::readObject('contract-lock.json');
 
         self::assertSame('3.0.3', $lock['openApiVersion'] ?? null);
-        self::assertSame('1.5.11', $lock['productionContractVersion'] ?? null);
+        self::assertSame('1.6.2', $lock['productionContractVersion'] ?? null);
         self::assertSame(self::PRODUCTION_HASH, $lock['productionSha256'] ?? null);
         self::assertFalse(self::nestedValue($lock, ['redistribution', 'fullOpenApiCommitted']));
 
@@ -39,10 +39,10 @@ final class ContractArtifactsTest extends TestCase
     {
         $manifest = self::readObject('operations.json');
         self::assertSame(self::PRODUCTION_HASH, $manifest['generatedFromSha256'] ?? null);
-        self::assertSame(169, self::nestedValue($manifest, ['summary', 'schemas']));
+        self::assertSame(172, self::nestedValue($manifest, ['summary', 'schemas']));
 
         $operations = self::listValue($manifest, 'operations');
-        self::assertCount(42, $operations);
+        self::assertCount(43, $operations);
 
         $operationIds = [];
         $methodPaths = [];
@@ -76,10 +76,10 @@ final class ContractArtifactsTest extends TestCase
             }
         }
 
-        self::assertCount(42, array_unique($operationIds));
-        self::assertCount(42, array_unique($methodPaths));
-        self::assertCount(38, array_unique($paths));
-        self::assertSame([5 => 4, 6 => 18, 7 => 20], $phaseCounts);
+        self::assertCount(43, array_unique($operationIds));
+        self::assertCount(43, array_unique($methodPaths));
+        self::assertCount(39, array_unique($paths));
+        self::assertSame([5 => 4, 6 => 19, 7 => 20], $phaseCounts);
         self::assertCount(2, $deprecated);
     }
 
@@ -90,13 +90,13 @@ final class ContractArtifactsTest extends TestCase
         $manifest = self::readObject('operations.json');
 
         self::assertSame(40, self::nestedValue($coverage, ['summary', 'implemented']));
-        self::assertSame(42, self::nestedValue($coverage, ['summary', 'total']));
+        self::assertSame(43, self::nestedValue($coverage, ['summary', 'total']));
         $operations = self::listValue($coverage, 'implementedOperations');
         $manifestOperations = self::listValue($manifest, 'operations');
         $implementedIds = array_column($operations, 'operationId');
         $manifestIds = array_column($manifestOperations, 'operationId');
         self::assertEqualsCanonicalizing(
-            ['getOrdersDeliveryMethodsV1', 'postOrdersRefuseByIdV1'],
+            ['getOrdersDeliveryMethodsV1', 'postOrdersRefuseByIdV1', 'putAttachmentsPriorityByOfferIdV1'],
             array_values(array_diff($manifestIds, $implementedIds)),
         );
         self::assertCount(40, array_unique($implementedIds));
@@ -115,7 +115,7 @@ final class ContractArtifactsTest extends TestCase
             self::listValue($diff, 'operationChanges'),
             self::listValue($diff, 'schemaChanges'),
         );
-        self::assertCount(18, $changes);
+        self::assertCount(76, $changes);
         foreach ($changes as $changeValue) {
             $change = self::objectValue($changeValue, 'change');
             self::assertContains(
@@ -129,10 +129,10 @@ final class ContractArtifactsTest extends TestCase
     public function validationRulesHaveExplicitProvenanceAndBounds(): void
     {
         $document = self::readObject('validation-rules.json');
-        self::assertSame('scheduled-not-verified', self::nestedValue($document, ['source', 'productionStatus']));
+        self::assertSame('verified-by-production-contract', self::nestedValue($document, ['source', 'productionStatus']));
 
         $rules = self::listValue($document, 'rules');
-        self::assertCount(21, $rules);
+        self::assertCount(20, $rules);
         foreach ($rules as $ruleValue) {
             $rule = self::objectValue($ruleValue, 'rule');
             self::assertNotSame('', self::requiredString($rule, 'id'));
@@ -140,7 +140,7 @@ final class ContractArtifactsTest extends TestCase
             self::assertNotSame('', self::requiredString($rule, 'unit'));
             self::assertArrayHasKey('minimum', $rule);
             self::assertArrayHasKey('maximum', $rule);
-            self::assertStringStartsWith('official-next-', self::requiredString($rule, 'status'));
+            self::assertSame('official-production-contract', self::requiredString($rule, 'status'));
         }
     }
 

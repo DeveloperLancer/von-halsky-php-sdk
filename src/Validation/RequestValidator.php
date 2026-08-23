@@ -50,13 +50,7 @@ final class RequestValidator
     /** @param array<mixed> $attributes */
     public static function productAttributes(array $attributes, string $fieldPath = 'ProductInfo.attributes'): void
     {
-        self::itemLimit($attributes, 20, $fieldPath);
-    }
-
-    /** @param array<mixed> $positions */
-    public static function depositPositions(array $positions, string $fieldPath = 'DepositPositions'): void
-    {
-        self::itemLimit($positions, 10, $fieldPath);
+        self::itemLimit($attributes, 120, $fieldPath);
     }
 
     /** @param array<mixed> $offers */

@@ -27,8 +27,7 @@ final class RequestValidatorTest extends TestCase
     {
         yield 'images' => [range(1, 21), 20, 'images'];
         yield 'manuals' => [range(1, 21), 20, 'manuals'];
-        yield 'attributes' => [range(1, 21), 20, 'attributes'];
-        yield 'deposits' => [range(1, 11), 10, 'deposits'];
+        yield 'attributes' => [range(1, 121), 120, 'attributes'];
         yield 'batch' => [range(1, 501), 500, 'batch'];
     }
 
@@ -65,9 +64,6 @@ final class RequestValidatorTest extends TestCase
                 break;
             case 'attributes':
                 RequestValidator::productAttributes($items);
-                break;
-            case 'deposits':
-                RequestValidator::depositPositions($items);
                 break;
             case 'batch':
                 RequestValidator::offerBatch($items);

@@ -40,6 +40,7 @@ final class PhaseSevenResourcesTest extends TestCase
             $this->json(['data' => [['id' => 'claim-type-1', 'description' => 'Damaged']]]),
             $this->json(['items' => [$claim], 'page' => $this->page()]),
             $this->json(['data' => [$order], 'page' => $this->page()]),
+            $this->json(['data' => [$order], 'page' => $this->page()]),
             $this->json(['commandId' => 'command-1', 'status' => 'SUCCESS']),
             $this->json(['data' => [['id' => 'event-1', 'orderEventType' => 'CREATED', 'order' => ['id' => 'order-1'], 'occurredAt' => '2026-08-04T20:00:00Z']]]),
             $this->json($order),
@@ -66,6 +67,7 @@ final class PhaseSevenResourcesTest extends TestCase
         self::assertSame('claim-type-1', $sdk->claims()->types()->data[0]->id->value);
         self::assertSame('claim-1', $organization->claims()->list(new ClaimListOptions(states: ['APPROVED'], submissionDateFrom: $instant, sort: ['-submission_date']))->data->items[0]->id->value);
         self::assertSame('49.99', $organization->orders()->list(new OrderListOptions(paymentStatuses: ['PAID', 'NOT_PAID'], updatedAtGte: $instant))->data->items[0]->finalPrice->amount);
+        self::assertSame('Leave with reception', $organization->orders()->list(new OrderListOptions())->data->items[0]->delivery['courierNote']);
         self::assertSame('SUCCESS', $organization->orders()->command(CommandId::fromString('command/1'))->data->status->value);
         self::assertSame('event-1', $organization->orders()->events(new OrderEventsOptions(EventId::fromString('event/0')))->data[0]->id->value);
         self::assertSame('order-1', $organization->orders()->get($orderId)->data->id->value);
@@ -82,12 +84,12 @@ final class PhaseSevenResourcesTest extends TestCase
         self::assertSame('Return rejected', $organization->returns()->reject($returnId)->data->message);
         self::assertSame('Parcel locker', $sdk->orders()->deliveryMethods()->data[0]->name);
 
-        self::assertCount(18, $http->requests());
+        self::assertCount(19, $http->requests());
         self::assertStringContainsString('paymentStatus%5B0%5D=PAID', (string) $http->requestAt(2)->getUri());
         self::assertStringContainsString('updatedAtGte=2026-08-04T20%3A00%3A00%2B00%3A00', (string) $http->requestAt(2)->getUri());
-        self::assertSame('/inpsa/v1/organizations/organization%2F1/orders/order%2F1/refund', $http->requestAt(11)->getUri()->getPath());
-        self::assertSame(['amount' => ['amount' => 12.34, 'currency' => 'PLN']], json_decode((string) $http->requestAt(11)->getBody(), true, 512, JSON_THROW_ON_ERROR));
-        self::assertSame('/inpsa/v2/orders/delivery-methods', $http->requestAt(17)->getUri()->getPath());
+        self::assertSame('/inpsa/v1/organizations/organization%2F1/orders/order%2F1/refund', $http->requestAt(12)->getUri()->getPath());
+        self::assertSame(['amount' => ['amount' => 12.34, 'currency' => 'PLN']], json_decode((string) $http->requestAt(12)->getBody(), true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame('/inpsa/v2/orders/delivery-methods', $http->requestAt(18)->getUri()->getPath());
     }
 
     /** @return array<string, mixed> */
@@ -99,7 +101,7 @@ final class PhaseSevenResourcesTest extends TestCase
             'basePrice' => ['amount' => 59.99, 'currency' => 'PLN'],
             'orderLines' => [['id' => 'line-1', 'quantity' => 2]],
             'customer' => ['email' => 'opaque-hashmail@example.invalid'],
-            'delivery' => ['deliveryType' => 'APM', 'email' => 'shipx@example.invalid', 'parcels' => []],
+            'delivery' => ['deliveryType' => 'APM', 'email' => 'shipx@example.invalid', 'courierNote' => 'Leave with reception', 'parcels' => []],
             'invoice' => ['email' => 'invoice@example.invalid', 'legalForm' => 'PERSON'],
             'paymentDetails' => ['status' => 'PAID'],
             'createdAt' => '2026-08-04T20:00:00Z', 'updatedAt' => '2026-08-04T20:01:00Z',

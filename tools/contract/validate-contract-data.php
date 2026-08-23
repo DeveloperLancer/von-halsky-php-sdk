@@ -187,8 +187,8 @@ function validateLock(array $lock, array &$errors): void
 function validateManifest(array $manifest, array $lock, array &$errors): void
 {
     $operations = $manifest['operations'] ?? null;
-    if (!is_array($operations) || count($operations) !== 42) {
-        $errors[] = 'operations.json must contain exactly 42 operations.';
+    if (!is_array($operations) || count($operations) !== 43) {
+        $errors[] = 'operations.json must contain exactly 43 operations.';
         return;
     }
     if (($manifest['generatedFromSha256'] ?? null) !== ($lock['productionSha256'] ?? null)) {
@@ -245,18 +245,18 @@ function validateManifest(array $manifest, array $lock, array &$errors): void
         }
     }
 
-    if (count($paths) !== 38) {
-        $errors[] = 'operations.json must describe exactly 38 unique paths.';
+    if (count($paths) !== 39) {
+        $errors[] = 'operations.json must describe exactly 39 unique paths.';
     }
-    if ($phaseCounts !== [5 => 4, 6 => 18, 7 => 20]) {
-        $errors[] = 'operations.json phase allocation must be 4 + 18 + 20.';
+    if ($phaseCounts !== [5 => 4, 6 => 19, 7 => 20]) {
+        $errors[] = 'operations.json phase allocation must be 4 + 19 + 20.';
     }
     if ($deprecated !== 2) {
         $errors[] = 'operations.json must contain exactly two deprecated operations.';
     }
     $summary = contractOptionalObject($manifest, 'summary');
-    if (($summary['schemas'] ?? null) !== 169) {
-        $errors[] = 'operations.json must record 169 production schemas.';
+    if (($summary['schemas'] ?? null) !== 172) {
+        $errors[] = 'operations.json must record 172 production schemas.';
     }
 }
 
@@ -341,8 +341,8 @@ function validateRules(array $document, array &$errors): void
     if (!is_string($sourceUrl) || !str_starts_with($sourceUrl, 'https://inpsa-api-portal.inpost-group.com/')) {
         $errors[] = 'validation-rules.source must be an official portal URL.';
     }
-    if (($source['productionStatus'] ?? null) !== 'scheduled-not-verified') {
-        $errors[] = 'Upcoming validation rules must not be marked as production verified.';
+    if (($source['productionStatus'] ?? null) !== 'verified-by-production-contract') {
+        $errors[] = 'Validation rules must be verified against the production contract.';
     }
     if (($source['defaultForRulesWithoutSourceOverride'] ?? null) !== true
         || !is_string($source['releaseVersion'] ?? null)) {

@@ -1,14 +1,265 @@
 {
     "from": {
-        "contractVersion": "1.5.11",
-        "sha256": "efa9827f60e7cf7b2c84d005380d5038461b8c183cce99867c8f8b782c3d3091"
+        "contractVersion": "1.6.2",
+        "sha256": "1e159cf4b75eb65788e31161706ea7b5a8506acc475e247a007a99f2fbd4a059"
     },
-    "operationChanges": [],
+    "operationChanges": [
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "DELETE /v1/organizations/{organizationId}/offers/{offerId}/attachments/{attachmentId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/categories"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/categories/{categoryId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/categories/{categoryId}/attributes"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/offers/deposit-types"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/orders/claim-types"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/orders/delivery-methods"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/claims"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/offers"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/offers/commands/{commandId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/offers/events"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/offers/hint"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/offers/{offerId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/offers/{offerId}/attachments"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/offers/{offerId}/attachments/{attachmentId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/orders"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/orders/commands/{commandId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/orders/events"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/orders/{orderId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/orders/{orderId}/returns"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/returns"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v1/organizations/{organizationId}/returns/{returnId}"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "GET /v2/orders/delivery-methods"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "PATCH /v1/organizations/{organizationId}/offers/prices"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "PATCH /v1/organizations/{organizationId}/offers/stocks"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "PATCH /v1/organizations/{organizationId}/offers/{offerId}"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "operation": "PATCH /v1/organizations/{organizationId}/offers/{offerId}/attributes"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/offers"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/offers/batch"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/offers/{offerId}/attachments"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/offers/{offerId}/close"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/offers/{offerId}/reopen"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/orders/{orderId}/accept"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}/partial-refund"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}/refund"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}/reject"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/orders/{orderId}/refund"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/orders/{orderId}/refuse"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/returns/{returnId}/accept"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "operation": "POST /v1/organizations/{organizationId}/returns/{returnId}/reject"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "operation": "PUT /v1/organizations/{organizationId}/offers/{offerId}/attachments/priority"
+        }
+    ],
     "schemaChanges": [
         {
             "change": "contract-changed",
             "classification": "validation",
             "name": "AddressState"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "name": "AffiliationProductUrl"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "name": "AttachmentInfo"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "AttachmentPriorities"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "AttachmentPriority"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "name": "AttributeDescription"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "AttributeRemoveOperation"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "AttributeUpsertOperation"
         },
         {
             "change": "contract-changed",
@@ -26,13 +277,18 @@
             "name": "City"
         },
         {
-            "change": "contract-changed",
-            "classification": "validation",
-            "name": "DepositPositions"
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "CommandError"
         },
         {
             "change": "contract-changed",
-            "classification": "validation",
+            "classification": "potentially-breaking",
+            "name": "Delivery"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
             "name": "Dimension"
         },
         {
@@ -44,6 +300,11 @@
             "change": "contract-changed",
             "classification": "validation",
             "name": "Flat"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "name": "GenericDateTime"
         },
         {
             "change": "contract-changed",
@@ -66,9 +327,39 @@
             "name": "Money"
         },
         {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "OfferAttributesPatch"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "OfferAttributesPatchOperationsInner"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "OfferCommandStatusDetails"
+        },
+        {
+            "change": "contract-changed",
+            "classification": "potentially-breaking",
+            "name": "OfferPatch"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "Priority"
+        },
+        {
             "change": "contract-changed",
             "classification": "validation",
             "name": "ProductInfo"
+        },
+        {
+            "change": "removed",
+            "classification": "potentially-breaking",
+            "name": "ProductInfoPatch"
         },
         {
             "change": "contract-changed",
@@ -97,11 +388,11 @@
         }
     ],
     "summary": {
-        "operationChanges": 0,
-        "schemaChanges": 18
+        "operationChanges": 43,
+        "schemaChanges": 33
     },
     "to": {
-        "contractVersion": "1.6.0-gokint-867-SNAPSHOT",
-        "sha256": "17d6d838295913ef4219186b8200848dee9f51b68f4a86af9553052cdb0a51a2"
+        "contractVersion": "1.6.0-SNAPSHOT-release-1-6-SNAPSHOT",
+        "sha256": "7eddb8c34e9f33ae79cd66c49cb73c63d6ce6df3c7753a8b29c62a27bede86d7"
     }
 }

@@ -1,6 +1,6 @@
 {
-    "contractVersion": "1.5.11",
-    "generatedFromSha256": "efa9827f60e7cf7b2c84d005380d5038461b8c183cce99867c8f8b782c3d3091",
+    "contractVersion": "1.6.2",
+    "generatedFromSha256": "1e159cf4b75eb65788e31161706ea7b5a8506acc475e247a007a99f2fbd4a059",
     "openApiVersion": "3.0.3",
     "operations": [
         {
@@ -296,6 +296,21 @@
             "method": "POST",
             "operationId": "postOffersAttachmentsByOfferIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/attachments",
+            "phase": 6,
+            "scope": null,
+            "scopes": [],
+            "tag": "Offer Attachments",
+            "verification": "official-contract",
+            "version": 1
+        },
+        {
+            "alternative": null,
+            "deprecated": false,
+            "deprecationReason": null,
+            "domain": "attachments",
+            "method": "PUT",
+            "operationId": "putAttachmentsPriorityByOfferIdV1",
+            "path": "/v1/organizations/{organizationId}/offers/{offerId}/attachments/priority",
             "phase": 6,
             "scope": null,
             "scopes": [],
@@ -637,7 +652,7 @@
     "summary": {
         "deprecated": 2,
         "domains": {
-            "attachments": 4,
+            "attachments": 5,
             "categories": 3,
             "claims": 3,
             "offers": 14,
@@ -646,13 +661,13 @@
             "refunds": 3,
             "returns": 5
         },
-        "operations": 42,
-        "paths": 38,
+        "operations": 43,
+        "paths": 39,
         "phases": {
             "5": 4,
-            "6": 18,
+            "6": 19,
             "7": 20
         },
-        "schemas": 169
+        "schemas": 172
     }
 }

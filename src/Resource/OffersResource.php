@@ -32,7 +32,7 @@ use DevLancer\VonHalsky\ValueObject\CommandId;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
 
-/** All global and organization-scoped offer operations from contract 1.5.11. */
+/** All global and organization-scoped offer operations from contract 1.6.2. */
 final class OffersResource
 {
     public function __construct(

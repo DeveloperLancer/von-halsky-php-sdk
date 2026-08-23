@@ -1,5 +1,5 @@
 {
-    "contractVersion": "1.5.11",
+    "contractVersion": "1.6.2",
     "implementedOperations": [
         {
             "operationId": "getCategoriesV1",
@@ -164,6 +164,6 @@
     ],
     "summary": {
         "implemented": 40,
-        "total": 42
+        "total": 43
     }
 }

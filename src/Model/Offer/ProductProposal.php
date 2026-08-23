@@ -38,7 +38,7 @@ final class ProductProposal implements RequestDtoInterface
         if ($ean === null && $manufacturerProductNumber === null) {
             throw new InvalidRequestException('Product', 'requires ean or manufacturerProductNumber');
         }
-        RequestValidator::itemLimit($attributes, 20, 'Product.attributes');
+        RequestValidator::productAttributes($attributes, 'Product.attributes');
     }
 
     public function jsonSerialize(): array
