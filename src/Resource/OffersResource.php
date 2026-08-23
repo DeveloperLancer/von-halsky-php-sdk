@@ -51,7 +51,11 @@ final class OffersResource
         return ApiResponse::fromResponse(OfferResponseHydrator::deposits($data), $response);
     }
 
-    /** @return ApiResponse<PageResult<OfferDetails>> */
+    /**
+     * Requires OAuth scope `api:offers:read`.
+     *
+     * @return ApiResponse<PageResult<OfferDetails>>
+     */
     public function list(?OfferListOptions $options = null): ApiResponse
     {
         $options ??= new OfferListOptions();
@@ -68,7 +72,11 @@ final class OffersResource
         return ApiResponse::fromResponse(OfferResponseHydrator::offers($this->requiredObject($response, 'getOffersV1')), $response);
     }
 
-    /** @return ApiResponse<OfferDetails> */
+    /**
+     * Requires OAuth scope `api:offers:read`.
+     *
+     * @return ApiResponse<OfferDetails>
+     */
     public function get(OfferId $offerId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('GET', $this->offerPath($offerId), [], self::language($language));
@@ -78,6 +86,7 @@ final class OffersResource
 
     /**
      * HTTP 201 means that the command was accepted, not that the offer is ready.
+     * Requires OAuth scope `api:offers:write`.
      *
      * @return ApiResponse<CommandHandle>
      */
@@ -88,7 +97,11 @@ final class OffersResource
         return ApiResponse::fromResponse(OfferResponseHydrator::handle($this->requiredObject($response, 'postOffersV1')), $response);
     }
 
-    /** @return ApiResponse<list<CommandHandle>> */
+    /**
+     * Requires OAuth scope `api:offers:write`.
+     *
+     * @return ApiResponse<list<CommandHandle>>
+     */
     public function createBatch(BatchCreateOffersRequest $request, ?ResponseLanguage $language = null): ApiResponse
     {
         $normalizer = new RequestNormalizer();
@@ -105,7 +118,11 @@ final class OffersResource
         return ApiResponse::fromResponse($handles, $response);
     }
 
-    /** @return ApiResponse<OfferDetails> */
+    /**
+     * Requires OAuth scope `api:offers:write`.
+     *
+     * @return ApiResponse<OfferDetails>
+     */
     public function patch(OfferId $offerId, PatchOfferRequest $request, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->executeDto('PATCH', $this->offerPath($offerId), $request, [], self::language($language) + ['Content-Type' => 'application/merge-patch+json']);
@@ -114,6 +131,8 @@ final class OffersResource
     }
 
     /**
+     * Requires OAuth scope `api:offers:write`.
+     *
      * @param list<OfferPriceUpdate> $updates
      * @return ApiResponse<list<CommandHandle>>
      */
@@ -123,6 +142,8 @@ final class OffersResource
     }
 
     /**
+     * Requires OAuth scope `api:offers:write`.
+     *
      * @param list<OfferStockUpdate> $updates
      * @return ApiResponse<list<CommandHandle>>
      */
@@ -131,7 +152,11 @@ final class OffersResource
         return $this->batchUpdate('stocks', $updates, 'patchUpdateOfferStocksBatchV1', $language);
     }
 
-    /** @return ApiResponse<CommandHandle> */
+    /**
+     * Requires OAuth scope `api:offers:write`.
+     *
+     * @return ApiResponse<CommandHandle>
+     */
     public function updateAttributes(OfferId $offerId, OfferAttributesPatch $patch, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->executeDto('PATCH', $this->offerPath($offerId) . '/attributes', $patch, [], self::language($language));
@@ -139,19 +164,31 @@ final class OffersResource
         return ApiResponse::fromResponse(OfferResponseHydrator::handle($this->requiredObject($response, 'patchOfferAttributesByIdV1')), $response);
     }
 
-    /** @return ApiResponse<CommandHandle> */
+    /**
+     * Requires OAuth scope `api:offers:write`.
+     *
+     * @return ApiResponse<CommandHandle>
+     */
     public function close(OfferId $offerId, ?ResponseLanguage $language = null): ApiResponse
     {
         return $this->lifecycle($offerId, 'close', 'postOffersCloseByOfferIdV1', $language);
     }
 
-    /** @return ApiResponse<CommandHandle> */
+    /**
+     * Requires OAuth scope `api:offers:write`.
+     *
+     * @return ApiResponse<CommandHandle>
+     */
     public function reopen(OfferId $offerId, ?ResponseLanguage $language = null): ApiResponse
     {
         return $this->lifecycle($offerId, 'reopen', 'postOffersReopenByOfferIdV1', $language);
     }
 
-    /** @return ApiResponse<CommandDetails> */
+    /**
+     * Requires OAuth scope `api:offers:read`.
+     *
+     * @return ApiResponse<CommandDetails>
+     */
     public function command(CommandId $commandId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('GET', $this->basePath() . '/commands/' . rawurlencode($commandId->value), [], self::language($language));
@@ -161,6 +198,7 @@ final class OffersResource
 
     /**
      * Events are returned newest-first by the API.
+     * Requires OAuth scope `api:offers:read`.
      *
      * @return ApiResponse<list<OfferEvent>>
      */
@@ -180,7 +218,11 @@ final class OffersResource
         return ApiResponse::fromResponse(OfferResponseHydrator::events($this->requiredObject($response, 'getOffersEventsV1')), $response);
     }
 
-    /** @return ApiResponse<PageResult<ProductHint>> */
+    /**
+     * Requires OAuth scope `api:offers:read`.
+     *
+     * @return ApiResponse<PageResult<ProductHint>>
+     */
     public function hints(ProductHintOptions $options): ApiResponse
     {
         /** @var array<string, scalar|list<scalar>|null> $query */

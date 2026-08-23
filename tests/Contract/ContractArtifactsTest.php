@@ -48,6 +48,7 @@ final class ContractArtifactsTest extends TestCase
         $methodPaths = [];
         $paths = [];
         $phaseCounts = [];
+        $scopeCounts = [];
         $deprecated = [];
 
         foreach ($operations as $operationValue) {
@@ -64,8 +65,16 @@ final class ContractArtifactsTest extends TestCase
             $phaseCounts[$phase] = ($phaseCounts[$phase] ?? 0) + 1;
 
             self::assertNotSame('', self::requiredString($operation, 'domain'));
-            self::assertArrayHasKey('scope', $operation);
-            self::assertIsArray($operation['scopes'] ?? null);
+            $scope = $operation['scope'] ?? null;
+            $scopes = $operation['scopes'] ?? null;
+            self::assertIsArray($scopes);
+            if ($scopes === []) {
+                self::assertNull($scope);
+            } else {
+                self::assertIsString($scope);
+                self::assertSame([$scope], $scopes);
+                $scopeCounts[$scope] = ($scopeCounts[$scope] ?? 0) + 1;
+            }
 
             if (($operation['deprecated'] ?? false) === true) {
                 $deprecated[] = $operation;
@@ -80,6 +89,14 @@ final class ContractArtifactsTest extends TestCase
         self::assertCount(43, array_unique($methodPaths));
         self::assertCount(39, array_unique($paths));
         self::assertSame([5 => 4, 6 => 19, 7 => 20], $phaseCounts);
+        ksort($scopeCounts, SORT_STRING);
+        self::assertSame([
+            'api:categories:read' => 3,
+            'api:offers:read' => 7,
+            'api:offers:write' => 11,
+            'api:orders:read' => 10,
+            'api:orders:write' => 8,
+        ], $scopeCounts);
         self::assertCount(2, $deprecated);
     }
 

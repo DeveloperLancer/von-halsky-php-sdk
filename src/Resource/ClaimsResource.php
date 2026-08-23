@@ -30,7 +30,11 @@ final class ClaimsResource
     ) {
     }
 
-    /** @return ApiResponse<list<ClaimType>> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<list<ClaimType>>
+     */
     public function types(?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('GET', '/v1/orders/claim-types', [], self::language($language));
@@ -38,7 +42,11 @@ final class ClaimsResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::claimTypes($this->requiredObject($response, 'getOrdersClaimTypesDictionaryV1')), $response);
     }
 
-    /** @return ApiResponse<PageResult<ClaimDetails>> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<PageResult<ClaimDetails>>
+     */
     public function list(?ClaimListOptions $options = null): ApiResponse
     {
         $options ??= new ClaimListOptions();
@@ -70,7 +78,11 @@ final class ClaimsResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::claims($this->requiredObject($response, 'getClaimsForOrganizationV1')), $response);
     }
 
-    /** @return ApiResponse<ClaimDetails> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<ClaimDetails>
+     */
     public function get(OrderId $orderId, ClaimId $claimId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('GET', $this->claimPath($orderId, $claimId), [], self::language($language));
@@ -78,19 +90,31 @@ final class ClaimsResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::claim($this->requiredObject($response, 'getClaimByIdV1')), $response);
     }
 
-    /** @return ApiResponse<ActionResult> */
+    /**
+     * Requires OAuth scope `api:orders:write`.
+     *
+     * @return ApiResponse<ActionResult>
+     */
     public function reject(OrderId $orderId, ClaimId $claimId, ?ResolutionDescription $request = null, ?ResponseLanguage $language = null): ApiResponse
     {
         return $this->action($orderId, $claimId, 'reject', 'rejectClaimV1', $request, $language);
     }
 
-    /** @return ApiResponse<ActionResult> */
+    /**
+     * Requires OAuth scope `api:orders:write`.
+     *
+     * @return ApiResponse<ActionResult>
+     */
     public function partialRefund(OrderId $orderId, ClaimId $claimId, ?ResolutionDescription $request = null, ?ResponseLanguage $language = null): ApiResponse
     {
         return $this->action($orderId, $claimId, 'partial-refund', 'partialRefundClaimV1', $request, $language);
     }
 
-    /** @return ApiResponse<ActionResult> */
+    /**
+     * Requires OAuth scope `api:orders:write`.
+     *
+     * @return ApiResponse<ActionResult>
+     */
     public function refund(OrderId $orderId, ClaimId $claimId, ?ResolutionDescription $request = null, ?ResponseLanguage $language = null): ApiResponse
     {
         return $this->action($orderId, $claimId, 'refund', 'refundClaimV1', $request, $language);

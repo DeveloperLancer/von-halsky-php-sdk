@@ -60,6 +60,7 @@ final class ContractToolsTest extends TestCase
         self::assertFileExists($manifest);
         self::assertFileExists($diff);
         self::assertStringContainsString('"operations": 1', self::read($manifest));
+        self::assertStringContainsString('"scope": "api:categories:read"', self::read($manifest));
         self::assertStringContainsString('"schemaChanges": 0', self::read($diff));
     }
 

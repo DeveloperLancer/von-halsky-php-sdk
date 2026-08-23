@@ -32,7 +32,11 @@ final class AttachmentsResource
     ) {
     }
 
-    /** @return ApiResponse<PageResult<AttachmentInfo>> */
+    /**
+     * Requires OAuth scope `api:offers:read`.
+     *
+     * @return ApiResponse<PageResult<AttachmentInfo>>
+     */
     public function list(OfferId $offerId, ?AttachmentListOptions $options = null): ApiResponse
     {
         $options ??= new AttachmentListOptions();
@@ -44,6 +48,7 @@ final class AttachmentsResource
 
     /**
      * The upload stream is consumed but never buffered or closed by the SDK.
+     * Requires OAuth scope `api:offers:write`.
      *
      * @return ApiResponse<CommandHandle>
      */
@@ -69,6 +74,7 @@ final class AttachmentsResource
 
     /**
      * The caller owns the returned response stream and must close it.
+     * Requires OAuth scope `api:offers:read`.
      *
      * @return ApiResponse<DownloadedAttachment>
      */
@@ -91,7 +97,11 @@ final class AttachmentsResource
         return ApiResponse::fromResponse($download, $response);
     }
 
-    /** @return ApiResponse<null> */
+    /**
+     * Requires OAuth scope `api:offers:write`.
+     *
+     * @return ApiResponse<null>
+     */
     public function delete(OfferId $offerId, AttachmentId $attachmentId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('DELETE', $this->attachmentPath($offerId, $attachmentId), [], self::language($language));

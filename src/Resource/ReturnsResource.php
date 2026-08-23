@@ -27,19 +27,31 @@ final class ReturnsResource
     ) {
     }
 
-    /** @return ApiResponse<PageResult<ReturnDetails>> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<PageResult<ReturnDetails>>
+     */
     public function list(?ReturnListOptions $options = null): ApiResponse
     {
         return $this->listAt($this->basePath(), 'getReturnsForOrganizationV1', $options);
     }
 
-    /** @return ApiResponse<PageResult<ReturnDetails>> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<PageResult<ReturnDetails>>
+     */
     public function forOrder(OrderId $orderId, ?ReturnListOptions $options = null): ApiResponse
     {
         return $this->listAt($this->ordersPath() . '/' . rawurlencode($orderId->value) . '/returns', 'getReturnsByOrderIdV1', $options);
     }
 
-    /** @return ApiResponse<ReturnDetails> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<ReturnDetails>
+     */
     public function get(ReturnId $returnId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('GET', $this->returnPath($returnId), [], self::language($language));
@@ -47,13 +59,21 @@ final class ReturnsResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::return($this->requiredObject($response, 'getReturnByIdV1')), $response);
     }
 
-    /** @return ApiResponse<ActionResult> */
+    /**
+     * Requires OAuth scope `api:orders:write`.
+     *
+     * @return ApiResponse<ActionResult>
+     */
     public function accept(ReturnId $returnId, ?ResponseLanguage $language = null): ApiResponse
     {
         return $this->action($returnId, 'accept', 'acceptReturnV1', $language);
     }
 
-    /** @return ApiResponse<ActionResult> */
+    /**
+     * Requires OAuth scope `api:orders:write`.
+     *
+     * @return ApiResponse<ActionResult>
+     */
     public function reject(ReturnId $returnId, ?ResponseLanguage $language = null): ApiResponse
     {
         return $this->action($returnId, 'reject', 'rejectReturnV1', $language);

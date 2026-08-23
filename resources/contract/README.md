@@ -8,7 +8,7 @@ This directory contains derived metadata used to plan and verify SDK coverage. I
 - `prod-next-diff.json` classifies the current production-to-next contract changes, including any breaking changes.
 - `validation-rules.json` records constraints verified against the deployed production contract.
 
-The `scope` and `scopes` entries in `operations.json` are informational. Callers select OAuth scopes when obtaining a token; the SDK does not enforce them at request time.
+The `scope` and `scopes` entries in `operations.json` are informational. The official contract documents them in each operation description rather than its OpenAPI security requirements; the manifest extracts those values. Callers select OAuth scopes when obtaining a token; the SDK does not enforce them at request time.
 - `pending-stage-verifications.json` is the deferred integration checklist and release gate.
 - `formal-decisions.json` records adopted decisions and outstanding formal confirmation.
 

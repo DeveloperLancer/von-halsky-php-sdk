@@ -199,6 +199,7 @@ function validateManifest(array $manifest, array $lock, array &$errors): void
     $methodPaths = [];
     $paths = [];
     $phaseCounts = [];
+    $scopeCounts = [];
     $deprecated = 0;
 
     foreach ($operations as $index => $operation) {
@@ -234,8 +235,18 @@ function validateManifest(array $manifest, array $lock, array &$errors): void
         if (!is_string($operation['domain'] ?? null) || $operation['domain'] === '') {
             $errors[] = sprintf('operations[%d] has no domain.', $index);
         }
-        if (!array_key_exists('scope', $operation) || !is_array($operation['scopes'] ?? null)) {
+        $scope = $operation['scope'] ?? null;
+        $scopes = $operation['scopes'] ?? null;
+        if (!array_key_exists('scope', $operation) || !is_array($scopes)) {
             $errors[] = sprintf('operations[%d] must explicitly declare scope information.', $index);
+        } elseif ($scopes === []) {
+            if ($scope !== null) {
+                $errors[] = sprintf('operations[%d] has an authentication-only scope mismatch.', $index);
+            }
+        } elseif (!is_string($scope) || $scope === '' || $scopes !== [$scope]) {
+            $errors[] = sprintf('operations[%d] must declare one documented OAuth scope.', $index);
+        } else {
+            $scopeCounts[$scope] = ($scopeCounts[$scope] ?? 0) + 1;
         }
         if (($operation['deprecated'] ?? false) === true) {
             ++$deprecated;
@@ -253,6 +264,16 @@ function validateManifest(array $manifest, array $lock, array &$errors): void
     }
     if ($deprecated !== 2) {
         $errors[] = 'operations.json must contain exactly two deprecated operations.';
+    }
+    ksort($scopeCounts, SORT_STRING);
+    if ($scopeCounts !== [
+        'api:categories:read' => 3,
+        'api:offers:read' => 7,
+        'api:offers:write' => 11,
+        'api:orders:read' => 10,
+        'api:orders:write' => 8,
+    ]) {
+        $errors[] = 'operations.json must record the documented OAuth scopes for every scoped operation.';
     }
     $summary = contractOptionalObject($manifest, 'summary');
     if (($summary['schemas'] ?? null) !== 172) {

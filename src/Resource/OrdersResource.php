@@ -42,7 +42,11 @@ final class OrdersResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::deliveryMethods($this->decoder->decodeList($response, 'getOrdersDeliveryMethodsV2')), $response);
     }
 
-    /** @return ApiResponse<PageResult<OrderDetails>> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<PageResult<OrderDetails>>
+     */
     public function list(?OrderListOptions $options = null): ApiResponse
     {
         $options ??= new OrderListOptions();
@@ -65,7 +69,11 @@ final class OrdersResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::orders($this->requiredObject($response, 'getOrdersV1')), $response);
     }
 
-    /** @return ApiResponse<OrderDetails> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<OrderDetails>
+     */
     public function get(OrderId $orderId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('GET', $this->orderPath($orderId), [], self::language($language));
@@ -73,7 +81,11 @@ final class OrdersResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::order($this->requiredObject($response, 'getOrdersByIdV1')), $response);
     }
 
-    /** @return ApiResponse<OrderCommand> */
+    /**
+     * Requires OAuth scope `api:orders:write`.
+     *
+     * @return ApiResponse<OrderCommand>
+     */
     public function accept(OrderId $orderId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('POST', $this->orderPath($orderId) . '/accept', [], self::language($language));
@@ -81,7 +93,11 @@ final class OrdersResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::command($this->requiredObject($response, 'postOrdersAcceptByIdV1')), $response);
     }
 
-    /** @return ApiResponse<OrderCommand> */
+    /**
+     * Requires OAuth scope `api:orders:read`.
+     *
+     * @return ApiResponse<OrderCommand>
+     */
     public function command(CommandId $commandId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute('GET', $this->basePath() . '/commands/' . rawurlencode($commandId->value), [], self::language($language));
@@ -89,7 +105,7 @@ final class OrdersResource
         return ApiResponse::fromResponse(PostSaleResponseHydrator::command($this->requiredObject($response, 'getOrdersCommandsByIdV1')), $response);
     }
 
-    /** Events are returned newest-first.
+    /** Events are returned newest-first. Requires OAuth scope `api:orders:read`.
      *  @return ApiResponse<list<OrderEvent>>
      */
     public function events(?OrderEventsOptions $options = null): ApiResponse
@@ -109,6 +125,7 @@ final class OrdersResource
     }
 
     /** Null requests a full refund; a RefundRequest requests an exact partial amount.
+     *  Requires OAuth scope `api:orders:write`.
      *  @return ApiResponse<RefundResult>
      */
     public function refund(OrderId $orderId, ?RefundRequest $request = null, ?ResponseLanguage $language = null): ApiResponse

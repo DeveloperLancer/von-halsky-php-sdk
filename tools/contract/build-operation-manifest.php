@@ -135,24 +135,35 @@ function manifestDomainAndPhase(string $tag, string $path): array
 function manifestScopes(array $operation, array $document): array
 {
     $security = array_key_exists('security', $operation) ? $operation['security'] : ($document['security'] ?? []);
-    if (!is_array($security)) {
-        return [];
-    }
-
     $scopes = [];
-    foreach ($security as $requirement) {
-        if (!is_array($requirement)) {
-            continue;
-        }
-        foreach ($requirement as $requiredScopes) {
-            if (!is_array($requiredScopes)) {
+    if (is_array($security)) {
+        foreach ($security as $requirement) {
+            if (!is_array($requirement)) {
                 continue;
             }
-            foreach ($requiredScopes as $scope) {
-                if (is_string($scope) && $scope !== '') {
-                    $scopes[$scope] = true;
+            foreach ($requirement as $requiredScopes) {
+                if (!is_array($requiredScopes)) {
+                    continue;
+                }
+                foreach ($requiredScopes as $scope) {
+                    if (is_string($scope) && $scope !== '') {
+                        $scopes[$scope] = true;
+                    }
                 }
             }
+        }
+    }
+
+    // The Von Halsky contract documents endpoint scopes in descriptions rather
+    // than OpenAPI security requirements. Prefer structured requirements when
+    // available, then extract the documented backtick-delimited scope values.
+    $description = $operation['description'] ?? null;
+    if ($scopes === [] && is_string($description)
+        && preg_match('/\\*\\*Required scope\\(s\\):\\*\\*\\s*(?<value>[^\\r\\n]+)/', $description, $matches) === 1
+    ) {
+        preg_match_all('/`(?<scope>[^`]+)`/', $matches['value'], $scopeMatches);
+        foreach ($scopeMatches['scope'] as $scope) {
+            $scopes[$scope] = true;
         }
     }
 

@@ -12,8 +12,10 @@
             "operationId": "getCategoriesV1",
             "path": "/v1/categories",
             "phase": 5,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:categories:read",
+            "scopes": [
+                "api:categories:read"
+            ],
             "tag": "Categories",
             "verification": "official-contract",
             "version": 1
@@ -27,8 +29,10 @@
             "operationId": "getCategoriesByIdV1",
             "path": "/v1/categories/{categoryId}",
             "phase": 5,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:categories:read",
+            "scopes": [
+                "api:categories:read"
+            ],
             "tag": "Categories",
             "verification": "official-contract",
             "version": 1
@@ -42,8 +46,10 @@
             "operationId": "getCategoriesAttributesByCategoryIdV1",
             "path": "/v1/categories/{categoryId}/attributes",
             "phase": 5,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:categories:read",
+            "scopes": [
+                "api:categories:read"
+            ],
             "tag": "Categories",
             "verification": "official-contract",
             "version": 1
@@ -72,8 +78,10 @@
             "operationId": "getOrdersClaimTypesDictionaryV1",
             "path": "/v1/orders/claim-types",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -117,8 +125,10 @@
             "operationId": "getClaimsForOrganizationV1",
             "path": "/v1/organizations/{organizationId}/claims",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -132,8 +142,10 @@
             "operationId": "getOffersV1",
             "path": "/v1/organizations/{organizationId}/offers",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:read",
+            "scopes": [
+                "api:offers:read"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -147,8 +159,10 @@
             "operationId": "postOffersV1",
             "path": "/v1/organizations/{organizationId}/offers",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -162,8 +176,10 @@
             "operationId": "postBatchOffersV1",
             "path": "/v1/organizations/{organizationId}/offers/batch",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -177,8 +193,10 @@
             "operationId": "getOffersCommandsByIdV1",
             "path": "/v1/organizations/{organizationId}/offers/commands/{commandId}",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:read",
+            "scopes": [
+                "api:offers:read"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -192,8 +210,10 @@
             "operationId": "getOffersEventsV1",
             "path": "/v1/organizations/{organizationId}/offers/events",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:read",
+            "scopes": [
+                "api:offers:read"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -207,8 +227,10 @@
             "operationId": "getOffersHintV1",
             "path": "/v1/organizations/{organizationId}/offers/hint",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:read",
+            "scopes": [
+                "api:offers:read"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -222,8 +244,10 @@
             "operationId": "patchUpdateOfferPricesBatchV1",
             "path": "/v1/organizations/{organizationId}/offers/prices",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -237,8 +261,10 @@
             "operationId": "patchUpdateOfferStocksBatchV1",
             "path": "/v1/organizations/{organizationId}/offers/stocks",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -252,8 +278,10 @@
             "operationId": "getOffersByIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:read",
+            "scopes": [
+                "api:offers:read"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -267,8 +295,10 @@
             "operationId": "patchOffersByIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -282,8 +312,10 @@
             "operationId": "getOffersAttachmentsByOfferIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/attachments",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:read",
+            "scopes": [
+                "api:offers:read"
+            ],
             "tag": "Offer Attachments",
             "verification": "official-contract",
             "version": 1
@@ -297,8 +329,10 @@
             "operationId": "postOffersAttachmentsByOfferIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/attachments",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offer Attachments",
             "verification": "official-contract",
             "version": 1
@@ -312,8 +346,10 @@
             "operationId": "putAttachmentsPriorityByOfferIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/attachments/priority",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offer Attachments",
             "verification": "official-contract",
             "version": 1
@@ -327,8 +363,10 @@
             "operationId": "deleteOffersAttachmentsByOfferIdAndAttachmentIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/attachments/{attachmentId}",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offer Attachments",
             "verification": "official-contract",
             "version": 1
@@ -342,8 +380,10 @@
             "operationId": "getOffersAttachmentsByOfferIdAndAttachmentIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/attachments/{attachmentId}",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:read",
+            "scopes": [
+                "api:offers:read"
+            ],
             "tag": "Offer Attachments",
             "verification": "official-contract",
             "version": 1
@@ -357,8 +397,10 @@
             "operationId": "patchOfferAttributesByIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/attributes",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -372,8 +414,10 @@
             "operationId": "postOffersCloseByOfferIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/close",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -387,8 +431,10 @@
             "operationId": "postOffersReopenByOfferIdV1",
             "path": "/v1/organizations/{organizationId}/offers/{offerId}/reopen",
             "phase": 6,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:offers:write",
+            "scopes": [
+                "api:offers:write"
+            ],
             "tag": "Offers",
             "verification": "official-contract",
             "version": 1
@@ -402,8 +448,10 @@
             "operationId": "getOrdersV1",
             "path": "/v1/organizations/{organizationId}/orders",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -417,8 +465,10 @@
             "operationId": "getOrdersCommandsByIdV1",
             "path": "/v1/organizations/{organizationId}/orders/commands/{commandId}",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -432,8 +482,10 @@
             "operationId": "getOrdersEventsV1",
             "path": "/v1/organizations/{organizationId}/orders/events",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -447,8 +499,10 @@
             "operationId": "getOrdersByIdV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -462,8 +516,10 @@
             "operationId": "postOrdersAcceptByIdV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/accept",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -477,8 +533,10 @@
             "operationId": "getClaimByIdV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -492,8 +550,10 @@
             "operationId": "partialRefundClaimV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}/partial-refund",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -507,8 +567,10 @@
             "operationId": "refundClaimV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}/refund",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -522,8 +584,10 @@
             "operationId": "rejectClaimV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/claims/{claimId}/reject",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -537,8 +601,10 @@
             "operationId": "postOrdersRefundByOrderIdV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/refund",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -552,8 +618,10 @@
             "operationId": "postOrdersRefuseByIdV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/refuse",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -567,8 +635,10 @@
             "operationId": "getReturnsByOrderIdV1",
             "path": "/v1/organizations/{organizationId}/orders/{orderId}/returns",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -582,8 +652,10 @@
             "operationId": "getReturnsForOrganizationV1",
             "path": "/v1/organizations/{organizationId}/returns",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -597,8 +669,10 @@
             "operationId": "getReturnByIdV1",
             "path": "/v1/organizations/{organizationId}/returns/{returnId}",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:read",
+            "scopes": [
+                "api:orders:read"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -612,8 +686,10 @@
             "operationId": "acceptReturnV1",
             "path": "/v1/organizations/{organizationId}/returns/{returnId}/accept",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1
@@ -627,8 +703,10 @@
             "operationId": "rejectReturnV1",
             "path": "/v1/organizations/{organizationId}/returns/{returnId}/reject",
             "phase": 7,
-            "scope": null,
-            "scopes": [],
+            "scope": "api:orders:write",
+            "scopes": [
+                "api:orders:write"
+            ],
             "tag": "Orders",
             "verification": "official-contract",
             "version": 1

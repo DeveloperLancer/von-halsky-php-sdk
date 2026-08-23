@@ -25,7 +25,11 @@ final class CategoriesResource
     ) {
     }
 
-    /** @return ApiResponse<list<Category>> */
+    /**
+     * Requires OAuth scope `api:categories:read`.
+     *
+     * @return ApiResponse<list<Category>>
+     */
     public function list(?CategoryTreeOptions $options = null): ApiResponse
     {
         $options ??= new CategoryTreeOptions();
@@ -47,7 +51,11 @@ final class CategoriesResource
         return ApiResponse::fromResponse($data, $response);
     }
 
-    /** @return ApiResponse<Category> */
+    /**
+     * Requires OAuth scope `api:categories:read`.
+     *
+     * @return ApiResponse<Category>
+     */
     public function get(CategoryId $categoryId, ?CategoryDetailsOptions $options = null): ApiResponse
     {
         $options ??= new CategoryDetailsOptions();
@@ -65,7 +73,11 @@ final class CategoriesResource
         return ApiResponse::fromResponse(DomainResponseHydrator::category($decoded), $response);
     }
 
-    /** @return ApiResponse<list<AttributeDefinition>> */
+    /**
+     * Requires OAuth scope `api:categories:read`.
+     *
+     * @return ApiResponse<list<AttributeDefinition>>
+     */
     public function attributes(CategoryId $categoryId, ?ResponseLanguage $language = null): ApiResponse
     {
         $response = $this->executor->execute(
