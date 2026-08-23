@@ -21,9 +21,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP 8.1
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: "8.1"
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -47,9 +47,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP 8.1
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: "8.1"
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -65,9 +65,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP 8.1
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: "8.1"
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -87,9 +87,9 @@ jobs:
                 php: ["8.1", "8.2", "8.3", "8.4", "8.5"]
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP ${{ matrix.php }}
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -97,7 +97,7 @@ jobs:
                   tools: composer:v2
             - name: Resolve current compatible dependencies
               run: |
-                  composer config platform.php "${{ matrix.php }}"
+                  composer config platform.php "$(php -r 'echo PHP_VERSION;')"
                   composer update --prefer-stable --no-progress
             - name: Audit resolved dependencies
               run: composer audit
@@ -109,9 +109,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP 8.1
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: "8.1"
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -139,9 +139,9 @@ jobs:
                       symfony: "^8.1"
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP ${{ matrix.php }}
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -149,7 +149,7 @@ jobs:
                   tools: composer:v2
             - name: Resolve selected Symfony line
               run: |
-                  composer config platform.php "${{ matrix.php }}"
+                  composer config platform.php "$(php -r 'echo PHP_VERSION;')"
                   composer require "symfony/http-client:${{ matrix.symfony }}" --no-update
                   composer update symfony/http-client --with-all-dependencies --no-progress
             - name: Run HTTP unit tests
@@ -160,9 +160,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP 8.1
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: "8.1"
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -182,9 +182,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP 8.1
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: "8.1"
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -204,9 +204,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP 8.1
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: "8.1"
                   extensions: curl, dom, intl, json, mbstring, simplexml, xml, xmlwriter, zip
@@ -217,7 +217,7 @@ jobs:
             - name: Build documentation
               run: composer docs-build
             - name: Upload documentation preview
-              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
               with:
                   name: api-documentation
                   path: build/docs/api
@@ -233,9 +233,9 @@ jobs:
                 php: ["8.1", "8.5"]
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Set up PHP ${{ matrix.php }}
-              uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: json, zip
@@ -269,13 +269,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out full history
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
                   fetch-depth: 0
             - name: Scan changed history with TruffleHog
-              uses: trufflesecurity/trufflehog@466da5b0bb161144f6afca9afe5d57975828c410 # v3.90.8
+              uses: trufflesecurity/trufflehog@6f3c981e7b77f235fd2702dd74af25fc4b72bf11 # v3.96.0
               with:
-                  version: 3.90.8
+                  version: 3.96.0
                   extra_args: --only-verified
 
     dependency-review:
@@ -284,8 +284,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
-              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             - name: Review dependency changes
-              uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+              uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
               with:
                   fail-on-severity: moderate

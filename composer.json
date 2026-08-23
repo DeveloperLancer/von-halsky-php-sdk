@@ -25,7 +25,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",
-        "phpdocumentor/phpdocumentor": "^3.10",
+        "phpdocumentor/shim": "^3.10",
         "phpstan/phpstan": "^2.2.3",
         "phpstan/phpstan-phpunit": "^2.0.18",
         "phpstan/phpstan-strict-rules": "^2.0",
@@ -42,7 +42,9 @@
         }
     },
     "config": {
-        "allow-plugins": {},
+        "allow-plugins": {
+            "phpdocumentor/shim": true
+        },
         "platform": {
             "php": "8.1.33"
         },
@@ -84,7 +86,7 @@
         "cs-check": "php-cs-fixer check --diff --using-cache=no",
         "cs-fix": "php-cs-fixer fix",
         "docs-check": "@php tools/quality/check-documentation.php",
-        "docs-build": "@php vendor/phpdocumentor/phpdocumentor/bin/phpdoc run -c phpdoc.dist.xml",
+        "docs-build": "@php vendor/bin/phpdoc run -c phpdoc.dist.xml",
         "quality": [
             "@validate-project",
             "@contract-check",
