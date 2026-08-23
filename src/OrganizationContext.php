@@ -6,7 +6,6 @@ namespace DevLancer\VonHalsky;
 
 use DevLancer\VonHalsky\Resource\AttachmentsResource;
 use DevLancer\VonHalsky\Resource\ClaimsResource;
-use DevLancer\VonHalsky\Resource\DeprecatedResource;
 use DevLancer\VonHalsky\Resource\OffersResource;
 use DevLancer\VonHalsky\Resource\OrdersResource;
 use DevLancer\VonHalsky\Resource\ReturnsResource;
@@ -52,9 +51,4 @@ final class OrganizationContext
         return $this->client->claimsForOrganization($this->organizationId);
     }
 
-    /** Explicitly isolated operations deprecated by the supported API contract. */
-    public function deprecated(): DeprecatedResource
-    {
-        return $this->client->deprecatedForOrganization($this->organizationId);
-    }
 }

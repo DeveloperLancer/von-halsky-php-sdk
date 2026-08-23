@@ -94,10 +94,6 @@
             "publicMethod": "ClaimsResource::types()"
         },
         {
-            "operationId": "getOrdersDeliveryMethodsV1",
-            "publicMethod": "DeprecatedResource::deliveryMethods()"
-        },
-        {
             "operationId": "getClaimsForOrganizationV1",
             "publicMethod": "ClaimsResource::list()"
         },
@@ -142,10 +138,6 @@
             "publicMethod": "OrdersResource::refund()"
         },
         {
-            "operationId": "postOrdersRefuseByIdV1",
-            "publicMethod": "DeprecatedResource::refuseOrder()"
-        },
-        {
             "operationId": "getReturnsByOrderIdV1",
             "publicMethod": "ReturnsResource::forOrder()"
         },
@@ -171,7 +163,7 @@
         }
     ],
     "summary": {
-        "implemented": 42,
+        "implemented": 40,
         "total": 42
     }
 }

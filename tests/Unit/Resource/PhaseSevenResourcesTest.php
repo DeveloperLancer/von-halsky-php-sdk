@@ -31,14 +31,13 @@ use PHPUnit\Framework\TestCase;
 
 final class PhaseSevenResourcesTest extends TestCase
 {
-    public function testAllTwentyOperationsUseContractRoutesAndTypedMoney(): void
+    public function testAllEighteenCurrentOperationsUseContractRoutesAndTypedMoney(): void
     {
         $order = $this->order();
         $claim = $this->claim();
         $return = $this->return();
         [$sdk, $http] = $this->client(
             $this->json(['data' => [['id' => 'claim-type-1', 'description' => 'Damaged']]]),
-            $this->json(['APM', 'COURIER']),
             $this->json(['items' => [$claim], 'page' => $this->page()]),
             $this->json(['data' => [$order], 'page' => $this->page()]),
             $this->json(['commandId' => 'command-1', 'status' => 'SUCCESS']),
@@ -50,7 +49,6 @@ final class PhaseSevenResourcesTest extends TestCase
             $this->json(['message' => 'Refund accepted']),
             $this->json(['message' => 'Claim rejected']),
             $this->json(['refundAmount' => ['amount' => 12.34, 'currency' => 'PLN'], 'status' => 'PENDING']),
-            $this->json(['commandId' => 'command-refuse', 'status' => 'PENDING'], 202),
             $this->json(['data' => [$return], 'page' => $this->page()]),
             $this->json(['data' => [$return], 'page' => $this->page()]),
             $this->json($return),
@@ -66,7 +64,6 @@ final class PhaseSevenResourcesTest extends TestCase
         $instant = UtcDateTime::fromString('2026-08-04T20:00:00Z');
 
         self::assertSame('claim-type-1', $sdk->claims()->types()->data[0]->id->value);
-        self::assertSame('APM', $sdk->deprecated()->deliveryMethods()->data[0]);
         self::assertSame('claim-1', $organization->claims()->list(new ClaimListOptions(states: ['APPROVED'], submissionDateFrom: $instant, sort: ['-submission_date']))->data->items[0]->id->value);
         self::assertSame('49.99', $organization->orders()->list(new OrderListOptions(paymentStatuses: ['PAID', 'NOT_PAID'], updatedAtGte: $instant))->data->items[0]->finalPrice->amount);
         self::assertSame('SUCCESS', $organization->orders()->command(CommandId::fromString('command/1'))->data->status->value);
@@ -78,7 +75,6 @@ final class PhaseSevenResourcesTest extends TestCase
         self::assertSame('Refund accepted', $organization->claims()->refund($orderId, $claimId)->data->message);
         self::assertSame('Claim rejected', $organization->claims()->reject($orderId, $claimId)->data->message);
         self::assertSame(1234, $organization->orders()->refund($orderId, new RefundRequest(Money::fromDecimal('12.34')))->data->amount?->minorUnits());
-        self::assertSame('command-refuse', $organization->deprecated()->refuseOrder($orderId)->data->commandId->value);
         self::assertSame('return-1', $organization->returns()->forOrder($orderId, new ReturnListOptions(['ACCEPTED']))->data->items[0]->id->value);
         self::assertSame('return-1', $organization->returns()->list()->data->items[0]->id->value);
         self::assertSame('return-1', $organization->returns()->get($returnId)->data->id->value);
@@ -86,12 +82,12 @@ final class PhaseSevenResourcesTest extends TestCase
         self::assertSame('Return rejected', $organization->returns()->reject($returnId)->data->message);
         self::assertSame('Parcel locker', $sdk->orders()->deliveryMethods()->data[0]->name);
 
-        self::assertCount(20, $http->requests());
-        self::assertStringContainsString('paymentStatus%5B0%5D=PAID', (string) $http->requestAt(3)->getUri());
-        self::assertStringContainsString('updatedAtGte=2026-08-04T20%3A00%3A00%2B00%3A00', (string) $http->requestAt(3)->getUri());
-        self::assertSame('/inpsa/v1/organizations/organization%2F1/orders/order%2F1/refund', $http->requestAt(12)->getUri()->getPath());
-        self::assertSame(['amount' => ['amount' => 12.34, 'currency' => 'PLN']], json_decode((string) $http->requestAt(12)->getBody(), true, 512, JSON_THROW_ON_ERROR));
-        self::assertSame('/inpsa/v2/orders/delivery-methods', $http->requestAt(19)->getUri()->getPath());
+        self::assertCount(18, $http->requests());
+        self::assertStringContainsString('paymentStatus%5B0%5D=PAID', (string) $http->requestAt(2)->getUri());
+        self::assertStringContainsString('updatedAtGte=2026-08-04T20%3A00%3A00%2B00%3A00', (string) $http->requestAt(2)->getUri());
+        self::assertSame('/inpsa/v1/organizations/organization%2F1/orders/order%2F1/refund', $http->requestAt(11)->getUri()->getPath());
+        self::assertSame(['amount' => ['amount' => 12.34, 'currency' => 'PLN']], json_decode((string) $http->requestAt(11)->getBody(), true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame('/inpsa/v2/orders/delivery-methods', $http->requestAt(17)->getUri()->getPath());
     }
 
     /** @return array<string, mixed> */

@@ -26,8 +26,6 @@ const DOCUMENTATION_OPERATION_PAGES = [
     'claims/refund.md',
     'claims/reject.md',
     'claims/types.md',
-    'deprecated/delivery-methods.md',
-    'deprecated/refuse-order.md',
     'offers/close.md',
     'offers/command.md',
     'offers/create-batch.md',
@@ -187,8 +185,8 @@ function documentationCheckLocaleCoverage(string $projectRoot, array &$errors): 
         foreach (array_diff($actual, $expected) as $unexpected) {
             $errors[] = sprintf('Unexpected %s operation reference page: docs/%s/reference/%s', $locale, $locale, $unexpected);
         }
-        if (count($actual) !== 42) {
-            $errors[] = sprintf('Expected exactly 42 %s operation reference pages, found %d.', $locale, count($actual));
+        if (count($actual) !== 40) {
+            $errors[] = sprintf('Expected exactly 40 %s operation reference pages, found %d.', $locale, count($actual));
         }
     }
 }

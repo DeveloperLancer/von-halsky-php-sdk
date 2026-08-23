@@ -12,7 +12,6 @@ use DevLancer\VonHalsky\Http\SymfonyHttpClientFactory;
 use DevLancer\VonHalsky\Resource\AttachmentsResource;
 use DevLancer\VonHalsky\Resource\CategoriesResource;
 use DevLancer\VonHalsky\Resource\ClaimsResource;
-use DevLancer\VonHalsky\Resource\DeprecatedResource;
 use DevLancer\VonHalsky\Resource\OffersResource;
 use DevLancer\VonHalsky\Resource\OrdersResource;
 use DevLancer\VonHalsky\Resource\OrganizationsResource;
@@ -79,12 +78,6 @@ final class VonHalskyClient
         return new ClaimsResource($this->executor);
     }
 
-    /** Explicitly isolated operations deprecated by the supported API contract. */
-    public function deprecated(): DeprecatedResource
-    {
-        return new DeprecatedResource($this->executor);
-    }
-
     /** @internal Used by the immutable organization context. */
     public function offersForOrganization(OrganizationId $organizationId): OffersResource
     {
@@ -113,12 +106,6 @@ final class VonHalskyClient
     public function claimsForOrganization(OrganizationId $organizationId): ClaimsResource
     {
         return new ClaimsResource($this->executor, $organizationId);
-    }
-
-    /** @internal Used by the immutable organization context. */
-    public function deprecatedForOrganization(OrganizationId $organizationId): DeprecatedResource
-    {
-        return new DeprecatedResource($this->executor, $organizationId);
     }
 
     public function forOrganization(OrganizationId $organizationId): OrganizationContext

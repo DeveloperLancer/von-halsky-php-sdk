@@ -24,7 +24,7 @@ use DevLancer\VonHalsky\ValueObject\CommandId;
 use DevLancer\VonHalsky\ValueObject\OrderId;
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
 
-/** Current order operations. Deprecated v1 operations live in DeprecatedResource. */
+/** Current order operations. */
 final class OrdersResource
 {
     public function __construct(
