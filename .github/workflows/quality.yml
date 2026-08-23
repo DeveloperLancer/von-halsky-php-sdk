@@ -118,7 +118,7 @@ jobs:
                   coverage: none
                   tools: composer:v2
             - name: Resolve lowest stable dependencies
-              run: composer update --prefer-lowest --prefer-stable --no-progress
+              run: composer update --prefer-lowest --prefer-stable --no-plugins --no-progress
             - name: Audit resolved dependencies
               run: composer audit
             - name: Run offline quality gate
@@ -151,7 +151,7 @@ jobs:
               run: |
                   composer config platform.php "$(php -r 'echo PHP_VERSION;')"
                   composer require "symfony/http-client:${{ matrix.symfony }}" --no-update
-                  composer update symfony/http-client --with-all-dependencies --no-progress
+                  composer update --with-all-dependencies --no-progress
             - name: Run HTTP unit tests
               run: vendor/bin/phpunit --testsuite unit
 
