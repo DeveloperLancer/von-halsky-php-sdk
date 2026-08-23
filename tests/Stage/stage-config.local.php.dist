@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'client_id' => '',
+    'client_secret' => '',
+    'organization_id' => '', // Optional: required only when the token can access multiple Stage organizations.
+    'leaf_category_id' => '', // Optional: overrides automatic selection of a compatible leaf category.
+    'product_ean' => '',
+    'command_timeout_seconds' => 60,
+    'poll_interval_milliseconds' => 1000,
+];

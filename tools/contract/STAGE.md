@@ -13,16 +13,17 @@ Use a protected GitHub Environment named `stage`. Configure only the variables r
 - `VON_HALSKY_STAGE_ORGANIZATION_ID`
 - `VON_HALSKY_STAGE_LEAF_CATEGORY_ID`
 - `VON_HALSKY_STAGE_PRODUCT_EAN`
-- `VON_HALSKY_STAGE_ALLOW_WRITES`, defaulting to `0`
+- `VON_HALSKY_STAGE_COMMAND_TIMEOUT_SECONDS`, optionally
+- `VON_HALSKY_STAGE_POLL_INTERVAL_MILLISECONDS`, optionally
 
-Never store values in repository files, workflow logs, test output, fixtures, or recorded HTTP traffic. Stage tests must reject the production API hostname and must remain in the PHPUnit `stage` group, which is excluded from the default test suite.
+For local execution, copy `tests/Stage/stage-config.local.php.dist` to the Git-ignored `tests/Stage/stage-config.local.php`. Environment variables override the local values. Never store values in tracked repository files, workflow logs, test output, fixtures, or recorded HTTP traffic. Stage tests must reject the production API hostname and must remain in the PHPUnit `stage` group, which is excluded from the default test suite.
 
 ## Grant and rotation
 
 1. Create credentials scoped to the dedicated Stage organization and the smallest usable permissions.
 2. Add values to the protected `stage` environment through GitHub repository settings; require reviewer approval for workflows using it.
 3. Record the grant date and responsible maintainer outside the repository without copying secret values.
-4. Execute read-only checks first. Enable writes for an approved run only by setting `VON_HALSKY_STAGE_ALLOW_WRITES=1` for that run.
+4. Execute read-only checks first. Treat invoking `composer test-stage` as explicit approval for the suite to create, update, and close a synthetic Stage offer.
 5. Rotate credentials after maintainer access changes, suspected disclosure, or the agreed lifetime. Revoke the old credential after confirming the replacement works.
 6. Remove secrets when Stage verification is complete or paused for an extended period.
 

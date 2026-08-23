@@ -3,3 +3,4 @@
 /var/
 /build
 /vendor
+/tests/Stage/stage-config.local.php

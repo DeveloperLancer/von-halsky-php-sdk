@@ -16,7 +16,8 @@
             "VON_HALSKY_STAGE_ORGANIZATION_ID",
             "VON_HALSKY_STAGE_LEAF_CATEGORY_ID",
             "VON_HALSKY_STAGE_PRODUCT_EAN",
-            "VON_HALSKY_STAGE_ALLOW_WRITES"
+            "VON_HALSKY_STAGE_COMMAND_TIMEOUT_SECONDS",
+            "VON_HALSKY_STAGE_POLL_INTERVAL_MILLISECONDS"
         ],
         "safeguards": {
             "defaultAllowWrites": false,
