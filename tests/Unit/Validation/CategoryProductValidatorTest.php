@@ -134,6 +134,55 @@ final class CategoryProductValidatorTest extends TestCase
         ], self::codes($result->errors()));
     }
 
+    public function testValidatesKnownValueTypes(): void
+    {
+        $validator = $this->validator([
+            $this->definition('text', AttributeExpectedValue::ANY, AttributeType::TEXT_VALUE),
+            $this->definition('long-text', AttributeExpectedValue::ANY, AttributeType::LONG_TEXT_VALUE),
+            $this->definition('integer', AttributeExpectedValue::ANY, AttributeType::NUMERIC),
+            $this->definition('decimal', AttributeExpectedValue::ANY, AttributeType::NUMERIC_FLOAT),
+            $this->definition('date', AttributeExpectedValue::ANY, AttributeType::DATE),
+            $this->definition('url', AttributeExpectedValue::ANY, AttributeType::URL),
+        ]);
+
+        $result = $validator->validate($this->product('category-1', [
+            new AttributeValue('text', ['any text']),
+            new AttributeValue('long-text', ['longer text']),
+            new AttributeValue('integer', ['-42']),
+            new AttributeValue('decimal', ['+3.14']),
+            new AttributeValue('date', ['2026-08-28']),
+            new AttributeValue('url', ['https://example.com/product']),
+        ]));
+
+        self::assertTrue($result->isValid());
+    }
+
+    public function testReportsEveryValueWithAnInvalidKnownType(): void
+    {
+        $validator = $this->validator([
+            $this->definition('integer', AttributeExpectedValue::ANY, AttributeType::NUMERIC),
+            $this->definition('decimal', AttributeExpectedValue::ANY, AttributeType::NUMERIC_FLOAT),
+            $this->definition('date', AttributeExpectedValue::ANY, AttributeType::DATE),
+            $this->definition('url', AttributeExpectedValue::ANY, AttributeType::URL),
+        ]);
+
+        $result = $validator->validate($this->product('category-1', [
+            new AttributeValue('integer', ['1.5']),
+            new AttributeValue('decimal', ['1,5']),
+            new AttributeValue('date', ['2026-02-30']),
+            new AttributeValue('url', ['ftp://example.com/product']),
+        ]));
+
+        self::assertFalse($result->isValid());
+        self::assertSame([
+            CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+            CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+            CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+            CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+        ], self::codes($result->errors()));
+        self::assertSame('Product.attributes[3].values[0]', $result->errors()[3]->fieldPath);
+    }
+
     public function testUnknownDefinitionMetadataProducesNonBlockingWarnings(): void
     {
         $validator = $this->validator([

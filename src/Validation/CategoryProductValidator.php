@@ -102,6 +102,7 @@ final class CategoryProductValidator
             }
 
             $this->validateCardinality($definition, $attribute, $fieldPath, $issues);
+            $this->validateValueTypes($definition, $attribute, $fieldPath, $issues);
             $this->validateDictionary($definition, $attribute, $fieldPath, $issues);
         }
 
@@ -234,6 +235,67 @@ final class CategoryProductValidator
                 $definition->name,
             );
         }
+    }
+
+    /** @param list<CategoryProductValidationIssue> $issues */
+    private function validateValueTypes(
+        AttributeDefinition $definition,
+        AttributeValue $attribute,
+        string $fieldPath,
+        array &$issues,
+    ): void {
+        foreach ($attribute->values as $index => $value) {
+            if (self::valueMatchesType($definition->type->value, $value)) {
+                continue;
+            }
+
+            $issues[] = self::issue(
+                CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+                CategoryProductValidationIssue::ERROR,
+                sprintf(
+                    'Value "%s" for attribute "%s" does not satisfy type "%s".',
+                    $value,
+                    $definition->name,
+                    $definition->type->value,
+                ),
+                sprintf('%s.values[%d]', $fieldPath, $index),
+                $definition->id,
+                $definition->name,
+            );
+        }
+    }
+
+    private static function valueMatchesType(string $type, string $value): bool
+    {
+        return match ($type) {
+            AttributeType::TEXT_VALUE, AttributeType::LONG_TEXT_VALUE, AttributeType::DICTIONARY => true,
+            AttributeType::NUMERIC => preg_match('/\A[+-]?\d+\z/D', $value) === 1,
+            AttributeType::NUMERIC_FLOAT => preg_match('/\A[+-]?(?:\d+(?:\.\d+)?|\.\d+)\z/D', $value) === 1,
+            AttributeType::DATE => self::isIsoDate($value),
+            AttributeType::URL => self::isHttpUrl($value),
+            default => true,
+        };
+    }
+
+    private static function isIsoDate(string $value): bool
+    {
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+        $errors = \DateTimeImmutable::getLastErrors();
+
+        return $date !== false
+            && ($errors === false || ($errors['warning_count'] === 0 && $errors['error_count'] === 0))
+            && $date->format('Y-m-d') === $value;
+    }
+
+    private static function isHttpUrl(string $value): bool
+    {
+        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+            return false;
+        }
+
+        $scheme = parse_url($value, PHP_URL_SCHEME);
+
+        return $scheme === 'http' || $scheme === 'https';
     }
 
     private static function issue(

@@ -62,7 +62,7 @@ $validator = new CategoryProductValidator($proposal->categoryId, $definitions);
 $validation = $validator->validate($proposal);
 ```
 
-Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory oraz aktywne wartości słownikowe. Nieznane przyszłe typy definicji powodują ostrzeżenia. Narzędzie celowo nie zgaduje formatów liczbowych, dat ani adresów URL, których metadane kategorii nie określają. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
+Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory, aktywne wartości słownikowe oraz znane typy wartości. `NUMERIC` przyjmuje liczby całkowite ze znakiem, `NUMERIC_FLOAT` liczby dziesiętne z kropką, `DATE` datę ISO `YYYY-MM-DD`, a `URL` bezwzględny adres HTTP lub HTTPS. Dla słownika przekazuj zlokalizowane `value` opcji zwrócone przez API, a nie ID opcji. Nieznane przyszłe typy definicji powodują ostrzeżenia. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
 
 ## Budowa poprawnej oferty
 

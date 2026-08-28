@@ -62,7 +62,7 @@ $validator = new CategoryProductValidator($proposal->categoryId, $definitions);
 $validation = $validator->validate($proposal);
 ```
 
-The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, and active dictionary values. Unknown future definition types produce warnings. It deliberately does not infer numeric, date, or URL string formats that are not specified by the category metadata. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
+The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. `NUMERIC` accepts signed integers, `NUMERIC_FLOAT` signed dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. Unknown future definition types produce warnings. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
 
 ## Build a valid offer
 

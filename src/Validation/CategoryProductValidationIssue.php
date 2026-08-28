@@ -15,6 +15,7 @@ final class CategoryProductValidationIssue
     public const ATTRIBUTE_CARDINALITY_INVALID = 'attribute_cardinality_invalid';
     public const ATTRIBUTE_DUPLICATED = 'attribute_duplicated';
     public const ATTRIBUTE_UNKNOWN = 'attribute_unknown';
+    public const ATTRIBUTE_TYPE_INVALID = 'attribute_type_invalid';
     public const DICTIONARY_VALUE_UNKNOWN = 'dictionary_value_unknown';
     public const DICTIONARY_VALUE_INACTIVE = 'dictionary_value_inactive';
     public const DICTIONARY_MISSING = 'dictionary_missing';
