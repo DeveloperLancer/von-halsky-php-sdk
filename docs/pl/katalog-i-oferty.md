@@ -68,24 +68,24 @@ Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórz
 
 Najważniejsze reguły formularza oferty sprawdzane lokalnie:
 
-| Wartość | Reguła SDK |
-| --- | --- |
-| Nazwa produktu | 7–150 znaków |
-| Opis | 100–100000 znaków |
-| Marka | 1–100 znaków |
-| Model i supermodel | Po 1–100 znaków, jeśli podano |
-| SKU | 1–250 znaków |
-| Grafiki oferty | 1–20 pozycji; nazwa pliku z rozszerzeniem `.jpg`, `.png` albo `.webp` |
-| Identyfikatory produktu | Co najmniej EAN albo numer katalogowy producenta |
-| Atrybuty produktu | Najwyżej 120 pozycji |
-| Stan magazynowy | 0–999999 |
-| Kwota brutto | `0.01`–`999999.99`, najwyżej dwa miejsca dziesiętne |
-| Opis stawki podatku | 1–100 znaków |
-| Dni do wysyłki | 0–60, jeśli podano |
-| Tworzenie grupowe | 1–500 ofert |
+| Wartość | Reguła SDK                                                                                                  |
+| --- |-------------------------------------------------------------------------------------------------------------|
+| Nazwa produktu | 7–150 znaków                                                                                                |
+| Opis | 100–100000 znaków                                                                                           |
+| Marka | 1–100 znaków                                                                                                |
+| Model i supermodel | Po 1–100 znaków, jeśli podano                                                                               |
+| SKU | 1–100 znaków                                                                                                |
+| Grafiki oferty | 1–20 pozycji; nazwa pliku z rozszerzeniem `.jpg`, `.png` albo `.webp`                                       |
+| Identyfikatory produktu | Co najmniej EAN albo numer katalogowy producenta                                                            |
+| Atrybuty produktu | Najwyżej 120 pozycji                                                                                        |
+| Stan magazynowy | 0–999999                                                                                                    |
+| Kwota brutto | `0.01`–`999999.99`, najwyżej dwa miejsca dziesiętne                                                         |
+| Opis stawki podatku | 1–100 znaków                                                                                                |
+| Dni do wysyłki | 0–60, jeśli podano                                                                                          |
+| Tworzenie grupowe | 1–500 ofert                                                                                                 |
 | GPSR producenta | Nazwa, e-mail i osoba odpowiedzialna: maks. 500; adres niestrukturalny: maks. 300; telefon: `+` i 3–15 cyfr |
-| Informacje GPSR | Informacja o bezpieczeństwie: maks. 100000; numer partii: maks. 500; oznaczenie CE: wartość logiczna |
-| Instrukcje GPSR | Najwyżej 20; tytuł 5–500, URL 9–2048 znaków |
+| Informacje GPSR | Informacja o bezpieczeństwie: maks. 100000; numer partii: maks. 500; oznaczenie CE: wartość logiczna        |
+| Instrukcje GPSR | Najwyżej 20; tytuł 5–500, URL 9–2048 znaków                                                                 |
 
 `GpsrInfo::required()` wymaga nazwy producenta, jego pełnego adresu oraz poprawnego adresu e-mail, a także niepustej informacji o bezpieczeństwie. `GpsrInfo::notRequired()` zapisuje jawne wyłączenie przewidziane przez kontrakt; nie używaj go wyłącznie w celu obejścia brakujących danych zgodności.
 
