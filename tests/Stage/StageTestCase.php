@@ -9,10 +9,7 @@ use DevLancer\VonHalsky\Auth\OAuthScope;
 use DevLancer\VonHalsky\Auth\StaticTokenProvider;
 use DevLancer\VonHalsky\Environment\Environment;
 use DevLancer\VonHalsky\Http\SymfonyHttpClientFactory;
-use DevLancer\VonHalsky\Model\Category\AttributeExpectedValue;
-use DevLancer\VonHalsky\Model\Category\Category;
 use DevLancer\VonHalsky\OrganizationContext;
-use DevLancer\VonHalsky\Request\CategoryTreeOptions;
 use DevLancer\VonHalsky\ValueObject\CategoryId;
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
 use DevLancer\VonHalsky\VonHalskyClient;
@@ -109,35 +106,7 @@ abstract class StageTestCase extends TestCase
             return self::$leafCategoryId = CategoryId::fromString($configured);
         }
 
-        $categories = $this->stageClient()->categories()->list(new CategoryTreeOptions(depth: 10))->data;
-        foreach (self::leaves($categories) as $category) {
-            if (!$category->doesNotRequireGpsrInfo) {
-                continue;
-            }
-            $attributes = $this->stageClient()->categories()->attributes($category->id)->data;
-            foreach ($attributes as $attribute) {
-                if (in_array($attribute->expectedValue->value, [AttributeExpectedValue::ONE, AttributeExpectedValue::AT_LEAST_ONE], true)) {
-                    continue 2;
-                }
-            }
-
-            return self::$leafCategoryId = $category->id;
-        }
-
-        throw new LogicException('Stage tests could not find a leaf category without mandatory attributes; configure leaf_category_id explicitly.');
-    }
-
-    /** @param list<Category> $categories
-     *  @return iterable<Category>
-     */
-    private static function leaves(array $categories): iterable
-    {
-        foreach ($categories as $category) {
-            if ($category->leaf) {
-                yield $category;
-            }
-            yield from self::leaves($category->children);
-        }
+        throw new LogicException('Stage offer tests require leaf_category_id to prevent mixing product hints with a different category.');
     }
 
     private static function assertStageEnvironment(Environment $environment): void

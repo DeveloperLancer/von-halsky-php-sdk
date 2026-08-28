@@ -44,7 +44,10 @@ final class RequestNormalizer
             return $this->normalizeValue($value->value(), $path);
         }
         if ($value instanceof Money) {
-            return $value->minorUnits() / 100.0;
+            return [
+                'amount' => $value->minorUnits() / 100.0,
+                'currency' => $value->currency->value,
+            ];
         }
         if ($value instanceof Identifier || $value instanceof Ean || $value instanceof ManufacturerProductNumber) {
             return (string) $value;

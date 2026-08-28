@@ -6,7 +6,7 @@ namespace DevLancer\VonHalsky\Validation;
 
 use DevLancer\VonHalsky\Exception\InvalidRequestException;
 
-/** Shared validation rules confirmed by the supported API 1.6 metadata. */
+/** Shared request-validation rules. */
 final class RequestValidator
 {
     public static function integerRange(int $value, int $minimum, int $maximum, string $fieldPath): void
@@ -38,7 +38,17 @@ final class RequestValidator
     /** @param array<mixed> $images */
     public static function offerImages(array $images, string $fieldPath = 'Offer.images'): void
     {
-        self::itemLimit($images, 20, $fieldPath);
+        $count = count($images);
+        if ($count < 1 || $count > 20) {
+            throw new InvalidRequestException($fieldPath, 'must contain between 1 and 20 items');
+        }
+    }
+
+    public static function offerImageFileName(string $fileName, string $fieldPath = 'Offer.images.fileName'): void
+    {
+        if (preg_match('/\.(?:jpg|png|webp)\z/iD', $fileName) !== 1) {
+            throw new InvalidRequestException($fieldPath, 'must use a .jpg, .png, or .webp extension');
+        }
     }
 
     /** @param array<mixed> $manuals */

@@ -5,9 +5,10 @@ declare(strict_types=1);
 return [
     'client_id' => '',
     'client_secret' => '',
-    'organization_id' => '', // Optional: required only when the token can access multiple Stage organizations.
-    'leaf_category_id' => '', // Optional: overrides automatic selection of a compatible leaf category.
-    'product_ean' => '',
-    'command_timeout_seconds' => 60,
+    'organization_id' => '', // Required when the token cannot list Stage organizations; ask InPost for this ID.
+    'leaf_category_id' => '2ac6fee7-fe14-5c77-96c0-8b6ef4142768', // Dla dzieci > Artykuły szkolne > Plecaki, torby i akcesoria szkolne > Plecaki szkolne
+    'product_ean' => '5901137129488', // Head HD-241 w serduszka plecak szkolny; confirmed in the Stage product catalogue.
+    'offer_image_url' => 'https://placehold.co/1200x1200/png?text=Von%20Halsky%20Stage%20Test',
+    'command_timeout_seconds' => 180,
     'poll_interval_milliseconds' => 1000,
 ];

@@ -21,9 +21,7 @@ final class Address
     ) {
         RequestValidator::stringLength($street, 2, 255, 'Address.street');
         RequestValidator::stringLength($city, 2, 255, 'Address.city');
-        if ($postalCode === '') {
-            throw new InvalidRequestException('Address.postalCode', 'cannot be empty');
-        }
+        RequestValidator::stringLength($postalCode, 3, 10, 'Address.postalCode');
         if ($building !== null) {
             RequestValidator::stringLength($building, 0, 10, 'Address.building');
         }

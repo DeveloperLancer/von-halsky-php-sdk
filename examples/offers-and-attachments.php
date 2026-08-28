@@ -7,6 +7,7 @@ use DevLancer\VonHalsky\Auth\StaticTokenProvider;
 use DevLancer\VonHalsky\Environment\Environment;
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
+use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
 use DevLancer\VonHalsky\Model\Offer\Stock;
@@ -35,12 +36,19 @@ $client = VonHalskyClient::create(
 );
 $offers = $client->forOrganization(OrganizationId::fromString($organizationId))->offers();
 $accepted = $offers->create(new CreateOfferRequest(
-    new ProductProposal('SDK example', 'Temporary Stage offer.', 'SDK', CategoryId::fromString($categoryId), new Ean($ean)),
+    new ProductProposal(
+        'SDK example product',
+        'This synthetic Stage offer exists only to demonstrate the SDK and is not intended for sale or order fulfilment.',
+        'SDK',
+        CategoryId::fromString($categoryId),
+        new Ean($ean),
+    ),
     new Stock(1),
     new Price(Money::fromDecimal('9.99'), '23%'),
     GpsrInfo::notRequired(),
     'sdk-example-' . bin2hex(random_bytes(8)),
     1,
+    [new OfferImage('sdk-example.png', 'https://placehold.co/1200x1200/png?text=SDK+example', 1)],
 ));
 
 $command = $offers->command($accepted->data->commandId)->data;

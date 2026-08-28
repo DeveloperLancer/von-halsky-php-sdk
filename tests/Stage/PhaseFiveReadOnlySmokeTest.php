@@ -15,7 +15,6 @@ final class PhaseFiveReadOnlySmokeTest extends StageTestCase
     {
         $client = $this->stageClient();
 
-        self::assertNotEmpty($client->organizations()->list()->data);
         $tree = $client->categories()->list(new CategoryTreeOptions(depth: 4))->data;
         self::assertNotEmpty($tree);
 

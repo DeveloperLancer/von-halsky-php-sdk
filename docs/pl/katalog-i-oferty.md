@@ -21,25 +21,73 @@ $categories = $client->categories()->list(
 
 Przekazanie pobranego obiektu `Category` do `ProductProposal` uruchamia `Category::requireLeaf()` i lokalnie odrzuca znany obiekt, który nie jest `leaf category`. Sam `CategoryId` nie pozwala tego stwierdzić, dlatego SDK ufa wywołującemu, a serwer pozostaje źródłem rozstrzygającym. Przy tworzeniu produktu preferuj świeżo pobraną kategorię. Nieznane wartości wyliczeń odpowiedzi są zachowywane; opisuje to przewodnik [odpowiedzi i błędy](./odpowiedzi-i-bledy.md).
 
+## Jawna walidacja wymagań kategorii
+
+Walidacja zależna od kategorii jest opcjonalna. `productValidator()` wykonuje jedno żądanie definicji atrybutów i zwraca walidator skonfigurowany dla tej kategorii. Wywołanie `validate()` nie wykonuje żądań HTTP i zwraca wszystkie wykryte błędy oraz ostrzeżenia zamiast rzucać wyjątek dla problemów z danymi produktu:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Request\ResponseLanguage;
+
+/** @var \DevLancer\VonHalsky\VonHalskyClient $client */
+/** @var \DevLancer\VonHalsky\Model\Offer\ProductProposal $proposal */
+$validatorResponse = $client->categories()->productValidator(
+    $proposal->categoryId,
+    ResponseLanguage::POLISH,
+);
+$validation = $validatorResponse->data->validate($proposal);
+
+if (!$validation->isValid()) {
+    foreach ($validation->errors() as $error) {
+        // Pokaż $error->fieldPath i $error->message przed wysłaniem oferty.
+    }
+}
+```
+
+Jeśli aplikacja ma już aktualne albo zapisane w pamięci podręcznej definicje, może utworzyć ten sam walidator bez kolejnego żądania:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Validation\CategoryProductValidator;
+
+/** @var list<\DevLancer\VonHalsky\Model\Category\AttributeDefinition> $definitions */
+/** @var \DevLancer\VonHalsky\Model\Offer\ProductProposal $proposal */
+$validator = new CategoryProductValidator($proposal->categoryId, $definitions);
+$validation = $validator->validate($proposal);
+```
+
+Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory oraz aktywne wartości słownikowe. Nieznane przyszłe typy definicji powodują ostrzeżenia. Narzędzie celowo nie zgaduje formatów liczbowych, dat ani adresów URL, których metadane kategorii nie określają. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
+
 ## Budowa poprawnej oferty
 
-Najważniejsze ograniczenia sprawdzane lokalnie:
+Najważniejsze reguły formularza oferty sprawdzane lokalnie:
 
-| Wartość | Potwierdzone ograniczenie SDK |
+| Wartość | Reguła SDK |
 | --- | --- |
-| Nazwa produktu | 1–150 znaków |
-| Opis | 1–100000 znaków |
+| Nazwa produktu | 7–150 znaków |
+| Opis | 100–100000 znaków |
 | Marka | 1–100 znaków |
+| Model i supermodel | Po 1–100 znaków, jeśli podano |
+| SKU | 1–250 znaków |
+| Grafiki oferty | 1–20 pozycji; nazwa pliku z rozszerzeniem `.jpg`, `.png` albo `.webp` |
 | Identyfikatory produktu | Co najmniej EAN albo numer katalogowy producenta |
-| Atrybuty produktu | Najwyżej 20 pozycji |
+| Atrybuty produktu | Najwyżej 120 pozycji |
 | Stan magazynowy | 0–999999 |
 | Kwota brutto | `0.01`–`999999.99`, najwyżej dwa miejsca dziesiętne |
 | Opis stawki podatku | 1–100 znaków |
 | Dni do wysyłki | 0–60, jeśli podano |
 | Tworzenie grupowe | 1–500 ofert |
+| GPSR producenta | Nazwa, e-mail i osoba odpowiedzialna: maks. 500; adres niestrukturalny: maks. 300; telefon: `+` i 3–15 cyfr |
+| Informacje GPSR | Informacja o bezpieczeństwie: maks. 100000; numer partii: maks. 500; oznaczenie CE: wartość logiczna |
 | Instrukcje GPSR | Najwyżej 20; tytuł 5–500, URL 9–2048 znaków |
 
-`GpsrInfo::required()` sprawdza również niepustą nazwę producenta, poprawny adres e-mail producenta i niepustą informację o bezpieczeństwie. `GpsrInfo::notRequired()` zapisuje jawne wyłączenie przewidziane przez kontrakt; nie używaj go wyłącznie w celu obejścia brakujących danych zgodności.
+`GpsrInfo::required()` wymaga nazwy producenta, jego pełnego adresu oraz poprawnego adresu e-mail, a także niepustej informacji o bezpieczeństwie. `GpsrInfo::notRequired()` zapisuje jawne wyłączenie przewidziane przez kontrakt; nie używaj go wyłącznie w celu obejścia brakujących danych zgodności.
 
 ```php
 <?php
@@ -48,26 +96,37 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
+use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
 use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\ValueObject\Ean;
+use DevLancer\VonHalsky\ValueObject\Address;
+use DevLancer\VonHalsky\ValueObject\CountryCode;
 use DevLancer\VonHalsky\ValueObject\Money;
+use DevLancer\VonHalsky\ValueObject\Sku;
 
 /** @var \DevLancer\VonHalsky\Model\Category\Category $leafCategory */
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
 $response = $shop->offers()->create(new CreateOfferRequest(
     product: new ProductProposal(
         name: 'Example product',
-        description: 'A safe example description.',
+        description: 'This example product description is longer than one hundred characters, so it meets the local offer-form requirement.',
         brand: 'Example',
         categoryId: $leafCategory,
         ean: new Ean('5901234123457'),
+        sku: new Sku('EXAMPLE-001'),
     ),
     stock: new Stock(10),
     price: new Price(Money::fromDecimal('49.90'), '23%'),
-    gpsr: GpsrInfo::notRequired(),
+    gpsr: GpsrInfo::required(
+        'Example manufacturer',
+        new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
+        'manufacturer@example.com',
+        'Keep this product away from children.',
+    ),
     daysToShip: 2,
+    images: [new OfferImage('example-product.webp', 'https://example.com/example-product.webp', 1)],
 ));
 
 $commandId = $response->data->commandId;

@@ -16,12 +16,15 @@ use DevLancer\VonHalsky\Exception\NotFoundException;
 use DevLancer\VonHalsky\Exception\ResponseMappingException;
 use DevLancer\VonHalsky\Http\HttpClientDependencies;
 use DevLancer\VonHalsky\Model\Category\AttributeType;
+use DevLancer\VonHalsky\Model\Offer\AttributeValue;
+use DevLancer\VonHalsky\Model\Offer\ProductProposal;
 use DevLancer\VonHalsky\Request\CategoryDetailsOptions;
 use DevLancer\VonHalsky\Request\CategoryTreeOptions;
 use DevLancer\VonHalsky\Request\OrganizationListOptions;
 use DevLancer\VonHalsky\Request\ResponseLanguage;
 use DevLancer\VonHalsky\Tests\Support\FakeHttpClient;
 use DevLancer\VonHalsky\ValueObject\CategoryId;
+use DevLancer\VonHalsky\ValueObject\Ean;
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
 use DevLancer\VonHalsky\VonHalskyClient;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -143,6 +146,41 @@ final class PhaseFiveResourcesTest extends TestCase
         self::assertSame('First', $attribute->dictionary?->options[0]->value);
     }
 
+    public function testBuildsProductValidatorFromOneAttributeRequest(): void
+    {
+        [$sdk, $http] = $this->client($this->jsonResponse([[
+            'id' => 'attribute-1',
+            'name' => 'Required attribute',
+            'type' => 'TEXT_VALUE',
+            'expectedValue' => 'ONE',
+        ]], 200, [
+            'X-Correlation-ID' => 'validator-correlation',
+        ]));
+
+        $response = $sdk->categories()->productValidator(
+            CategoryId::fromString('leaf/1'),
+            ResponseLanguage::POLISH,
+        );
+        $result = $response->data->validate(new ProductProposal(
+            'Product name',
+            str_repeat('Long product description. ', 5),
+            'Brand',
+            CategoryId::fromString('leaf/1'),
+            new Ean('5901234123457'),
+            attributes: [new AttributeValue('attribute-1', ['value'], 'pl')],
+        ));
+
+        self::assertTrue($result->isValid());
+        self::assertCount(1, $http->requests());
+        self::assertSame(
+            'https://stage-api.inpost-group.com/inpsa/v1/categories/leaf%2F1/attributes',
+            (string) $http->requestAt(0)->getUri(),
+        );
+        self::assertSame('pl', $http->requestAt(0)->getHeaderLine('Accept-Language'));
+        self::assertSame(200, $response->statusCode);
+        self::assertSame('validator-correlation', $response->correlationId);
+    }
+
     /** @param class-string<ApiException> $exception */
     #[DataProvider('endpointErrorProvider')]
     public function testEveryEndpointMapsApiErrors(string $endpoint, int $status, string $exception): void
@@ -155,6 +193,7 @@ final class PhaseFiveResourcesTest extends TestCase
             'categories' => $sdk->categories()->list(),
             'category' => $sdk->categories()->get(CategoryId::fromString('category-1')),
             'attributes' => $sdk->categories()->attributes(CategoryId::fromString('category-1')),
+            'validator' => $sdk->categories()->productValidator(CategoryId::fromString('category-1')),
             default => throw new \LogicException('Unknown endpoint fixture.'),
         };
     }
@@ -162,14 +201,14 @@ final class PhaseFiveResourcesTest extends TestCase
     /** @return iterable<string, array{string, int, class-string<ApiException>}> */
     public static function endpointErrorProvider(): iterable
     {
-        foreach (['organizations', 'categories', 'category', 'attributes'] as $endpoint) {
+        foreach (['organizations', 'categories', 'category', 'attributes', 'validator'] as $endpoint) {
             yield $endpoint . ' 401' => [$endpoint, 401, AuthenticationException::class];
             yield $endpoint . ' 403' => [$endpoint, 403, AuthorizationException::class];
             yield $endpoint . ' 404' => [$endpoint, 404, NotFoundException::class];
         }
     }
 
-    /** @param 'organizations'|'categories'|'category'|'attributes' $endpoint */
+    /** @param 'organizations'|'categories'|'category'|'attributes'|'validator' $endpoint */
     #[DataProvider('endpointProvider')]
     public function testEveryEndpointRejectsMalformedResponse(string $endpoint): void
     {
@@ -181,16 +220,18 @@ final class PhaseFiveResourcesTest extends TestCase
             'categories' => $sdk->categories()->list(),
             'category' => $sdk->categories()->get(CategoryId::fromString('category-1')),
             'attributes' => $sdk->categories()->attributes(CategoryId::fromString('category-1')),
+            'validator' => $sdk->categories()->productValidator(CategoryId::fromString('category-1')),
         };
     }
 
-    /** @return iterable<string, array{'organizations'|'categories'|'category'|'attributes'}> */
+    /** @return iterable<string, array{'organizations'|'categories'|'category'|'attributes'|'validator'}> */
     public static function endpointProvider(): iterable
     {
         yield 'organizations' => ['organizations'];
         yield 'categories' => ['categories'];
         yield 'category' => ['category'];
         yield 'attributes' => ['attributes'];
+        yield 'validator' => ['validator'];
     }
 
     public function testDepthBoundariesFollowOfficialContract(): void

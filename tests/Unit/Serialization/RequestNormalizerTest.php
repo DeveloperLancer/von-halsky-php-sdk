@@ -33,7 +33,7 @@ final class RequestNormalizerTest extends TestCase
             'cleared' => null,
             'title' => 'New title',
             'id' => 'offer-1',
-            'price' => 10.0,
+            'price' => ['amount' => 10.0, 'currency' => 'PLN'],
         ], (new RequestNormalizer())->normalize($dto));
     }
 }

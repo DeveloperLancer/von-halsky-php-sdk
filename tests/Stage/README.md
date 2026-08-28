@@ -14,17 +14,18 @@ declare(strict_types=1);
 return [
     'client_id' => 'stage-client-id',
     'client_secret' => 'stage-client-secret',
-    'organization_id' => '', // Optional: needed only for a token with multiple organizations.
-    'leaf_category_id' => '', // Optional: overrides automatic compatible-category selection.
-    'product_ean' => '5901234123457',
-    'command_timeout_seconds' => 60,
+    'organization_id' => '', // Required when the token cannot list organizations.
+    'leaf_category_id' => '2ac6fee7-fe14-5c77-96c0-8b6ef4142768', // Dla dzieci > Artykuły szkolne > Plecaki, torby i akcesoria szkolne > Plecaki szkolne
+    'product_ean' => '5901137129488', // Head HD-241 w serduszka plecak szkolny; confirmed in the Stage product catalogue.
+    'offer_image_url' => 'https://placehold.co/1200x1200/png?text=Von%20Halsky%20Stage%20Test',
+    'command_timeout_seconds' => 180,
     'poll_interval_milliseconds' => 1000,
 ];
 ```
 
 The local file is ignored by Git. Never commit it, print it, or paste its contents into test output.
 
-The suite chooses the only organization available to the token and a leaf category without mandatory attributes. If the token has multiple organizations or no compatible category is found, configure the optional IDs explicitly. CI may provide the equivalent `VON_HALSKY_STAGE_CLIENT_ID`, `VON_HALSKY_STAGE_CLIENT_SECRET`, `VON_HALSKY_STAGE_ORGANIZATION_ID`, `VON_HALSKY_STAGE_LEAF_CATEGORY_ID`, and `VON_HALSKY_STAGE_PRODUCT_EAN` environment variables. Environment variables override local values. The polling settings can be overridden with `VON_HALSKY_STAGE_COMMAND_TIMEOUT_SECONDS` and `VON_HALSKY_STAGE_POLL_INTERVAL_MILLISECONDS`.
+The suite selects the only organization available to a token that is allowed to list organizations; otherwise configure `organization_id`. `leaf_category_id` is mandatory. The distributed fixture uses Stage EAN `5901137129488` (Head HD-241) and the Stage category `Plecaki szkolne`. Before creating an offer, the test verifies that the product hint has exactly this category ID. Product identity and descriptive data come from the hint, while required attribute IDs always come from the current category definitions because Stage hints can contain stale attribute IDs. The description is extended to the Stage business minimum of 100 characters, and the offer includes one publicly reachable test image. CI may provide the equivalent `VON_HALSKY_STAGE_CLIENT_ID`, `VON_HALSKY_STAGE_CLIENT_SECRET`, `VON_HALSKY_STAGE_ORGANIZATION_ID`, `VON_HALSKY_STAGE_LEAF_CATEGORY_ID`, `VON_HALSKY_STAGE_PRODUCT_EAN`, and `VON_HALSKY_STAGE_OFFER_IMAGE_URL` environment variables. Environment variables override local values. The polling settings can be overridden with `VON_HALSKY_STAGE_COMMAND_TIMEOUT_SECONDS` and `VON_HALSKY_STAGE_POLL_INTERVAL_MILLISECONDS`.
 
 ## Run
 

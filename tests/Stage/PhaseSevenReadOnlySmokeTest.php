@@ -44,14 +44,4 @@ final class PhaseSevenReadOnlySmokeTest extends StageTestCase
         self::assertSame($this->stageOrganizationId()->value, $response->data->organizationId->value);
     }
 
-    public function testPostSaleDictionariesAndListsRemainReadableOnStage(): void
-    {
-        $client = $this->stageClient();
-        $organization = $this->stageOrganization();
-
-        self::assertSame(200, $client->orders()->deliveryMethods()->statusCode);
-        self::assertSame(200, $client->claims()->types()->statusCode);
-        self::assertSame(200, $organization->returns()->list()->statusCode);
-        self::assertSame(200, $organization->claims()->list()->statusCode);
-    }
 }

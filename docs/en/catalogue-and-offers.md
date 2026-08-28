@@ -21,25 +21,73 @@ $categories = $client->categories()->list(
 
 Passing a hydrated `Category` to `ProductProposal` invokes `Category::requireLeaf()` and rejects a known non-leaf locally. Passing only a `CategoryId` cannot prove leaf status, so the SDK trusts the caller and the server remains authoritative. Prefer a freshly fetched category when creating a product. Unknown response enum values are retained rather than discarded; see [responses and errors](./responses-and-errors.md).
 
+## Validate category requirements explicitly
+
+Category-dependent validation is opt-in. `productValidator()` performs one attribute-definition request and returns a validator configured for that category. Calling `validate()` performs no HTTP requests and returns every detected error and warning instead of throwing for product-data problems:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Request\ResponseLanguage;
+
+/** @var \DevLancer\VonHalsky\VonHalskyClient $client */
+/** @var \DevLancer\VonHalsky\Model\Offer\ProductProposal $proposal */
+$validatorResponse = $client->categories()->productValidator(
+    $proposal->categoryId,
+    ResponseLanguage::ENGLISH,
+);
+$validation = $validatorResponse->data->validate($proposal);
+
+if (!$validation->isValid()) {
+    foreach ($validation->errors() as $error) {
+        // Present $error->fieldPath and $error->message before submitting the offer.
+    }
+}
+```
+
+When the application already owns fresh or cached definitions, construct the same validator without another request:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Validation\CategoryProductValidator;
+
+/** @var list<\DevLancer\VonHalsky\Model\Category\AttributeDefinition> $definitions */
+/** @var \DevLancer\VonHalsky\Model\Offer\ProductProposal $proposal */
+$validator = new CategoryProductValidator($proposal->categoryId, $definitions);
+$validation = $validator->validate($proposal);
+```
+
+The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, and active dictionary values. Unknown future definition types produce warnings. It deliberately does not infer numeric, date, or URL string formats that are not specified by the category metadata. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
+
 ## Build a valid offer
 
-The most important locally enforced limits are:
+The most important locally enforced offer-form rules are:
 
-| Value | Confirmed SDK constraint |
-| --- | --- |
-| Product name | 1–150 characters |
-| Description | 1–100000 characters |
-| Brand | 1–100 characters |
-| Product identifiers | At least one of EAN or manufacturer product number |
-| Product attributes | At most 20 entries |
-| Stock | 0–999999 |
-| Gross money amount | `0.01`–`999999.99`, at most two decimal places |
-| Tax-rate description | 1–100 characters |
-| Days to ship | 0–60 when supplied |
-| Batch creation | 1–500 offers |
-| GPSR manuals | At most 20; each title 5–500 and URL 9–2048 characters |
+| Value | SDK rule                                                                                                        |
+| --- |-----------------------------------------------------------------------------------------------------------------|
+| Product name | 7–150 characters                                                                                                |
+| Description | 100–100000 characters                                                                                           |
+| Brand | 1–100 characters                                                                                                |
+| Model and supermodel | 1–100 characters each, when supplied                                                                            |
+| SKU | 1–100 characters                                                                                                |
+| Offer images | 1–20 entries; filename ending in `.jpg`, `.png`, or `.webp`                                                     |
+| Product identifiers | At least one of EAN or manufacturer product number                                                              |
+| Product attributes | At most 120 entries                                                                                             |
+| Stock | 0–999999                                                                                                        |
+| Gross money amount | `0.01`–`999999.99`, at most two decimal places                                                                  |
+| Tax-rate description | 1–100 characters                                                                                                |
+| Days to ship | 0–60 when supplied                                                                                              |
+| Batch creation | 1–500 offers                                                                                                    |
+| GPSR manufacturer | Name, email, and responsible person: at most 500; unstructured address: at most 300; phone: `+` and 3–15 digits |
+| GPSR information | Safety information: at most 100000; batch number: at most 500; CE marking: boolean                              |
+| GPSR manuals | At most 20; each title 5–500 and URL 9–2048 characters                                                          |
 
-`GpsrInfo::required()` additionally validates a non-empty manufacturer name, a valid manufacturer email, and non-empty safety information. `GpsrInfo::notRequired()` serializes the explicit contract exemption; do not use it merely to bypass missing compliance data.
+`GpsrInfo::required()` additionally requires a manufacturer name, full address, valid email, and non-empty safety information. `GpsrInfo::notRequired()` serializes the explicit contract exemption; do not use it merely to bypass missing compliance data.
 
 ```php
 <?php
@@ -48,26 +96,37 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
+use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
 use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\ValueObject\Ean;
+use DevLancer\VonHalsky\ValueObject\Address;
+use DevLancer\VonHalsky\ValueObject\CountryCode;
 use DevLancer\VonHalsky\ValueObject\Money;
+use DevLancer\VonHalsky\ValueObject\Sku;
 
 /** @var \DevLancer\VonHalsky\Model\Category\Category $leafCategory */
 /** @var \DevLancer\VonHalsky\OrganizationContext $shop */
 $result = $shop->offers()->create(new CreateOfferRequest(
     product: new ProductProposal(
         name: 'Example product',
-        description: 'A safe example description.',
+        description: 'This example product description is longer than one hundred characters, so it meets the local offer-form requirement.',
         brand: 'Example',
         categoryId: $leafCategory,
         ean: new Ean('5901234123457'),
+        sku: new Sku('EXAMPLE-001'),
     ),
     stock: new Stock(10),
     price: new Price(Money::fromDecimal('49.90'), '23%'),
-    gpsr: GpsrInfo::notRequired(),
+    gpsr: GpsrInfo::required(
+        'Example manufacturer',
+        new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
+        'manufacturer@example.com',
+        'Keep this product away from children.',
+    ),
     daysToShip: 2,
+    images: [new OfferImage('example-product.webp', 'https://example.com/example-product.webp', 1)],
 ));
 
 $commandId = $result->data->commandId;

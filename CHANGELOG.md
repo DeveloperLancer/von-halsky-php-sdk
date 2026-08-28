@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Explicit category product validation from caller-supplied or API-fetched attribute definitions.
+- Local official-offer-form validation for product name and description, SKU, offer images, and manufacturer GPSR address data.
+- `Sku` value object and typed manufacturer address support in `GpsrInfo::required()`.
 - Reproducible production and upcoming API contract baseline.
 - Dependency-free PHP 8.1 contract extraction, normalization, manifest, diff, and validation tools.
 - Composer library foundation with PHPUnit, PHPStan, PHP-CS-Fixer, and phpDocumentor.

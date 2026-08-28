@@ -14,6 +14,7 @@ final class StageTestConfig
         'organization_id' => 'VON_HALSKY_STAGE_ORGANIZATION_ID',
         'leaf_category_id' => 'VON_HALSKY_STAGE_LEAF_CATEGORY_ID',
         'product_ean' => 'VON_HALSKY_STAGE_PRODUCT_EAN',
+        'offer_image_url' => 'VON_HALSKY_STAGE_OFFER_IMAGE_URL',
         'command_timeout_seconds' => 'VON_HALSKY_STAGE_COMMAND_TIMEOUT_SECONDS',
         'poll_interval_milliseconds' => 'VON_HALSKY_STAGE_POLL_INTERVAL_MILLISECONDS',
     ];
@@ -24,6 +25,7 @@ final class StageTestConfig
         public readonly ?string $organizationId,
         public readonly ?string $leafCategoryId,
         public readonly string $productEan,
+        public readonly string $offerImageUrl,
         public readonly int $commandTimeoutSeconds,
         public readonly int $pollIntervalMilliseconds,
     ) {
@@ -60,7 +62,9 @@ final class StageTestConfig
         $organizationId = self::optionalString($values, 'organization_id');
         $leafCategoryId = self::optionalString($values, 'leaf_category_id');
         $productEan = self::requiredString($values, 'product_ean');
-        $commandTimeoutSeconds = self::integer($values, 'command_timeout_seconds', 60, 1, 300);
+        $offerImageUrl = self::optionalString($values, 'offer_image_url')
+            ?? 'https://placehold.co/1200x1200/png?text=Von%20Halsky%20Stage%20Test';
+        $commandTimeoutSeconds = self::integer($values, 'command_timeout_seconds', 180, 1, 300);
         $pollIntervalMilliseconds = self::integer($values, 'poll_interval_milliseconds', 1000, 100, 5000);
         if ($pollIntervalMilliseconds > $commandTimeoutSeconds * 1000) {
             throw new RuntimeException('poll_interval_milliseconds cannot exceed command_timeout_seconds.');
@@ -72,6 +76,7 @@ final class StageTestConfig
             $organizationId,
             $leafCategoryId,
             $productEan,
+            $offerImageUrl,
             $commandTimeoutSeconds,
             $pollIntervalMilliseconds,
         );

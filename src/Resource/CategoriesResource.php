@@ -14,9 +14,11 @@ use DevLancer\VonHalsky\Request\CategoryDetailsOptions;
 use DevLancer\VonHalsky\Request\CategoryTreeOptions;
 use DevLancer\VonHalsky\Request\ResponseLanguage;
 use DevLancer\VonHalsky\Serialization\JsonResponseDecoder;
+use DevLancer\VonHalsky\Validation\CategoryProductValidator;
 use DevLancer\VonHalsky\ValueObject\CategoryId;
+use Psr\Http\Message\ResponseInterface;
 
-/** Read-only access to category trees, details, and attribute definitions. */
+/** Read-only access to category data and explicitly configured local product validators. */
 final class CategoriesResource
 {
     public function __construct(
@@ -80,17 +82,39 @@ final class CategoriesResource
      */
     public function attributes(CategoryId $categoryId, ?ResponseLanguage $language = null): ApiResponse
     {
+        [$data, $response] = $this->attributeDefinitions($categoryId, $language);
+
+        return ApiResponse::fromResponse($data, $response);
+    }
+
+    /**
+     * Builds an explicit local product validator from the current category definitions.
+     *
+     * Requires OAuth scope `api:categories:read`.
+     *
+     * @return ApiResponse<CategoryProductValidator>
+     */
+    public function productValidator(CategoryId $categoryId, ?ResponseLanguage $language = null): ApiResponse
+    {
+        [$definitions, $response] = $this->attributeDefinitions($categoryId, $language);
+
+        return ApiResponse::fromResponse(new CategoryProductValidator($categoryId, $definitions), $response);
+    }
+
+    /** @return array{list<AttributeDefinition>, ResponseInterface} */
+    private function attributeDefinitions(CategoryId $categoryId, ?ResponseLanguage $language): array
+    {
         $response = $this->executor->execute(
             'GET',
             self::path($categoryId) . '/attributes',
             [],
             self::languageHeader($language),
         );
-        $data = DomainResponseHydrator::attributes(
+        $definitions = DomainResponseHydrator::attributes(
             $this->decoder->decodeList($response, 'getCategoriesAttributesByCategoryIdV1'),
         );
 
-        return ApiResponse::fromResponse($data, $response);
+        return [$definitions, $response];
     }
 
     private static function path(CategoryId $categoryId): string

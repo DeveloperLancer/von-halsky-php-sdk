@@ -10,6 +10,7 @@ use DevLancer\VonHalsky\Validation\RequestValidator;
 /** Complete create-offer command payload. */
 final class CreateOfferRequest implements RequestDtoInterface
 {
+    /** @param list<OfferImage> $images */
     public function __construct(
         public readonly ProductProposal $product,
         public readonly Stock $stock,
@@ -17,10 +18,15 @@ final class CreateOfferRequest implements RequestDtoInterface
         public readonly ?GpsrInfo $gpsr = null,
         public readonly ?string $externalId = null,
         public readonly ?int $daysToShip = null,
+        public readonly array $images = [],
     ) {
+        if ($externalId !== null) {
+            RequestValidator::stringLength($externalId, 0, 255, 'Offer.externalId');
+        }
         if ($daysToShip !== null) {
             RequestValidator::integerRange($daysToShip, 0, 60, 'ShippingTime.daysToShip');
         }
+        RequestValidator::offerImages($images);
     }
 
     public function jsonSerialize(): array
@@ -32,6 +38,7 @@ final class CreateOfferRequest implements RequestDtoInterface
             'gpsr' => $this->gpsr,
             'externalId' => $this->externalId,
             'shippingTime' => $this->daysToShip === null ? null : ['daysToShip' => $this->daysToShip],
+            'images' => $this->images === [] ? null : $this->images,
         ], static fn (mixed $value): bool => $value !== null);
     }
 }

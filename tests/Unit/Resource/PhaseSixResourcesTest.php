@@ -15,6 +15,7 @@ use DevLancer\VonHalsky\Model\Offer\BatchCreateOffersRequest;
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
 use DevLancer\VonHalsky\Model\Offer\OfferAttributesPatch;
+use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\OfferPriceUpdate;
 use DevLancer\VonHalsky\Model\Offer\OfferStockUpdate;
 use DevLancer\VonHalsky\Model\Offer\PatchOfferRequest;
@@ -81,7 +82,11 @@ final class PhaseSixResourcesTest extends TestCase
         self::assertSame('price-command', $offers->updatePrices([new OfferPriceUpdate($offerId, Money::fromDecimal('12.50'))])->data[0]->commandId->value);
         self::assertSame('stock-command', $offers->updateStocks([new OfferStockUpdate($offerId, new Stock(5))])->data[0]->commandId->value);
         self::assertSame('offer-1', $offers->get($offerId)->data->id->value);
-        $offers->patch($offerId, new PatchOfferRequest(price: OptionalValue::null(), stock: OptionalValue::of(new Stock(2))));
+        $offers->patch($offerId, new PatchOfferRequest(
+            price: OptionalValue::null(),
+            stock: OptionalValue::of(new Stock(2)),
+            images: OptionalValue::of([new OfferImage('image.png', 'https://example.com/image.png', 1)]),
+        ));
         self::assertSame('attachment-1', $attachments->list($offerId)->data->items[0]->id->value);
 
         $factory = new Psr17Factory();
@@ -99,7 +104,11 @@ final class PhaseSixResourcesTest extends TestCase
         self::assertSame('https://stage-api.inpost-group.com/inpsa/v1/organizations/organization%2F1/offers/offer%2F1/attachments?attachmentType=MANUAL', (string) $http->requestAt(12)->getUri());
         self::assertStringContainsString('name="file"; filename="manual.pdf"', (string) $http->requestAt(12)->getBody());
         self::assertSame('application/merge-patch+json', $http->requestAt(10)->getHeaderLine('Content-Type'));
-        self::assertSame(['price' => null, 'stock' => ['quantity' => 2, 'unit' => 'UNIT']], json_decode((string) $http->requestAt(10)->getBody(), true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame([
+            'price' => null,
+            'stock' => ['quantity' => 2, 'unit' => 'UNIT'],
+            'images' => [['fileName' => 'image.png', 'fileUrl' => 'https://example.com/image.png', 'priority' => 1]],
+        ], json_decode((string) $http->requestAt(10)->getBody(), true, 512, JSON_THROW_ON_ERROR));
     }
 
     public function testBatchAndOfferValidationBoundaries(): void
@@ -115,12 +124,13 @@ final class PhaseSixResourcesTest extends TestCase
     private function createRequest(): CreateOfferRequest
     {
         return new CreateOfferRequest(
-            new ProductProposal('Product', 'Description', 'Brand', CategoryId::fromString('leaf-1'), new Ean('5901234123457')),
+            new ProductProposal('Product', str_repeat('Description ', 10), 'Brand', CategoryId::fromString('leaf-1'), new Ean('5901234123457')),
             new Stock(10),
             new Price(Money::fromDecimal('49.99'), '23%'),
             GpsrInfo::notRequired(),
             'external-1',
             2,
+            [new OfferImage('image.png', 'https://example.com/image.png', 1)],
         );
     }
 

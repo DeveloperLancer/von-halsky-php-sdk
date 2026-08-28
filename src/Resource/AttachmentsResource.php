@@ -20,6 +20,7 @@ use DevLancer\VonHalsky\Serialization\JsonResponseDecoder;
 use DevLancer\VonHalsky\ValueObject\AttachmentId;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
+use DevLancer\VonHalsky\Validation\RequestValidator;
 use Psr\Http\Message\StreamInterface;
 
 /** Stream-first offer attachment operations. */
@@ -56,6 +57,9 @@ final class AttachmentsResource
     {
         if (strlen($filename) > 500) {
             throw new InvalidRequestException('attachment.filename', 'must contain at most 500 bytes');
+        }
+        if ($type === AttachmentType::IMAGE) {
+            RequestValidator::offerImageFileName($filename, 'attachment.filename');
         }
         if (preg_match('/\A[a-zA-Z0-9!#$&^_.+-]+\/[a-zA-Z0-9!#$&^_.+-]+\z/D', $mimeType) !== 1) {
             throw new InvalidRequestException('attachment.mimeType', 'must be a valid MIME type');
