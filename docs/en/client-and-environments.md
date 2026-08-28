@@ -17,6 +17,12 @@ $stage = Environment::stage();
 $production = Environment::production();
 ```
 
+### Obtaining access to Stage
+
+1. Create an account in the [Stage Merchant portal](https://stage-merchant.inpost-group.com/).
+2. Email [dok.onboarding@inpost.pl](mailto:dok.onboarding@inpost.pl) and request access to the test environment.
+3. Include the email address used to create the account and the details of the store that the test environment should cover, in particular its name and Polish tax identification number.
+
 Each factory supplies the API, authorization, and token URLs as one atomic set. `Environment::custom()` is intended for a local mock server or an explicitly configured proxy. It requires absolute HTTPS URLs, except for loopback HTTP; userinfo, query strings, and fragments are rejected.
 
 ```php
