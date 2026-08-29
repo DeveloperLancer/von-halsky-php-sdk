@@ -246,6 +246,20 @@ Najważniejsze reguły formularza oferty sprawdzane lokalnie:
 
 `GpsrInfo::required()` wymaga nazwy producenta, jego pełnego adresu oraz poprawnego adresu e-mail, a także niepustej informacji o bezpieczeństwie. `GpsrInfo::notRequired()` zapisuje jawne wyłączenie przewidziane przez kontrakt; nie używaj go wyłącznie w celu obejścia brakujących danych zgodności.
 
+## Formatowanie opisu produktu
+
+Opis produktu można formatować HTML. SDK wysyła wartość `ProductProposal::$description` bez konwersji lub filtrowania znaczników; ogranicza wyłącznie długość całego tekstu do `100–100000` znaków.
+
+| Efekt | HTML |
+| --- | --- |
+| Pogrubienie | `<strong>tekst</strong>` |
+| Pochylenie | `<em>tekst</em>` |
+| Podkreślenie | `<u>tekst</u>` |
+| Lista punktowana | `<ul><li>element</li></ul>` |
+| Lista numerowana | `<ol><li>element</li></ol>` |
+
+Walidacja i ewentualne oczyszczanie HTML pozostają po stronie API, dlatego nie zakładaj, że dowolne znaczniki będą obsługiwane.
+
 ```php
 <?php
 

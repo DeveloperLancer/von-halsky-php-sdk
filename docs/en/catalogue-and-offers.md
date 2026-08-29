@@ -246,6 +246,20 @@ The most important locally enforced offer-form rules are:
 
 `GpsrInfo::required()` additionally requires a manufacturer name, full address, valid email, and non-empty safety information. `GpsrInfo::notRequired()` serializes the explicit contract exemption; do not use it merely to bypass missing compliance data.
 
+## Product description formatting
+
+The product description can be formatted with HTML. The SDK sends `ProductProposal::$description` without converting or filtering markup; it only limits the complete text to `100–100000` characters.
+
+| Effect | HTML |
+| --- | --- |
+| Bold | `<strong>text</strong>` |
+| Italic | `<em>text</em>` |
+| Underline | `<u>text</u>` |
+| Bulleted list | `<ul><li>item</li></ul>` |
+| Numbered list | `<ol><li>item</li></ol>` |
+
+The API remains responsible for validation and any HTML sanitization, so do not assume arbitrary tags are supported.
+
 ```php
 <?php
 
