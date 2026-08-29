@@ -70,6 +70,10 @@
             "publicMethod": "AttachmentsResource::upload()"
         },
         {
+            "operationId": "putAttachmentsPriorityByOfferIdV1",
+            "publicMethod": "AttachmentsResource::updatePriorities()"
+        },
+        {
             "operationId": "deleteOffersAttachmentsByOfferIdAndAttachmentIdV1",
             "publicMethod": "AttachmentsResource::delete()"
         },
@@ -163,7 +167,7 @@
         }
     ],
     "summary": {
-        "implemented": 40,
+        "implemented": 41,
         "total": 43
     }
 }

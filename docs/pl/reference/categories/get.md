@@ -6,7 +6,7 @@ Zwraca wybraną kategorię oraz ograniczone potomstwo.
 
 - Zakres: globalny.
 - Sygnatura: `get(CategoryId $categoryId, ?CategoryDetailsOptions $options = null): ApiResponse<Category>`.
-- Parametry: ID, głębokość `0–4`, opcjonalny język.
+- Parametry: ID, głębokość API `0–10`, opcjonalny język.
 - Wynik: `Category`.
 
 ## Zachowanie

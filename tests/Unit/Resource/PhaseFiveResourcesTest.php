@@ -237,12 +237,12 @@ final class PhaseFiveResourcesTest extends TestCase
     public function testDepthBoundariesFollowOfficialContract(): void
     {
         new CategoryTreeOptions(0);
-        new CategoryTreeOptions(4);
+        new CategoryTreeOptions(10);
         new CategoryDetailsOptions(0);
-        new CategoryDetailsOptions(4);
+        new CategoryDetailsOptions(10);
         self::addToAssertionCount(4);
 
-        foreach ([-1, 5] as $invalid) {
+        foreach ([-1, 11] as $invalid) {
             try {
                 new CategoryTreeOptions($invalid);
                 self::fail('Expected invalid tree depth.');

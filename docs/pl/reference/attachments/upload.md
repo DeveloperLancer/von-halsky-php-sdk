@@ -6,11 +6,11 @@ Wysyła strumień pliku do oferty.
 
 - Zakres: organizacja.
 - Sygnatura: `upload(OfferId $offerId, AttachmentType $type, string $filename, string $mimeType, StreamInterface $stream, ?ResponseLanguage $language = null): ApiResponse<CommandHandle>`.
-- Parametry: typ, nazwa do 500 bajtów, poprawny typ MIME i strumień PSR-7.
+- Parametry: typ, nazwa do 500 bajtów, MIME dozwolony dla danego typu załącznika i strumień PSR-7.
 
 ## Zachowanie
 
-SDK czyta strumień bez buforowania i go nie zamyka. Wysłanie jest operacją POST bez automatycznego ponawiania; serwer ostatecznie sprawdza rozmiar i zawartość. Aplikacja powinna wcześniej zastosować własne limity rozmiaru i zasady ochrony przed złośliwymi plikami.
+SDK sprawdza kombinację typu załącznika i MIME zgodnie z wytycznymi, a następnie czyta strumień bez buforowania i go nie zamyka. Wysłanie jest operacją POST bez automatycznego ponawiania; serwer ostatecznie sprawdza rozmiar i zawartość. Aplikacja powinna wcześniej zastosować własne limity rozmiaru i zasady ochrony przed złośliwymi plikami.
 
 ## Przykład
 

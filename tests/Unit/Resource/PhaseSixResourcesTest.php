@@ -10,6 +10,7 @@ use DevLancer\VonHalsky\Auth\StaticTokenProvider;
 use DevLancer\VonHalsky\Environment\Environment;
 use DevLancer\VonHalsky\Exception\InvalidRequestException;
 use DevLancer\VonHalsky\Http\HttpClientDependencies;
+use DevLancer\VonHalsky\Model\Attachment\AttachmentPriority;
 use DevLancer\VonHalsky\Model\Attachment\AttachmentType;
 use DevLancer\VonHalsky\Model\Offer\BatchCreateOffersRequest;
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
@@ -42,7 +43,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PhaseSixResourcesTest extends TestCase
 {
-    public function testAllEighteenOperationsUseTheContractRoutesAndTypedResults(): void
+    public function testAllNineteenOperationsUseTheContractRoutesAndTypedResults(): void
     {
         $offer = $this->offerDetails();
         [$sdk, $http] = $this->client(
@@ -64,6 +65,7 @@ final class PhaseSixResourcesTest extends TestCase
             $this->json(['commandId' => 'attributes-command', 'offerId' => 'offer-1', 'status' => 'PENDING']),
             $this->json(['commandId' => 'close-command', 'status' => 'PENDING'], 202),
             $this->json(['commandId' => 'reopen-command', 'status' => 'PENDING'], 202),
+            $this->json(['commandId' => 'priority-command', 'status' => 'PENDING'], 202),
         );
 
         $organization = $sdk->forOrganization(OrganizationId::fromString('organization/1'));
@@ -99,8 +101,11 @@ final class PhaseSixResourcesTest extends TestCase
         self::assertSame('attributes-command', $offers->updateAttributes($offerId, new OfferAttributesPatch([new UpsertAttribute('attribute-1', ['red']), new RemoveAttribute('attribute-2')]))->data->commandId->value);
         self::assertSame('close-command', $offers->close($offerId)->data->commandId->value);
         self::assertSame('reopen-command', $offers->reopen($offerId)->data->commandId->value);
+        self::assertSame('priority-command', $attachments->updatePriorities($offerId, [
+            new AttachmentPriority(AttachmentId::fromString('attachment/1'), 1),
+        ])->data->commandId->value);
 
-        self::assertCount(18, $http->requests());
+        self::assertCount(19, $http->requests());
         self::assertSame('https://stage-api.inpost-group.com/inpsa/v1/organizations/organization%2F1/offers/offer%2F1/attachments?attachmentType=MANUAL', (string) $http->requestAt(12)->getUri());
         self::assertStringContainsString('name="file"; filename="manual.pdf"', (string) $http->requestAt(12)->getBody());
         self::assertSame('application/merge-patch+json', $http->requestAt(10)->getHeaderLine('Content-Type'));
@@ -109,6 +114,14 @@ final class PhaseSixResourcesTest extends TestCase
             'stock' => ['quantity' => 2, 'unit' => 'UNIT'],
             'images' => [['fileName' => 'image.png', 'fileUrl' => 'https://example.com/image.png', 'priority' => 1]],
         ], json_decode((string) $http->requestAt(10)->getBody(), true, 512, JSON_THROW_ON_ERROR));
+        self::assertSame(
+            'https://stage-api.inpost-group.com/inpsa/v1/organizations/organization%2F1/offers/offer%2F1/attachments/priority',
+            (string) $http->requestAt(18)->getUri(),
+        );
+        self::assertSame(
+            [['attachmentId' => 'attachment/1', 'priority' => 1]],
+            json_decode((string) $http->requestAt(18)->getBody(), true, 512, JSON_THROW_ON_ERROR),
+        );
     }
 
     public function testBatchAndOfferValidationBoundaries(): void
@@ -158,6 +171,53 @@ final class PhaseSixResourcesTest extends TestCase
         self::assertCount(0, $http->requests());
         self::assertTrue(AttachmentType::OTHER->allowsMimeType('video/mp4'));
         self::assertFalse(AttachmentType::MANUAL->allowsMimeType('image/png'));
+
+        [$validSdk, $validHttp] = $this->client($this->json(['commandId' => 'gif-command'], 202));
+        $command = $validSdk->forOrganization(OrganizationId::fromString('organization-1'))->attachments()->upload(
+            OfferId::fromString('offer-1'),
+            AttachmentType::IMAGE,
+            'animation.gif',
+            'image/gif',
+            $factory->createStream('gif'),
+        )->data;
+        self::assertSame('gif-command', $command->commandId->value);
+        self::assertCount(1, $validHttp->requests());
+    }
+
+    public function testEmptyAttributePatchIsAValidNoOpRequest(): void
+    {
+        [$sdk, $http] = $this->client($this->json([
+            'commandId' => 'empty-attributes-command',
+            'offerId' => 'offer-1',
+            'status' => 'PENDING',
+        ]));
+
+        $command = $sdk->forOrganization(OrganizationId::fromString('organization-1'))->offers()->updateAttributes(
+            OfferId::fromString('offer-1'),
+            new OfferAttributesPatch([]),
+        )->data;
+
+        self::assertSame('empty-attributes-command', $command->commandId->value);
+        self::assertSame(
+            ['operations' => []],
+            json_decode((string) $http->requestAt(0)->getBody(), true, 512, JSON_THROW_ON_ERROR),
+        );
+    }
+
+    public function testAttachmentPriorityRangeFollowsProductionContract(): void
+    {
+        new AttachmentPriority(AttachmentId::fromString('attachment-1'), 1);
+        new AttachmentPriority(AttachmentId::fromString('attachment-1'), 1000);
+        self::addToAssertionCount(2);
+
+        foreach ([0, 1001] as $invalid) {
+            try {
+                new AttachmentPriority(AttachmentId::fromString('attachment-1'), $invalid);
+                self::fail('Expected an invalid attachment priority.');
+            } catch (InvalidRequestException $exception) {
+                self::assertSame('attachment.priority', $exception->fieldPath);
+            }
+        }
     }
 
     private function createRequest(): CreateOfferRequest

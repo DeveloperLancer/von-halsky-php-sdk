@@ -10,6 +10,7 @@ use DevLancer\VonHalsky\Http\Body\MultipartPart;
 use DevLancer\VonHalsky\Http\RequestExecutor;
 use DevLancer\VonHalsky\Internal\OfferResponseHydrator;
 use DevLancer\VonHalsky\Model\Attachment\AttachmentInfo;
+use DevLancer\VonHalsky\Model\Attachment\AttachmentPriority;
 use DevLancer\VonHalsky\Model\Attachment\AttachmentType;
 use DevLancer\VonHalsky\Model\Attachment\DownloadedAttachment;
 use DevLancer\VonHalsky\Model\Offer\CommandHandle;
@@ -58,9 +59,6 @@ final class AttachmentsResource
         if (strlen($filename) > 500) {
             throw new InvalidRequestException('attachment.filename', 'must contain at most 500 bytes');
         }
-        if ($type === AttachmentType::IMAGE) {
-            RequestValidator::offerImageFileName($filename, 'attachment.filename');
-        }
         if (preg_match('/\A[a-zA-Z0-9!#$&^_.+-]+\/[a-zA-Z0-9!#$&^_.+-]+\z/D', $mimeType) !== 1) {
             throw new InvalidRequestException('attachment.mimeType', 'must be a valid MIME type');
         }
@@ -75,6 +73,32 @@ final class AttachmentsResource
             ['attachmentType' => $type->value],
         );
         $data = $this->decoder->decodeObject($response, 'postOffersAttachmentsByOfferIdV1') ?? [];
+
+        return ApiResponse::fromResponse(OfferResponseHydrator::handle($data), $response);
+    }
+
+    /**
+     * Lower values are displayed first.
+     * Requires OAuth scope `api:offers:write`.
+     *
+     * @param list<AttachmentPriority> $priorities
+     * @return ApiResponse<CommandHandle>
+     */
+    public function updatePriorities(OfferId $offerId, array $priorities, ?ResponseLanguage $language = null): ApiResponse
+    {
+        RequestValidator::listOfInstances($priorities, AttachmentPriority::class, 'attachment.priorities');
+        $payload = array_map(
+            static fn (AttachmentPriority $priority): array => $priority->jsonSerialize(),
+            $priorities,
+        );
+        $response = $this->executor->executeJson(
+            'PUT',
+            $this->basePath($offerId) . '/priority',
+            $payload,
+            [],
+            self::language($language),
+        );
+        $data = $this->decoder->decodeObject($response, 'putAttachmentsPriorityByOfferIdV1') ?? [];
 
         return ApiResponse::fromResponse(OfferResponseHydrator::handle($data), $response);
     }

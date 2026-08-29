@@ -15,8 +15,8 @@ final class CategoryTreeOptions
         public readonly ?CategoryId $root = null,
         public readonly ?ResponseLanguage $language = null,
     ) {
-        if ($depth < 0 || $depth > 4) {
-            throw new InvalidRequestException('depth', 'must be between 0 and 4');
+        if ($depth < 0 || $depth > 10) {
+            throw new InvalidRequestException('depth', 'must be between 0 and 10');
         }
     }
 }

@@ -6,7 +6,7 @@ This is not an official InPost product and is not affiliated with or endorsed by
 
 ## Status
 
-The SDK implements 40 current operations across organizations, categories, offers, attachments, orders, returns, and claims. It intentionally excludes two deprecated upstream operations. It is not yet published on Packagist, so the repository is a development snapshot rather than a release promise.
+The SDK implements 41 current operations across organizations, categories, offers, attachments, orders, returns, and claims. It intentionally excludes two deprecated upstream operations. It is not yet published on Packagist, so the repository is a development snapshot rather than a release promise.
 
 ## Requirements
 

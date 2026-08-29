@@ -6,11 +6,11 @@ Wysyła uporządkowane operacje atrybutów jednej oferty.
 
 - Zakres: organizacja.
 - Sygnatura: `updateAttributes(OfferId $offerId, OfferAttributesPatch $patch, ?ResponseLanguage $language = null): ApiResponse<CommandHandle>`.
-- Parametry: ID oraz niepusta lista `UpsertAttribute`/`RemoveAttribute`.
+- Parametry: ID oraz uporządkowana lista `UpsertAttribute`/`RemoveAttribute`.
 
 ## Zachowanie
 
-Kolejność jest zachowana; dla powtarzającego się atrybutu API stosuje ostatnią operację. PATCH nie jest automatycznie ponawiany.
+Kolejność jest zachowana; dla powtarzającego się atrybutu API stosuje ostatnią operację. Pusta lista jest poprawnym żądaniem bez zmian. PATCH nie jest automatycznie ponawiany.
 
 ## Przykład
 

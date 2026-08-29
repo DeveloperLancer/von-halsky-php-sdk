@@ -1,6 +1,6 @@
 # Polska mapa operacji
 
-Ta strona opisuje po polsku wszystkie 40 aktualnych metod zasobów SDK. Link w ostatniej kolumnie prowadzi do pełnej polskiej strony referencyjnej z przykładem PHP, parametrami i ograniczeniami.
+Ta strona opisuje po polsku wszystkie 41 nieprzestarzałych metod produkcyjnych SDK. Link w ostatniej kolumnie prowadzi do pełnej polskiej strony referencyjnej z przykładem PHP, parametrami i ograniczeniami.
 
 Wszystkie udane wywołania zwracają `ApiResponse<T>`. Zasoby globalne są dostępne z `$client`; zasoby organizacji z `$shop = $client->forOrganization($organizationId)`.
 
@@ -9,7 +9,7 @@ Wszystkie udane wywołania zwracają `ApiResponse<T>`. Zasoby globalne są dost�
 | Metoda | Zakres i wynik | Opis | Szczegóły |
 |---|---|---|---|
 | `organizations()->list()` | globalny, `list<Organization>` | Organizacje dostępne dla obecnego tokenu. | [PL](./reference/organizations/list.md) |
-| `categories()->list()` | globalny, `list<Category>` | Ograniczone drzewo kategorii; głębokość `0–4`. | [PL](./reference/categories/list.md) |
+| `categories()->list()` | globalny, `list<Category>` | Drzewo kategorii; kontrakt przyjmuje głębokość `0–10`, a `4` pobiera obecne L1-L5. | [PL](./reference/categories/list.md) |
 | `categories()->get()` | globalny, `Category` | Jedna kategoria i ograniczone potomstwo. | [PL](./reference/categories/get.md) |
 | `categories()->attributes()` | globalny, `list<AttributeDefinition>` | Definicje atrybutów wymaganych/opcjonalnych dla kategorii. | [PL](./reference/categories/attributes.md) |
 
@@ -42,6 +42,7 @@ Wszystkie udane wywołania zwracają `ApiResponse<T>`. Zasoby globalne są dost�
 |---|---|---|---|
 | `$shop->attachments()->list()` | organizacja, `PageResult<AttachmentInfo>` | Jedna strona metadanych załączników oferty. | [PL](./reference/attachments/list.md) |
 | `$shop->attachments()->upload()` | organizacja, `CommandHandle` | Wysłanie należącego do aplikacji strumienia PSR-7. | [PL](./reference/attachments/upload.md) |
+| `$shop->attachments()->updatePriorities()` | organizacja, `CommandHandle` | Asynchroniczna zmiana kolejności wyświetlania załączników. | [PL](./reference/attachments/update-priorities.md) |
 | `$shop->attachments()->download()` | organizacja, `DownloadedAttachment` | Strumień odpowiedzi zamykany przez aplikację. | [PL](./reference/attachments/download.md) |
 | `$shop->attachments()->delete()` | organizacja, `null` | Usunięcie zdalnego załącznika. | [PL](./reference/attachments/delete.md) |
 

@@ -6,12 +6,12 @@ Submits ordered attribute operations for one organization offer.
 
 - Scope: organization; call `$shop->offers()`.
 - Signature: `updateAttributes(OfferId $offerId, OfferAttributesPatch $patch, ?ResponseLanguage $language = null): ApiResponse<CommandHandle>`.
-- Parameters: offer ID and a non-empty ordered list of upsert/remove operations.
+- Parameters: offer ID and an ordered list of upsert/remove operations.
 - Result: one accepted command handle.
 
 ## Behavior and limits
 
-Operation order is preserved; when the same attribute ID occurs more than once, the API applies the last operation. This PATCH is never automatically retried. API errors use [shared handling](../../responses-and-errors.md).
+Operation order is preserved; when the same attribute ID occurs more than once, the API applies the last operation. An empty operation list is accepted as a no-op. This PATCH is never automatically retried. API errors use [shared handling](../../responses-and-errors.md).
 
 ## Example
 

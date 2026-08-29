@@ -6,12 +6,12 @@ Uploads one file stream to an organization offer.
 
 - Scope: organization; call `$shop->attachments()`.
 - Signature: `upload(OfferId $offerId, AttachmentType $type, string $filename, string $mimeType, StreamInterface $stream, ?ResponseLanguage $language = null): ApiResponse<CommandHandle>`.
-- Parameters: offer ID, closed attachment type, filename up to 500 bytes, valid MIME type, and a PSR-7 stream.
+- Parameters: offer ID, closed attachment type, filename up to 500 bytes, an allowed MIME type for that attachment type, and a PSR-7 stream.
 - Result: an accepted command handle.
 
 ## Behavior and limits
 
-The SDK streams, consumes, and never closes the supplied stream. The caller closes it. This POST is not retried automatically and server-side media limits remain server-validated.
+The SDK validates the attachment-type/MIME combination from the integration guide, then streams, consumes, and never closes the supplied stream. The caller closes it. This POST is not retried automatically; size, content, and malware policy remain server- or application-validated.
 
 ## Example
 

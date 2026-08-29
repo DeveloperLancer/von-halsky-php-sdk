@@ -49,7 +49,7 @@ Zainstaluj pakiet, utwórz klienta z istniejącym tokenem, odczytaj organizacje 
 
 ## Pełna referencja
 
-[Referencja operacji](./reference/README.md) ma osobną stronę z opisem, sygnaturą, wynikiem i przykładem dla każdej z 40 aktualnych metod. [Mapa operacji](./referencja-operacji.md) pozostaje skróconą ściągą.
+[Referencja operacji](./reference/README.md) ma osobną stronę z opisem, sygnaturą, wynikiem i przykładem dla każdej z 41 nieprzestarzałych operacji produkcyjnych. [Mapa operacji](./referencja-operacji.md) pozostaje skróconą ściągą.
 
 - [Przykłady uruchamialne](../../examples/README.md)
 - [Generowana referencja klas PHP](./referencja-php.md)

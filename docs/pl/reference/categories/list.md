@@ -6,7 +6,7 @@ Przegląda ograniczone globalne drzewo kategorii.
 
 - Zakres: globalny, `$client->categories()`.
 - Sygnatura: `list(?CategoryTreeOptions $options = null): ApiResponse<list<Category>>`.
-- Parametry: głębokość `0–4`, opcjonalny root i język.
+- Parametry: głębokość API `0–10`, opcjonalny root i język. Obecna hierarchia opisana w wytycznych ma pięć poziomów, więc `depth: 4` pobiera L1-L5.
 - Wynik: węzły drzewa do żądanej głębokości.
 
 ## Zachowanie

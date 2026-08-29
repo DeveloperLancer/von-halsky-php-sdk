@@ -22,12 +22,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - OAuth2 Authorization Code + PKCE, Client Credentials, opaque token models, token contexts, stores, guarded refresh rotation, and authentication documentation.
 - Immutable identifiers, money, measurements, addresses, UTC dates, and cursor value objects with confirmed API 1.6 validation limits.
 - Tri-state PATCH values, request normalization, forward-compatible response hydration, typed API exceptions, rate-limit parsing, and bounded generic pagination.
-- `VonHalskyClient`, immutable organization contexts, and typed organization and category resources covering 4 of 42 production operations.
+- `VonHalskyClient`, immutable organization contexts, and typed organization and category resources covering 4 of 43 production operations.
 - Category tree/detail DTOs, leaf validation, forward-compatible attribute definitions, typed request options, and generic API response metadata.
-- Complete offer and offer-attachment resources covering 18 additional production operations (22 of 42 total).
+- Complete offer and offer-attachment resources covering 19 additional production operations (23 of 43 total), including attachment display priorities.
 - Typed product, GPSR, price, stock, batch, merge-patch, attribute-operation, command, event, hint, and attachment models.
 - Stream-first multipart uploads and downloads with explicit caller ownership, plus an opt-in Stage offer lifecycle suite.
-- Complete order, return, refund, and claim resources covering 18 current production operations (40 supported operations total).
+- Complete order, return, refund, and claim resources covering 18 current production operations (41 supported operations total).
 - Typed order events/commands, UTC list filters, precise refund requests, post-sale actions, delivery methods v2, and recursive PII redaction.
 - Phase 8 reliability primitives: explicitly enabled, short GET-only retry with jitter, elapsed-time limits, `Retry-After` support, and double-retry detection.
 - One-call command and event endpoint access while leaving polling state, checkpoint age, scheduling, and persistence to the application.
@@ -36,5 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Local OAuth failures now use `AuthenticationFlowException`; `AuthenticationException` represents an HTTP 401 API response.
+- Attachment uploads validate the documented type/MIME combinations while accepting all documented image filename extensions.
+- Empty offer-attribute operation lists are accepted as documented no-op requests.
 
 [Unreleased]: https://github.com/DeveloperLancer/von-halsky-php-sdk/commits/HEAD

@@ -17,6 +17,7 @@ const DOCUMENTATION_OPERATION_PAGES = [
     'attachments/download.md',
     'attachments/list.md',
     'attachments/upload.md',
+    'attachments/update-priorities.md',
     'categories/attributes.md',
     'categories/get.md',
     'categories/list.md',
@@ -185,8 +186,8 @@ function documentationCheckLocaleCoverage(string $projectRoot, array &$errors): 
         foreach (array_diff($actual, $expected) as $unexpected) {
             $errors[] = sprintf('Unexpected %s operation reference page: docs/%s/reference/%s', $locale, $locale, $unexpected);
         }
-        if (count($actual) !== 40) {
-            $errors[] = sprintf('Expected exactly 40 %s operation reference pages, found %d.', $locale, count($actual));
+        if (count($actual) !== 41) {
+            $errors[] = sprintf('Expected exactly 41 %s operation reference pages, found %d.', $locale, count($actual));
         }
     }
 }

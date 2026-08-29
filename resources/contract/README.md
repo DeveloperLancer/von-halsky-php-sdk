@@ -4,7 +4,7 @@ This directory contains derived metadata used to plan and verify SDK coverage. I
 
 - `contract-lock.json` records official source URLs, versions, normalized hashes, and the redistribution safeguard.
 - `operations.json` is the generated inventory of 43 production operations and their implementation phases.
-- `implementation-coverage.json` maps the 40 currently supported operations to their public SDK methods (40/43 total); the remaining three production operations are intentionally unsupported.
+- `implementation-coverage.json` maps the 41 currently supported operations to their public SDK methods (41/43 total); the remaining two production operations are deprecated and intentionally unsupported.
 - `prod-next-diff.json` classifies the current production-to-next contract changes, including any breaking changes.
 - `validation-rules.json` records constraints verified against the deployed production contract.
 

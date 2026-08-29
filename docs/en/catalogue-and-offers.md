@@ -332,4 +332,4 @@ try {
 }
 ```
 
-Validate filenames, MIME types, destination paths, size limits, and malware policy in the application. See [attachment operations](./reference/attachments/README.md) and [production reliability](./reliability.md).
+The SDK validates the documented attachment-type/MIME combinations. Validate destination paths, size limits, actual file content, and malware policy in the application. See [attachment operations](./reference/attachments/README.md) and [production reliability](./reliability.md).

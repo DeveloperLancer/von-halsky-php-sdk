@@ -106,17 +106,17 @@ final class ContractArtifactsTest extends TestCase
         $coverage = self::readObject('implementation-coverage.json');
         $manifest = self::readObject('operations.json');
 
-        self::assertSame(40, self::nestedValue($coverage, ['summary', 'implemented']));
+        self::assertSame(41, self::nestedValue($coverage, ['summary', 'implemented']));
         self::assertSame(43, self::nestedValue($coverage, ['summary', 'total']));
         $operations = self::listValue($coverage, 'implementedOperations');
         $manifestOperations = self::listValue($manifest, 'operations');
         $implementedIds = array_column($operations, 'operationId');
         $manifestIds = array_column($manifestOperations, 'operationId');
         self::assertEqualsCanonicalizing(
-            ['getOrdersDeliveryMethodsV1', 'postOrdersRefuseByIdV1', 'putAttachmentsPriorityByOfferIdV1'],
+            ['getOrdersDeliveryMethodsV1', 'postOrdersRefuseByIdV1'],
             array_values(array_diff($manifestIds, $implementedIds)),
         );
-        self::assertCount(40, array_unique($implementedIds));
+        self::assertCount(41, array_unique($implementedIds));
     }
 
     #[Test]

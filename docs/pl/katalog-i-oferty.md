@@ -332,4 +332,4 @@ try {
 }
 ```
 
-Aplikacja odpowiada za sprawdzenie nazwy pliku, typu MIME, ścieżki docelowej, limitu rozmiaru i zasad ochrony przed złośliwymi plikami. Zobacz [referencję załączników](./reference/attachments/README.md) i [niezawodność produkcyjną](./niezawodnosc.md).
+SDK sprawdza udokumentowaną kombinację typu załącznika i MIME. Aplikacja odpowiada za ścieżkę docelową, limit rozmiaru, rzeczywistą zawartość pliku i zasady ochrony przed złośliwymi plikami. Zobacz [referencję załączników](./reference/attachments/README.md) i [niezawodność produkcyjną](./niezawodnosc.md).

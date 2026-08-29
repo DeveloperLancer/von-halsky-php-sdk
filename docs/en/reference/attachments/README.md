@@ -4,5 +4,6 @@ All attachment operations require an organization context and an offer ID. Strea
 
 - [`list()`](./list.md)
 - [`upload()`](./upload.md)
+- [`updatePriorities()`](./update-priorities.md)
 - [`download()`](./download.md)
 - [`delete()`](./delete.md)
