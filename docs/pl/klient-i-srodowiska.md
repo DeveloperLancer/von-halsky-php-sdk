@@ -19,9 +19,7 @@ $production = Environment::production();
 
 ### Uzyskanie dostępu do Stage
 
-1. Załóż konto w [panelu Stage Merchant](https://stage-merchant.inpost-group.com/).
-2. Wyślij wiadomość na adres [dok.onboarding@inpost.pl](mailto:dok.onboarding@inpost.pl) z prośbą o udzielenie dostępu do środowiska testowego.
-3. W treści wiadomości podaj adres e-mail użyty do założenia konta oraz dane sklepu, którego ma dotyczyć środowisko testowe, w szczególności nazwę i NIP.
+Instrukcję założenia konta i uzyskania dostępu do środowiska Stage znajdziesz w [oficjalnym portalu API InPost](https://inpsa-api-portal.inpost-group.com/).
 
 Każda fabryka dostarcza jeden spójny zestaw adresów API, autoryzacji i tokenów. `Environment::custom()` służy do lokalnego serwera testowego lub jawnie skonfigurowanego serwera pośredniczącego. Wymaga bezwzględnych adresów HTTPS, z wyjątkiem lokalnego loopback URI; dane użytkownika w URL, zapytania i fragmenty są odrzucane.
 
