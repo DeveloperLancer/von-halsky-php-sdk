@@ -43,7 +43,7 @@ final class OfferInputValidationTest extends TestCase
             str_repeat('B', 100),
             CategoryId::fromString('leaf-1'),
             new Ean('5901234123457'),
-            sku: new Sku(str_repeat('S', 250)),
+            sku: new Sku(str_repeat('S', 100)),
             model: str_repeat('M', 100),
             superModel: str_repeat('U', 100),
         );
@@ -152,12 +152,12 @@ final class OfferInputValidationTest extends TestCase
         new OfferImage('product.jpeg', 'https://example.com/product.jpeg', 1);
     }
 
-    public function testSkuAllowsAtMostTwoHundredAndFiftyCharacters(): void
+    public function testSkuAllowsAtMostOneHundredCharacters(): void
     {
-        self::assertSame(str_repeat('S', 250), (string) new Sku(str_repeat('S', 250)));
+        self::assertSame(str_repeat('S', 100), (string) new Sku(str_repeat('S', 100)));
 
         $this->expectException(InvalidRequestException::class);
-        new Sku(str_repeat('S', 251));
+        new Sku(str_repeat('S', 101));
     }
 
     public function testSkuIsIncludedInTheProductPayload(): void

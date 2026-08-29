@@ -38,7 +38,7 @@ This checklist records observed behavior of the real Stage API. It is not an API
 | Stock quantity: 1000000 | Rejected | rejected |
 | Gross price: 999999.99 | Accepted | confirmed |
 | Gross price: 1000000 | Rejected | rejected |
-| SKU length | Conflicting local expectations: SDK code enforces 100, an existing test expects 250 | unresolved |
+| SKU length | Local SDK code and unit test enforce 100 characters | locally confirmed |
 | Product name, brand, model, supermodel, EAN and tax-rate boundaries |  | pending |
 
 ## GPSR fields
