@@ -55,7 +55,7 @@ final class GpsrInfo implements RequestDtoInterface
             RequestValidator::stringLength($manufacturerUnstructuredAddress, 1, 300, 'Gpsr.manufacturer.unstructuredAddress');
         }
         RequestValidator::stringLength($manufacturerEmail, 3, 500, 'Gpsr.manufacturer.email');
-        if (!self::validEmail($manufacturerEmail)) {
+        if (filter_var($manufacturerEmail, FILTER_VALIDATE_EMAIL) === false) {
             throw new InvalidRequestException('Gpsr.manufacturer.email', 'must be a valid email address');
         }
         if ($manufacturerPhone !== null) {
@@ -71,10 +71,19 @@ final class GpsrInfo implements RequestDtoInterface
         if ($batchNumber !== null) {
             RequestValidator::stringLength($batchNumber, 1, 500, 'Gpsr.batchNumber');
         }
-        RequestValidator::itemLimit($manuals, 20, 'Gpsr.manuals');
-        foreach ($manuals as $manual) {
-            RequestValidator::stringLength($manual['title'], 5, 500, 'Gpsr.manuals.title');
-            RequestValidator::stringLength($manual['url'], 9, 2048, 'Gpsr.manuals.url');
+        RequestValidator::gpsrManuals($manuals, 'Gpsr.manuals');
+        foreach ($manuals as $index => $manual) {
+            if (!is_array($manual) || array_is_list($manual)) {
+                throw new InvalidRequestException(sprintf('Gpsr.manuals[%d]', $index), 'must be an object');
+            }
+            if (!array_key_exists('title', $manual) || !is_string($manual['title'])) {
+                throw new InvalidRequestException(sprintf('Gpsr.manuals[%d].title', $index), 'is required and must be a string');
+            }
+            if (!array_key_exists('url', $manual) || !is_string($manual['url'])) {
+                throw new InvalidRequestException(sprintf('Gpsr.manuals[%d].url', $index), 'is required and must be a string');
+            }
+            RequestValidator::stringLength($manual['title'], 5, 500, sprintf('Gpsr.manuals[%d].title', $index));
+            RequestValidator::stringLength($manual['url'], 9, 2048, sprintf('Gpsr.manuals[%d].url', $index));
         }
 
         return new self(
@@ -138,25 +147,5 @@ final class GpsrInfo implements RequestDtoInterface
         }
 
         return $result;
-    }
-
-    private static function validEmail(string $email): bool
-    {
-        if (preg_match('/^[^@\\s]+@[^@\\s]+$/D', $email) !== 1) {
-            return false;
-        }
-
-        [, $domain] = explode('@', $email, 2);
-        $labels = explode('.', $domain);
-        if (count($labels) < 2) {
-            return false;
-        }
-        foreach ($labels as $label) {
-            if (preg_match('/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/D', $label) !== 1) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

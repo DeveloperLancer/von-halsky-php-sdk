@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLancer\VonHalsky\Model\Offer;
 
+use DevLancer\VonHalsky\Exception\InvalidRequestException;
 use DevLancer\VonHalsky\Model\OptionalValue;
 use DevLancer\VonHalsky\Model\RequestDtoInterface;
 use DevLancer\VonHalsky\Validation\RequestValidator;
@@ -43,6 +44,9 @@ final class PatchOfferRequest implements RequestDtoInterface
         $this->images = $images ?? OptionalValue::undefined();
         if ($this->images->isDefined() && !$this->images->isNull()) {
             $imageValues = $this->images->value();
+            if (!is_array($imageValues)) {
+                throw new InvalidRequestException('Offer.images', 'must be a list');
+            }
             RequestValidator::offerImages($imageValues);
         }
     }

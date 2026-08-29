@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Validation;
 
 use DevLancer\VonHalsky\Exception\InvalidRequestException;
+use DevLancer\VonHalsky\Model\Offer\AttributeOperation;
+use DevLancer\VonHalsky\Model\Offer\AttributeValue;
+use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
+use DevLancer\VonHalsky\Model\Offer\OfferImage;
 
 /** Shared request-validation rules. */
 final class RequestValidator
@@ -30,9 +34,7 @@ final class RequestValidator
     /** @param array<mixed> $values */
     public static function attributeValues(array $values, string $fieldPath, ?int $maximumLength = null): void
     {
-        if (!array_is_list($values)) {
-            throw new InvalidRequestException($fieldPath, 'must be a list');
-        }
+        self::list($values, $fieldPath);
 
         foreach ($values as $index => $value) {
             if (!is_string($value)) {
@@ -59,6 +61,7 @@ final class RequestValidator
     /** @param array<mixed> $images */
     public static function offerImages(array $images, string $fieldPath = 'Offer.images'): void
     {
+        self::listOfInstances($images, OfferImage::class, $fieldPath);
         $count = count($images);
         if ($count < 1 || $count > 20) {
             throw new InvalidRequestException($fieldPath, 'must contain between 1 and 20 items');
@@ -75,23 +78,65 @@ final class RequestValidator
     /** @param array<mixed> $manuals */
     public static function gpsrManuals(array $manuals, string $fieldPath = 'GpsrInfo.manuals'): void
     {
+        self::list($manuals, $fieldPath);
         self::itemLimit($manuals, 20, $fieldPath);
     }
 
     /** @param array<mixed> $attributes */
     public static function productAttributes(array $attributes, string $fieldPath = 'ProductInfo.attributes'): void
     {
+        self::listOfInstances($attributes, AttributeValue::class, $fieldPath);
         self::itemLimit($attributes, 120, $fieldPath);
     }
 
     /** @param array<mixed> $offers */
     public static function offerBatch(array $offers, string $fieldPath = 'offers'): void
     {
+        self::listOfInstances($offers, CreateOfferRequest::class, $fieldPath);
         self::itemLimit($offers, 500, $fieldPath);
+    }
+
+    /** @param array<mixed> $operations */
+    public static function offerAttributeOperations(array $operations, string $fieldPath = 'Offer.attributes.operations'): void
+    {
+        self::listOfInstances($operations, AttributeOperation::class, $fieldPath);
+    }
+
+    /** @param array<mixed> $values */
+    public static function stringList(array $values, string $fieldPath): void
+    {
+        self::list($values, $fieldPath);
+        foreach ($values as $index => $value) {
+            if (!is_string($value)) {
+                throw new InvalidRequestException(sprintf('%s[%d]', $fieldPath, $index), 'must be a string');
+            }
+        }
     }
 
     public static function daysToShip(int $days, string $fieldPath = 'ShippingTime.daysToShip'): void
     {
         self::integerRange($days, 0, 60, $fieldPath);
+    }
+
+    /** @param array<mixed> $values */
+    private static function list(array $values, string $fieldPath): void
+    {
+        if (!array_is_list($values)) {
+            throw new InvalidRequestException($fieldPath, 'must be a list');
+        }
+    }
+
+    /**
+     * @param array<mixed> $values
+     * @param class-string $type
+     */
+    public static function listOfInstances(array $values, string $type, string $fieldPath): void
+    {
+        self::list($values, $fieldPath);
+        foreach ($values as $index => $value) {
+            if (!$value instanceof $type) {
+                throw new InvalidRequestException(sprintf('%s[%d]', $fieldPath, $index), sprintf('must be an instance of %s', $type));
+            }
+        }
     }
 }

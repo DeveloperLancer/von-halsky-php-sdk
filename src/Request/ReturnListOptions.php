@@ -20,5 +20,6 @@ final class ReturnListOptions
         if ($offset < 0) {
             throw new InvalidRequestException('returns.offset', 'must be non-negative');
         }
+        RequestValidator::stringList($statuses, 'returns.statuses');
     }
 }

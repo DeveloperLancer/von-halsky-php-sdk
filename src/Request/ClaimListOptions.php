@@ -30,6 +30,9 @@ final class ClaimListOptions
         if ($offset < 0) {
             throw new InvalidRequestException('claims.offset', 'must be non-negative');
         }
+        RequestValidator::stringList($resolutions, 'claims.resolutions');
+        RequestValidator::stringList($states, 'claims.states');
+        RequestValidator::stringList($sort, 'claims.sort');
         foreach ($sort as $value) {
             if (!in_array($value, ['expires_at', '-expires_at', 'state', '-state', 'submission_date', '-submission_date'], true)) {
                 throw new InvalidRequestException('claims.sort', 'contains an unsupported value');

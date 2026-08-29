@@ -24,6 +24,8 @@ final class OfferListOptions
         if ($offset < 0) {
             throw new InvalidRequestException('offers.offset', 'must be non-negative');
         }
+        RequestValidator::stringList($statuses, 'offers.statuses');
+        RequestValidator::stringList($sort, 'offers.sort');
         foreach ($sort as $value) {
             if (!in_array($value, ['status', '-status', 'updatedAt', '-updatedAt', 'createdAt', '-createdAt'], true)) {
                 throw new InvalidRequestException('offers.sort', 'contains an unsupported value');

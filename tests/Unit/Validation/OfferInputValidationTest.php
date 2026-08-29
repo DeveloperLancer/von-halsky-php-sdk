@@ -6,13 +6,17 @@ namespace DevLancer\VonHalsky\Tests\Unit\Validation;
 
 use DevLancer\VonHalsky\Exception\InvalidRequestException;
 use DevLancer\VonHalsky\Model\Offer\AttributeValue;
+use DevLancer\VonHalsky\Model\Offer\BatchCreateOffersRequest;
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
+use DevLancer\VonHalsky\Model\Offer\OfferAttributesPatch;
 use DevLancer\VonHalsky\Model\Offer\OfferImage;
+use DevLancer\VonHalsky\Model\Offer\PatchOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
 use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\Model\Offer\UpsertAttribute;
+use DevLancer\VonHalsky\Model\OptionalValue;
 use DevLancer\VonHalsky\Serialization\RequestNormalizer;
 use DevLancer\VonHalsky\Validation\RequestValidator;
 use DevLancer\VonHalsky\ValueObject\Address;
@@ -21,6 +25,7 @@ use DevLancer\VonHalsky\ValueObject\CountryCode;
 use DevLancer\VonHalsky\ValueObject\Ean;
 use DevLancer\VonHalsky\ValueObject\Money;
 use DevLancer\VonHalsky\ValueObject\Sku;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class OfferInputValidationTest extends TestCase
@@ -239,7 +244,7 @@ final class OfferInputValidationTest extends TestCase
         $gpsr = GpsrInfo::required(
             str_repeat('M', 500),
             new Address(str_repeat('S', 255), str_repeat('C', 255), '1234567890', new CountryCode('PL'), '1234567890', '1234567890', str_repeat('R', 100)),
-            self::fiveHundredCharacterEmail(),
+            self::maximumLengthEmail(),
             str_repeat('I', 100000),
             [[
                 'title' => str_repeat('T', 500),
@@ -260,6 +265,65 @@ final class OfferInputValidationTest extends TestCase
         self::assertSame(str_repeat('B', 500), $serialized['batchNumber']);
         self::assertTrue($serialized['ceMarking']);
         self::assertSame(2048, strlen($serialized['manuals'][0]['url']));
+    }
+
+    #[DataProvider('validManufacturerEmailProvider')]
+    public function testRequiredGpsrAcceptsValidManufacturerEmail(string $email): void
+    {
+        $gpsr = GpsrInfo::required(
+            'Example manufacturer',
+            self::manufacturerAddress(),
+            $email,
+            'Safe product.',
+        );
+
+        self::assertSame($email, $gpsr->manufacturerEmail);
+    }
+
+    #[DataProvider('invalidManufacturerEmailProvider')]
+    public function testRequiredGpsrRejectsInvalidManufacturerEmail(string $email): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        $this->expectExceptionMessage('Gpsr.manufacturer.email');
+
+        GpsrInfo::required('Example manufacturer', self::manufacturerAddress(), $email, 'Safe product.');
+    }
+
+    public function testRequiredGpsrRejectsMalformedManualEntries(): void
+    {
+        foreach ([
+            ['manual' => ['title' => 'Manual title', 'url' => 'https://example.com/manual.pdf']],
+            ['not-an-object'],
+            [[]],
+            [['title' => 123, 'url' => 'https://example.com/manual.pdf']],
+            [['title' => 'Manual title', 'url' => 123]],
+        ] as $manuals) {
+            try {
+                GpsrInfo::required('Example manufacturer', self::manufacturerAddress(), 'manufacturer@example.com', 'Safe product.', $manuals);
+                self::fail('Expected malformed GPSR manuals to be rejected.');
+            } catch (InvalidRequestException $exception) {
+                self::assertStringStartsWith('Gpsr.manuals', $exception->fieldPath);
+            }
+        }
+    }
+
+    public function testRequestDtoListsRejectAssociativeAndWrongTypeEntries(): void
+    {
+        $attribute = new AttributeValue('attribute-1', ['value']);
+        $image = new OfferImage('product.webp', 'https://example.com/product.webp', 1);
+        $request = new CreateOfferRequest(self::minimumProduct(), new Stock(1), new Price(Money::fromDecimal('1.00'), '23%'), images: [$image]);
+
+        self::assertInvalidRequestField('Product.attributes', static fn (): ProductProposal => new ProductProposal(
+            'Product', str_repeat('D', 100), 'Brand', CategoryId::fromString('leaf-1'), new Ean('5901234123457'), attributes: ['attribute' => $attribute],
+        ));
+        self::assertInvalidRequestField('Offer.images[0]', static fn (): CreateOfferRequest => new CreateOfferRequest(
+            self::minimumProduct(), new Stock(1), new Price(Money::fromDecimal('1.00'), '23%'), images: ['invalid'],
+        ));
+        self::assertInvalidRequestField('Offer.images', static fn (): PatchOfferRequest => new PatchOfferRequest(
+            images: OptionalValue::of(['image' => $image]),
+        ));
+        self::assertInvalidRequestField('BatchOffers', static fn (): BatchCreateOffersRequest => new BatchCreateOffersRequest(['offer' => $request]));
+        self::assertInvalidRequestField('Offer.attributes.operations[0]', static fn (): OfferAttributesPatch => new OfferAttributesPatch(['invalid']));
     }
 
     public function testRequiredGpsrRejectsValuesOverDocumentedMaximums(): void
@@ -316,16 +380,48 @@ final class OfferInputValidationTest extends TestCase
         new Address('Example Street', 'Warsaw', '12', new CountryCode('PL'), '10');
     }
 
-    private static function fiveHundredCharacterEmail(): string
+    /** @return iterable<string, array{string}> */
+    public static function validManufacturerEmailProvider(): iterable
+    {
+        yield 'ordinary address' => ['manufacturer@example.com'];
+        yield 'plus tag' => ['manufacturer+gpsr@example.co.uk'];
+        yield 'maximum RFC length' => [self::maximumLengthEmail()];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function invalidManufacturerEmailProvider(): iterable
+    {
+        yield 'missing at sign' => ['manufacturer.example.com'];
+        yield 'empty local part' => ['@example.com'];
+        yield 'empty domain' => ['manufacturer@'];
+        yield 'space' => ['manufacturer name@example.com'];
+        yield 'dotless domain' => ['manufacturer@localhost'];
+        yield 'invalid domain label' => ['manufacturer@-example.com'];
+        yield 'double domain dot' => ['manufacturer@example..com'];
+        yield 'unicode local part' => ['mąnufacturer@example.com'];
+    }
+
+    private static function maximumLengthEmail(): string
     {
         return str_repeat('a', 64) . '@'
             . str_repeat('b', 63) . '.'
             . str_repeat('c', 63) . '.'
-            . str_repeat('d', 63) . '.'
-            . str_repeat('e', 63) . '.'
-            . str_repeat('f', 63) . '.'
-            . str_repeat('g', 63) . '.'
-            . str_repeat('h', 51);
+            . str_repeat('d', 61);
+    }
+
+    private static function manufacturerAddress(): Address
+    {
+        return new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10');
+    }
+
+    private static function assertInvalidRequestField(string $fieldPath, callable $operation): void
+    {
+        try {
+            $operation();
+            self::fail(sprintf('Expected invalid request field "%s".', $fieldPath));
+        } catch (InvalidRequestException $exception) {
+            self::assertSame($fieldPath, $exception->fieldPath);
+        }
     }
 
     private static function minimumProduct(): ProductProposal

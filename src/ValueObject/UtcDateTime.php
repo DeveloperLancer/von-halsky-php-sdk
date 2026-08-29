@@ -23,12 +23,16 @@ final class UtcDateTime
 
     public static function fromString(string $value): self
     {
-        if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$/D', $value) !== 1) {
+        if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$/D', $value) !== 1) {
             throw new InvalidRequestException('dateTime', 'must be an ISO-8601 date with an explicit offset');
         }
         try {
             $parsed = new DateTimeImmutable($value);
         } catch (\Exception) {
+            throw new InvalidRequestException('dateTime', 'must be an ISO-8601 date with an explicit offset');
+        }
+        $errors = DateTimeImmutable::getLastErrors();
+        if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
             throw new InvalidRequestException('dateTime', 'must be an ISO-8601 date with an explicit offset');
         }
 

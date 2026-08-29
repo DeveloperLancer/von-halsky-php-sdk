@@ -17,5 +17,6 @@ final class OrderEventsOptions
         public readonly ?ResponseLanguage $language = null,
     ) {
         RequestValidator::integerRange($limit, 0, 1000, 'orderEvents.limit');
+        RequestValidator::stringList($types, 'orderEvents.types');
     }
 }

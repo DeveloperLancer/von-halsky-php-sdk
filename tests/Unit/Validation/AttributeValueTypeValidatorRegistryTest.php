@@ -56,6 +56,44 @@ final class AttributeValueTypeValidatorRegistryTest extends TestCase
         $registry->add($validator);
     }
 
+    public function testRejectsValidatorWithAnEmptyType(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        (new AttributeValueTypeValidatorRegistry([]))->add(new class implements AttributeValueTypeValidatorInterface {
+            public function type(): string
+            {
+                return '';
+            }
+
+            public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
+            {
+                return AttributeValueTypeValidationResult::valid();
+            }
+        });
+    }
+
+    public function testAcceptsGeneratorOfValidators(): void
+    {
+        $validators = (static function (): \Generator {
+            yield new class implements AttributeValueTypeValidatorInterface {
+                public function type(): string
+                {
+                    return 'APPLICATION_CODE';
+                }
+
+                public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
+                {
+                    return AttributeValueTypeValidationResult::valid();
+                }
+            };
+        })();
+
+        $registry = new AttributeValueTypeValidatorRegistry($validators);
+
+        self::assertTrue($registry->supports(AttributeType::fromString('APPLICATION_CODE')));
+    }
+
     public function testReplacesBuiltInValidatorAfterRemoval(): void
     {
         $registry = AttributeValueTypeValidatorRegistry::withDefaults()

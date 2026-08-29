@@ -27,6 +27,9 @@ final class OrderListOptions
         if ($offset < 0) {
             throw new InvalidRequestException('orders.offset', 'must be non-negative');
         }
+        RequestValidator::stringList($statuses, 'orders.statuses');
+        RequestValidator::stringList($paymentStatuses, 'orders.paymentStatuses');
+        RequestValidator::stringList($sort, 'orders.sort');
         foreach ($paymentStatuses as $value) {
             if (!in_array($value, ['PAID', 'NOT_PAID'], true)) {
                 throw new InvalidRequestException('orders.paymentStatuses', 'contains an unsupported value');

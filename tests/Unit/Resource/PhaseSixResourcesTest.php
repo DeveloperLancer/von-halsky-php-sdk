@@ -121,6 +121,21 @@ final class PhaseSixResourcesTest extends TestCase
         new BatchCreateOffersRequest(array_fill(0, 501, $request));
     }
 
+    public function testInvalidRequestInputDoesNotReachTheHttpClient(): void
+    {
+        [$sdk, $http] = $this->client();
+        $offers = $sdk->forOrganization(OrganizationId::fromString('organization-1'))->offers();
+
+        try {
+            $offers->updatePrices(['not-an-update']);
+            self::fail('Expected malformed price updates to be rejected.');
+        } catch (InvalidRequestException $exception) {
+            self::assertSame('offers.prices[0]', $exception->fieldPath);
+        }
+
+        self::assertCount(0, $http->requests());
+    }
+
     private function createRequest(): CreateOfferRequest
     {
         return new CreateOfferRequest(

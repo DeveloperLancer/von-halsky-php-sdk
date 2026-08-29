@@ -28,6 +28,7 @@ use DevLancer\VonHalsky\Request\ProductHintOptions;
 use DevLancer\VonHalsky\Request\ResponseLanguage;
 use DevLancer\VonHalsky\Serialization\JsonResponseDecoder;
 use DevLancer\VonHalsky\Serialization\RequestNormalizer;
+use DevLancer\VonHalsky\Validation\RequestValidator;
 use DevLancer\VonHalsky\ValueObject\CommandId;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
@@ -247,6 +248,11 @@ final class OffersResource
      */
     private function batchUpdate(string $path, array $updates, string $operationId, ?ResponseLanguage $language): ApiResponse
     {
+        RequestValidator::listOfInstances(
+            $updates,
+            $path === 'prices' ? OfferPriceUpdate::class : OfferStockUpdate::class,
+            'offers.' . $path,
+        );
         if ($updates === []) {
             throw new InvalidRequestException('offers.' . $path, 'must not be empty');
         }

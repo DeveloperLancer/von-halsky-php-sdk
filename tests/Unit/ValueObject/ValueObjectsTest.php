@@ -104,4 +104,28 @@ final class ValueObjectsTest extends TestCase
         $this->expectException(InvalidRequestException::class);
         UtcDateTime::fromString('tomorrow +00:00');
     }
+
+    #[DataProvider('invalidUtcDateProvider')]
+    public function testUtcDateRejectsParseWarnings(string $value): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        UtcDateTime::fromString($value);
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function invalidUtcDateProvider(): iterable
+    {
+        yield 'nonexistent calendar day' => ['2026-02-30T12:00:00Z'];
+        yield 'invalid hour' => ['2026-08-04T25:00:00+00:00'];
+        yield 'invalid minute' => ['2026-08-04T12:61:00+00:00'];
+        yield 'invalid offset' => ['2026-08-04T12:00:00+25:00'];
+    }
+
+    public function testUtcDateAcceptsLeapDayAndNormalizesItToUtc(): void
+    {
+        self::assertSame(
+            '2024-02-29T21:30:00+00:00',
+            UtcDateTime::fromString('2024-02-29T23:30:00+02:00')->toAtomString(),
+        );
+    }
 }

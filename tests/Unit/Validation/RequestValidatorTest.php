@@ -5,30 +5,38 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Tests\Unit\Validation;
 
 use DevLancer\VonHalsky\Exception\InvalidRequestException;
+use DevLancer\VonHalsky\Model\Offer\AttributeValue;
+use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
+use DevLancer\VonHalsky\Model\Offer\OfferImage;
+use DevLancer\VonHalsky\Model\Offer\Price;
+use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\Validation\RequestValidator;
+use DevLancer\VonHalsky\ValueObject\CategoryId;
+use DevLancer\VonHalsky\ValueObject\Ean;
+use DevLancer\VonHalsky\ValueObject\Money;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class RequestValidatorTest extends TestCase
 {
-    /** @param list<int> $values */
     #[DataProvider('collectionLimitProvider')]
-    public function testConfirmedCollectionMaximums(array $values, int $maximum, string $kind): void
+    public function testConfirmedCollectionMaximums(int $maximum, string $kind): void
     {
-        self::validateCollection($kind, array_slice($values, 0, $maximum));
+        self::validateCollection($kind, self::collection($kind, $maximum));
         self::addToAssertionCount(1);
 
         $this->expectException(InvalidRequestException::class);
-        self::validateCollection($kind, $values);
+        self::validateCollection($kind, self::collection($kind, $maximum + 1));
     }
 
-    /** @return iterable<string, array{list<int>, int, string}> */
+    /** @return iterable<string, array{int, string}> */
     public static function collectionLimitProvider(): iterable
     {
-        yield 'images' => [range(1, 21), 20, 'images'];
-        yield 'manuals' => [range(1, 21), 20, 'manuals'];
-        yield 'attributes' => [range(1, 121), 120, 'attributes'];
-        yield 'batch' => [range(1, 501), 500, 'batch'];
+        yield 'images' => [20, 'images'];
+        yield 'manuals' => [20, 'manuals'];
+        yield 'attributes' => [120, 'attributes'];
+        yield 'batch' => [500, 'batch'];
     }
 
     public function testShippingTimeBoundaries(): void
@@ -78,7 +86,19 @@ final class RequestValidatorTest extends TestCase
         RequestValidator::attributeValues([123], 'Product.attributes.values');
     }
 
-    /** @param list<int> $items */
+    /** @return list<mixed> */
+    private static function collection(string $kind, int $count): array
+    {
+        return match ($kind) {
+            'images' => array_fill(0, $count, new OfferImage('product.webp', 'https://example.com/product.webp', 1)),
+            'manuals' => array_fill(0, $count, ['title' => 'Manual title', 'url' => 'https://example.com/manual.pdf']),
+            'attributes' => array_fill(0, $count, new AttributeValue('attribute-1', ['value'])),
+            'batch' => array_fill(0, $count, self::createOfferRequest()),
+            default => throw new \LogicException('Unknown validation kind.'),
+        };
+    }
+
+    /** @param list<mixed> $items */
     private static function validateCollection(string $kind, array $items): void
     {
         switch ($kind) {
@@ -97,5 +117,15 @@ final class RequestValidatorTest extends TestCase
             default:
                 throw new \LogicException('Unknown validation kind.');
         }
+    }
+
+    private static function createOfferRequest(): CreateOfferRequest
+    {
+        return new CreateOfferRequest(
+            new ProductProposal('Product', str_repeat('D', 100), 'Brand', CategoryId::fromString('category-1'), new Ean('5901234123457')),
+            new Stock(1),
+            new Price(Money::fromDecimal('1.00'), '23%'),
+            images: [new OfferImage('product.webp', 'https://example.com/product.webp', 1)],
+        );
     }
 }

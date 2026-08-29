@@ -22,6 +22,9 @@ final class ProductHintOptions
         if ($ean === null && $manufacturerProductNumber === null && $name === null) {
             throw new InvalidRequestException('offerHint', 'requires ean, manufacturerProductNumber or name');
         }
+        if ($name === '') {
+            throw new InvalidRequestException('offerHint.name', 'must not be empty');
+        }
         RequestValidator::integerRange($limit, 0, 30, 'offerHint.limit');
         if ($offset < 0) {
             throw new InvalidRequestException('offerHint.offset', 'must be non-negative');
