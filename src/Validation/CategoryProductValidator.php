@@ -17,12 +17,17 @@ final class CategoryProductValidator
     /** @var array<string, AttributeDefinition> */
     private readonly array $definitions;
 
+    private readonly AttributeValueTypeValidatorRegistry $attributeValueTypeValidators;
+
     /** @param list<AttributeDefinition> $attributeDefinitions */
     public function __construct(
         public readonly CategoryId $categoryId,
         array $attributeDefinitions,
+        ?AttributeValueTypeValidatorRegistry $attributeValueTypeValidators = null,
     ) {
         $this->definitions = self::indexDefinitions($attributeDefinitions);
+        $this->attributeValueTypeValidators = $attributeValueTypeValidators
+            ?? AttributeValueTypeValidatorRegistry::withDefaults();
     }
 
     /**
@@ -140,15 +145,26 @@ final class CategoryProductValidator
                     $definition->name,
                 );
             }
-            if (!$definition->type->isKnown()) {
-                $issues[] = self::issue(
-                    CategoryProductValidationIssue::ATTRIBUTE_TYPE_UNSUPPORTED,
-                    CategoryProductValidationIssue::WARNING,
-                    sprintf('Attribute "%s" uses unsupported type "%s".', $definition->name, $definition->type->value),
-                    'Product.attributes',
-                    $definition->id,
-                    $definition->name,
-                );
+            if (!$this->attributeValueTypeValidators->supports($definition->type)) {
+                if ($definition->type->isKnown()) {
+                    $issues[] = self::issue(
+                        CategoryProductValidationIssue::ATTRIBUTE_TYPE_VALIDATOR_MISSING,
+                        CategoryProductValidationIssue::ERROR,
+                        sprintf('Attribute "%s" uses known type "%s" without a registered validator.', $definition->name, $definition->type->value),
+                        'Product.attributes',
+                        $definition->id,
+                        $definition->name,
+                    );
+                } else {
+                    $issues[] = self::issue(
+                        CategoryProductValidationIssue::ATTRIBUTE_TYPE_UNSUPPORTED,
+                        CategoryProductValidationIssue::WARNING,
+                        sprintf('Attribute "%s" uses unsupported type "%s".', $definition->name, $definition->type->value),
+                        'Product.attributes',
+                        $definition->id,
+                        $definition->name,
+                    );
+                }
             }
             if ($definition->type->value === AttributeType::DICTIONARY && $definition->dictionary === null) {
                 $issues[] = self::issue(
@@ -245,7 +261,7 @@ final class CategoryProductValidator
         array &$issues,
     ): void {
         foreach ($attribute->values as $index => $value) {
-            if (self::valueMatchesType($definition->type->value, $value)) {
+            if ($this->attributeValueTypeValidators->isValid($definition->type, $value)) {
                 continue;
             }
 
@@ -263,39 +279,6 @@ final class CategoryProductValidator
                 $definition->name,
             );
         }
-    }
-
-    private static function valueMatchesType(string $type, string $value): bool
-    {
-        return match ($type) {
-            AttributeType::TEXT_VALUE, AttributeType::LONG_TEXT_VALUE, AttributeType::DICTIONARY => true,
-            AttributeType::NUMERIC => preg_match('/\A[+-]?\d+\z/D', $value) === 1,
-            AttributeType::NUMERIC_FLOAT => preg_match('/\A[+-]?(?:\d+(?:\.\d+)?|\.\d+)\z/D', $value) === 1,
-            AttributeType::DATE => self::isIsoDate($value),
-            AttributeType::URL => self::isHttpUrl($value),
-            default => true,
-        };
-    }
-
-    private static function isIsoDate(string $value): bool
-    {
-        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $value);
-        $errors = \DateTimeImmutable::getLastErrors();
-
-        return $date !== false
-            && ($errors === false || ($errors['warning_count'] === 0 && $errors['error_count'] === 0))
-            && $date->format('Y-m-d') === $value;
-    }
-
-    private static function isHttpUrl(string $value): bool
-    {
-        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
-            return false;
-        }
-
-        $scheme = parse_url($value, PHP_URL_SCHEME);
-
-        return $scheme === 'http' || $scheme === 'https';
     }
 
     private static function issue(

@@ -2,6 +2,8 @@
 
 These tests call the real Von Halsky Stage environment. The normal `composer test` command excludes them. Every `composer test-stage` run creates, updates, and closes a synthetic Stage offer.
 
+See [the API verification checklist](./VERIFICATION-CHECKLIST.md) for the Stage fields and operations already verified, inconclusive probes, and the remaining test backlog.
+
 ## Local configuration
 
 Copy `stage-config.local.php.dist` to `stage-config.local.php` and fill in `client_id`, `client_secret`, and `product_ean`:

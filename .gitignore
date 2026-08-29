@@ -4,3 +4,4 @@
 /build
 /vendor
 /tests/Stage/stage-config.local.php
+/.php-cs-fixer.cache

@@ -11,6 +11,8 @@ use DevLancer\VonHalsky\Model\Category\AttributeExpectedValue;
 use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Model\Offer\AttributeValue;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
+use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
 use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 use DevLancer\VonHalsky\Validation\CategoryProductValidator;
 use DevLancer\VonHalsky\ValueObject\CategoryId;
@@ -148,8 +150,8 @@ final class CategoryProductValidatorTest extends TestCase
         $result = $validator->validate($this->product('category-1', [
             new AttributeValue('text', ['any text']),
             new AttributeValue('long-text', ['longer text']),
-            new AttributeValue('integer', ['-42']),
-            new AttributeValue('decimal', ['+3.14']),
+            new AttributeValue('integer', ['42']),
+            new AttributeValue('decimal', ['3.14']),
             new AttributeValue('date', ['2026-08-28']),
             new AttributeValue('url', ['https://example.com/product']),
         ]));
@@ -198,6 +200,58 @@ final class CategoryProductValidatorTest extends TestCase
             CategoryProductValidationIssue::ATTRIBUTE_TYPE_UNSUPPORTED,
             CategoryProductValidationIssue::DICTIONARY_MISSING,
         ], self::codes($result->warnings()));
+    }
+
+    public function testUsesRegisteredValidatorForApplicationDefinedAttributeType(): void
+    {
+        $registry = AttributeValueTypeValidatorRegistry::withDefaults([
+            new class implements AttributeValueTypeValidatorInterface {
+                public function type(): string
+                {
+                    return 'APPLICATION_CODE';
+                }
+
+                public function isValid(string $value): bool
+                {
+                    return $value === 'accepted';
+                }
+            },
+        ]);
+        $validator = new CategoryProductValidator(
+            CategoryId::fromString('category-1'),
+            [$this->definition('application-code', AttributeExpectedValue::ONE, 'APPLICATION_CODE')],
+            $registry,
+        );
+
+        $invalid = $validator->validate($this->product('category-1', [
+            new AttributeValue('application-code', ['invalid']),
+        ]));
+        $valid = $validator->validate($this->product('category-1', [
+            new AttributeValue('application-code', ['accepted']),
+        ]));
+
+        self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID], self::codes($invalid->errors()));
+        self::assertSame([], $invalid->warnings());
+        self::assertTrue($valid->isValid());
+    }
+
+    public function testReportsErrorWhenKnownApiTypeHasNoRegisteredValidator(): void
+    {
+        $registry = AttributeValueTypeValidatorRegistry::withDefaults()
+            ->remove(AttributeType::NUMERIC);
+        $validator = new CategoryProductValidator(
+            CategoryId::fromString('category-1'),
+            [$this->definition('integer', AttributeExpectedValue::ONE, AttributeType::NUMERIC)],
+            $registry,
+        );
+
+        $result = $validator->validate($this->product('category-1', [
+            new AttributeValue('integer', ['42']),
+        ]));
+
+        self::assertFalse($result->isValid());
+        self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_TYPE_VALIDATOR_MISSING], self::codes($result->errors()));
+        self::assertSame([], $result->warnings());
     }
 
     public function testCategoryMismatchStopsCategorySpecificChecks(): void
