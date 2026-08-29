@@ -6,7 +6,7 @@ Reads one global category and a bounded descendant subtree.
 
 - Scope: global; call `$client->categories()`.
 - Signature: `get(CategoryId $categoryId, ?CategoryDetailsOptions $options = null): ApiResponse<Category>`.
-- Parameters: category ID and optional depth 0 through 10 plus language.
+- Parameters: category ID and optional depth 0 through 4 plus language.
 - Result: one hydrated `Category` in `data`.
 
 ## Behavior and limits

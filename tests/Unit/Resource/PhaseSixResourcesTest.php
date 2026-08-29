@@ -136,6 +136,30 @@ final class PhaseSixResourcesTest extends TestCase
         self::assertCount(0, $http->requests());
     }
 
+    public function testAttachmentMimeTypeMustBeAllowedForItsType(): void
+    {
+        [$sdk, $http] = $this->client();
+        $attachments = $sdk->forOrganization(OrganizationId::fromString('organization-1'))->attachments();
+        $factory = new Psr17Factory();
+
+        try {
+            $attachments->upload(
+                OfferId::fromString('offer-1'),
+                AttachmentType::IMAGE,
+                'image.png',
+                'application/pdf',
+                $factory->createStream('file'),
+            );
+            self::fail('Expected an invalid attachment MIME type.');
+        } catch (InvalidRequestException $exception) {
+            self::assertSame('attachment.mimeType', $exception->fieldPath);
+        }
+
+        self::assertCount(0, $http->requests());
+        self::assertTrue(AttachmentType::OTHER->allowsMimeType('video/mp4'));
+        self::assertFalse(AttachmentType::MANUAL->allowsMimeType('image/png'));
+    }
+
     private function createRequest(): CreateOfferRequest
     {
         return new CreateOfferRequest(

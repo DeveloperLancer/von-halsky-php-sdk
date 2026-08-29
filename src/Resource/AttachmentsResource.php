@@ -17,10 +17,10 @@ use DevLancer\VonHalsky\Pagination\PageResult;
 use DevLancer\VonHalsky\Request\AttachmentListOptions;
 use DevLancer\VonHalsky\Request\ResponseLanguage;
 use DevLancer\VonHalsky\Serialization\JsonResponseDecoder;
+use DevLancer\VonHalsky\Validation\RequestValidator;
 use DevLancer\VonHalsky\ValueObject\AttachmentId;
 use DevLancer\VonHalsky\ValueObject\OfferId;
 use DevLancer\VonHalsky\ValueObject\OrganizationId;
-use DevLancer\VonHalsky\Validation\RequestValidator;
 use Psr\Http\Message\StreamInterface;
 
 /** Stream-first offer attachment operations. */
@@ -63,6 +63,9 @@ final class AttachmentsResource
         }
         if (preg_match('/\A[a-zA-Z0-9!#$&^_.+-]+\/[a-zA-Z0-9!#$&^_.+-]+\z/D', $mimeType) !== 1) {
             throw new InvalidRequestException('attachment.mimeType', 'must be a valid MIME type');
+        }
+        if (!$type->allowsMimeType($mimeType)) {
+            throw new InvalidRequestException('attachment.mimeType', sprintf('is not permitted for attachment type %s', $type->value));
         }
         $response = $this->executor->executeMultipart(
             'POST',

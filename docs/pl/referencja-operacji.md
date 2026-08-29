@@ -9,7 +9,7 @@ Wszystkie udane wywołania zwracają `ApiResponse<T>`. Zasoby globalne są dost�
 | Metoda | Zakres i wynik | Opis | Szczegóły |
 |---|---|---|---|
 | `organizations()->list()` | globalny, `list<Organization>` | Organizacje dostępne dla obecnego tokenu. | [PL](./reference/organizations/list.md) |
-| `categories()->list()` | globalny, `list<Category>` | Ograniczone drzewo kategorii; głębokość `0–10`. | [PL](./reference/categories/list.md) |
+| `categories()->list()` | globalny, `list<Category>` | Ograniczone drzewo kategorii; głębokość `0–4`. | [PL](./reference/categories/list.md) |
 | `categories()->get()` | globalny, `Category` | Jedna kategoria i ograniczone potomstwo. | [PL](./reference/categories/get.md) |
 | `categories()->attributes()` | globalny, `list<AttributeDefinition>` | Definicje atrybutów wymaganych/opcjonalnych dla kategorii. | [PL](./reference/categories/attributes.md) |
 

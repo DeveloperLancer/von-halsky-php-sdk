@@ -13,8 +13,8 @@ final class CategoryDetailsOptions
         public readonly int $depth = 1,
         public readonly ?ResponseLanguage $language = null,
     ) {
-        if ($depth < 0 || $depth > 10) {
-            throw new InvalidRequestException('depth', 'must be between 0 and 10');
+        if ($depth < 0 || $depth > 4) {
+            throw new InvalidRequestException('depth', 'must be between 0 and 4');
         }
     }
 }

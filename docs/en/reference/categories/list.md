@@ -6,7 +6,7 @@ Browses a bounded global category tree.
 
 - Scope: global; call `$client->categories()`.
 - Signature: `list(?CategoryTreeOptions $options = null): ApiResponse<list<Category>>`.
-- Parameters: `CategoryTreeOptions(depth, root, language)`; depth is 0 through 10.
+- Parameters: `CategoryTreeOptions(depth, root, language)`; depth is 0 through 4.
 - Result: the requested root nodes and only descendants included by that depth.
 
 ## Behavior and limits

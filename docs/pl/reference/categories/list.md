@@ -6,7 +6,7 @@ Przegląda ograniczone globalne drzewo kategorii.
 
 - Zakres: globalny, `$client->categories()`.
 - Sygnatura: `list(?CategoryTreeOptions $options = null): ApiResponse<list<Category>>`.
-- Parametry: głębokość `0–10`, opcjonalny root i język.
+- Parametry: głębokość `0–4`, opcjonalny root i język.
 - Wynik: węzły drzewa do żądanej głębokości.
 
 ## Zachowanie
