@@ -109,7 +109,6 @@ final class CategoryProductValidator
 
             $this->validateCardinality($definition, $attribute, $fieldPath, $issues);
             $this->validateValueTypes($definition, $attribute, $index, $issues);
-            $this->validateDictionary($definition, $attribute, $fieldPath, $issues);
         }
 
         foreach ($this->definitions as $definition) {
@@ -209,47 +208,6 @@ final class CategoryProductValidator
                     $definition->expectedValue->value,
                 ),
                 $fieldPath . '.values',
-                $definition->id,
-                $definition->name,
-            );
-        }
-    }
-
-    /** @param list<CategoryProductValidationIssue> $issues */
-    private function validateDictionary(
-        AttributeDefinition $definition,
-        AttributeValue $attribute,
-        string $fieldPath,
-        array &$issues,
-    ): void {
-        if ($definition->dictionary === null) {
-            return;
-        }
-
-        $active = [];
-        $inactive = [];
-        foreach ($definition->dictionary->options as $option) {
-            if ($option->active) {
-                $active[$option->value] = true;
-            } else {
-                $inactive[$option->value] = true;
-            }
-        }
-
-        foreach ($attribute->values as $index => $value) {
-            if (isset($active[$value])) {
-                continue;
-            }
-            $inactiveValue = isset($inactive[$value]);
-            $issues[] = self::issue(
-                $inactiveValue
-                    ? CategoryProductValidationIssue::DICTIONARY_VALUE_INACTIVE
-                    : CategoryProductValidationIssue::DICTIONARY_VALUE_UNKNOWN,
-                CategoryProductValidationIssue::ERROR,
-                $inactiveValue
-                    ? sprintf('Dictionary value "%s" for attribute "%s" is inactive.', $value, $definition->name)
-                    : sprintf('Dictionary value "%s" is not defined for attribute "%s".', $value, $definition->name),
-                sprintf('%s.values[%d]', $fieldPath, $index),
                 $definition->id,
                 $definition->name,
             );

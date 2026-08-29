@@ -162,6 +162,8 @@ final class CategoryProductValidatorTest extends TestCase
             CategoryProductValidationIssue::DICTIONARY_VALUE_INACTIVE,
             CategoryProductValidationIssue::DICTIONARY_VALUE_UNKNOWN,
         ], self::codes($result->errors()));
+        self::assertSame('Product.attributes[0].values[1]', $result->errors()[0]->fieldPath);
+        self::assertSame('Product.attributes[0].values[2]', $result->errors()[1]->fieldPath);
     }
 
     public function testValidatesKnownValueTypes(): void

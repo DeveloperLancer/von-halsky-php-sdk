@@ -130,7 +130,7 @@ foreach ($validation->issues as $issue) {
 | `AT_LEAST_ONE` | co najmniej 1 |
 | `ANY` | 0, 1 lub wiele |
 
-Wartości muszą też odpowiadać typowi definicji. Przykładowe `'123'` jest poprawnym kandydatem dla `NUMERIC`, ale nie musi być poprawne dla definicji wybranej w rzeczywistej kategorii. Dla `DICTIONARY` przekaż dokładne `value` aktywnej opcji zwróconej w `$definition->dictionary`, a nie jej ID. Pusta lista w `UpsertAttribute` jest serializowana zgodnie z kontraktem, ale do jednoznacznego usunięcia atrybutu służy `RemoveAttribute`.
+Wartości muszą też odpowiadać typowi definicji. Przykładowe `'123'` jest poprawnym kandydatem dla `NUMERIC`, ale nie musi być poprawne dla definicji wybranej w rzeczywistej kategorii. `DictionaryValueValidator` porównuje wartość dokładnie z `option->value` w `$definition->dictionary`: aktywna opcja jest akceptowana, nieaktywna zwraca `dictionary_value_inactive`, a nieznana wartość lub ID opcji zwraca `dictionary_value_unknown`. Jeśli definicja nie zawiera słownika, `CategoryProductValidator` zwraca ostrzeżenie `dictionary_missing`. Pusta lista w `UpsertAttribute` jest serializowana zgodnie z kontraktem, ale do jednoznacznego usunięcia atrybutu służy `RemoveAttribute`.
 
 Jeśli potrzebujesz sprawdzić wyłącznie format jednej wartości, możesz jawnie utworzyć kontekst i wywołać rejestr typów. Indeksy muszą wskazywać rzeczywistą pozycję atrybutu i wartości w produkcie; w powyższym przykładzie oba wynoszą `0`:
 
@@ -164,7 +164,7 @@ foreach ($typeValidation->warnings() as $warning) {
 }
 ```
 
-Bezpośrednie wywołanie rejestru uruchamia wszystkie reguły wybranego walidatora typu, w tym jego własny limit długości. Nie sprawdza kompletności produktu, krotności atrybutu, wymaganych atrybutów ani przynależności wartości do słownika. Do walidacji danych przed utworzeniem lub aktualizacją oferty używaj `CategoryProductValidator::validate()`.
+Bezpośrednie wywołanie rejestru uruchamia wszystkie reguły wybranego walidatora typu, w tym jego własny limit długości oraz — dla `DICTIONARY` — przynależność do aktywnych opcji słownika. Nie sprawdza kompletności produktu, krotności atrybutu ani wymaganych atrybutów. Do walidacji danych przed utworzeniem lub aktualizacją oferty używaj `CategoryProductValidator::validate()`.
 
 Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory, aktywne wartości słownikowe oraz znane typy wartości. Każdy wbudowany typ ma obecnie własny limit 1024 znaków. `NUMERIC` przyjmuje nieujemne liczby całkowite bez znaku, `NUMERIC_FLOAT` nieujemne liczby dziesiętne z kropką, `DATE` datę ISO `YYYY-MM-DD`, a `URL` bezwzględny adres HTTP lub HTTPS. Dla słownika przekazuj zlokalizowane `value` opcji zwrócone przez API, a nie ID opcji. Nieznane przyszłe typy definicji powodują ostrzeżenia, natomiast brak zarejestrowanego walidatora dla typu znanego API jest błędem. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
 

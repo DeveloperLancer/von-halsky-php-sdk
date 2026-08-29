@@ -130,7 +130,7 @@ foreach ($validation->issues as $issue) {
 | `AT_LEAST_ONE` | at least 1 |
 | `ANY` | 0, 1, or many |
 
-Values must also match the definition type. The example `'123'` is a valid candidate for `NUMERIC`, but it might not be valid for the definition selected in a real category. For `DICTIONARY`, pass the exact active option `value` returned in `$definition->dictionary`, not its ID. An empty `UpsertAttribute` value list is serialized according to the contract, but use `RemoveAttribute` when the intent is to remove an attribute unambiguously.
+Values must also match the definition type. The example `'123'` is a valid candidate for `NUMERIC`, but it might not be valid for the definition selected in a real category. `DictionaryValueValidator` compares the input exactly with each `option->value` in `$definition->dictionary`: an active option is accepted, an inactive option returns `dictionary_value_inactive`, and an unknown value or option ID returns `dictionary_value_unknown`. When a definition has no dictionary, `CategoryProductValidator` returns the `dictionary_missing` warning. An empty `UpsertAttribute` value list is serialized according to the contract, but use `RemoveAttribute` when the intent is to remove an attribute unambiguously.
 
 When only one value's format needs to be checked, create the context explicitly and call the type registry. The indexes must point to the attribute's and value's real positions in the product; both are `0` in the preceding example:
 
@@ -164,7 +164,7 @@ foreach ($typeValidation->warnings() as $warning) {
 }
 ```
 
-Calling the registry directly runs every rule of the selected type validator, including its independent length limit. It does not check product completeness, attribute cardinality, required attributes, or dictionary membership. Use `CategoryProductValidator::validate()` before creating or updating an offer.
+Calling the registry directly runs every rule of the selected type validator, including its independent length limit and, for `DICTIONARY`, membership in the active dictionary options. It does not check product completeness, attribute cardinality, or required attributes. Use `CategoryProductValidator::validate()` before creating or updating an offer.
 
 The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. Every built-in type currently owns an independent 1024-character limit. `NUMERIC` accepts unsigned non-negative integers, `NUMERIC_FLOAT` unsigned non-negative dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. Unknown future definition types produce warnings, while a missing validator for an API-defined type is an error. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
 

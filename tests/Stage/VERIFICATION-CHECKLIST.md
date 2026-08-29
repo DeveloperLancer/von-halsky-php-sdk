@@ -62,9 +62,12 @@ This checklist records observed behavior of the real Stage API. It is not an API
 | `NUMERIC_FLOAT` | Stage command acceptance was observed for several JSON/string shapes, but read-after-write was inconsistent | inconclusive |
 | `LONG_TEXT_VALUE` | No existing published offer category exposed the type | pending |
 | `DICTIONARY` | No existing published offer category exposed the type for a write probe | pending |
+| `DICTIONARY`: request value representation | Test `option.value` and `option.id` separately; the OpenAPI contract does not state unambiguously which representation `AttributeValue.values[]` accepts | pending |
+| `DICTIONARY`: allowed option membership | Verify that an active option returned by the current category definition is accepted and a value absent from its dictionary is rejected | pending |
+| `DICTIONARY`: inactive option | Verify whether an option with `active=false` is rejected, rather than inferring behavior from the field name | pending |
 | `DATE` | No existing published offer category exposed the type | pending |
 | `URL` | No existing published offer category exposed the type | pending |
-| Attribute cardinality, multilingual values, dictionary option ID/value semantics and per-category required attributes |  | pending |
+| Attribute cardinality, multilingual values and per-category required attributes |  | pending |
 
 ## Update protocol for this checklist
 
