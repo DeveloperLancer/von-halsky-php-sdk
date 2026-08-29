@@ -9,8 +9,6 @@ use DevLancer\VonHalsky\Exception\InvalidRequestException;
 /** Shared request-validation rules. */
 final class RequestValidator
 {
-    public const ATTRIBUTE_VALUE_MAX_LENGTH = 1024;
-
     public static function integerRange(int $value, int $minimum, int $maximum, string $fieldPath): void
     {
         if ($value < $minimum || $value > $maximum) {

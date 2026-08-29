@@ -121,7 +121,7 @@ foreach ($validation->issues as $issue) {
 }
 ```
 
-`values` is always a list of strings, including when an attribute has one value. The official common `AttributeValueItem` schema permits an empty string, limits every item to 1024 characters, and does not set `minItems`, so `[]` is structurally valid. The definition determines the permitted item count:
+`values` is always a list of strings, including when an attribute has one value. The official common `AttributeValueItem` schema permits an empty string, limits every item to 1024 characters, and does not set `minItems`, so `[]` is structurally valid. The SDK stores the current 1024 limit independently in every built-in type validator so that a future change to one type does not alter the others automatically. The definition determines the permitted item count:
 
 | `expectedValue` | Permitted `values` item count |
 | --- | --- |
@@ -164,11 +164,11 @@ foreach ($typeValidation->warnings() as $warning) {
 }
 ```
 
-Calling the registry directly checks the common `AttributeValueItem` limit and the current value's type rule. It does not check product completeness, attribute cardinality, required attributes, or dictionary membership. Use `CategoryProductValidator::validate()` before creating or updating an offer.
+Calling the registry directly runs every rule of the selected type validator, including its independent length limit. It does not check product completeness, attribute cardinality, required attributes, or dictionary membership. Use `CategoryProductValidator::validate()` before creating or updating an offer.
 
-The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. Every `values` item, including `TEXT_VALUE` and `LONG_TEXT_VALUE`, has the official contract's common 1024-character limit. `NUMERIC` accepts unsigned non-negative integers, `NUMERIC_FLOAT` unsigned non-negative dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. Unknown future definition types produce warnings, while a missing validator for an API-defined type is an error. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
+The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. Every built-in type currently owns an independent 1024-character limit. `NUMERIC` accepts unsigned non-negative integers, `NUMERIC_FLOAT` unsigned non-negative dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. Unknown future definition types produce warnings, while a missing validator for an API-defined type is an error. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
 
-An application can register its own attribute type. The validator receives the category, definition, complete attribute, current value, indexes, and field path. It returns a list of errors and warnings that `CategoryProductValidator` adds to the product result. The registry adds the common `AttributeValueItem` constraints automatically, so an application validator does not need to repeat the 1024-character limit:
+An application can register its own attribute type. The validator receives the category, definition, complete attribute, current value, indexes, and field path. It returns a list of errors and warnings that `CategoryProductValidator` adds to the product result. A custom type owns its limit. The `ValidatesAttributeValueLength` trait provides shared mechanics without imposing one shared limit value:
 
 ```php
 <?php
@@ -179,11 +179,16 @@ use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationIss
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
+use DevLancer\VonHalsky\Validation\AttributeType\ValidatesAttributeValueLength;
 use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
 use DevLancer\VonHalsky\Validation\CategoryProductValidator;
 
 final class ApplicationCodeValidator implements AttributeValueTypeValidatorInterface
 {
+    use ValidatesAttributeValueLength;
+
+    private const MAX_LENGTH = 64;
+
     public function type(): string
     {
         return 'APPLICATION_CODE';
@@ -191,17 +196,20 @@ final class ApplicationCodeValidator implements AttributeValueTypeValidatorInter
 
     public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        if (preg_match('/\AAPP-\d+\z/D', $context->value) === 1) {
-            return AttributeValueTypeValidationResult::valid();
+        $issues = [];
+        $lengthIssue = $this->maximumLengthIssue($context, self::MAX_LENGTH, $this->type());
+        if ($lengthIssue !== null) {
+            $issues[] = $lengthIssue;
         }
-
-        return new AttributeValueTypeValidationResult([
-            new AttributeValueTypeValidationIssue(
+        if (preg_match('/\AAPP-\d+\z/D', $context->value) !== 1) {
+            $issues[] = new AttributeValueTypeValidationIssue(
                 'application_code_invalid',
                 AttributeValueTypeValidationIssue::ERROR,
                 'Application code must use the APP-123 format.',
-            ),
-        ]);
+            );
+        }
+
+        return new AttributeValueTypeValidationResult($issues);
     }
 }
 

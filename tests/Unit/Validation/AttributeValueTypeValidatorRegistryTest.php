@@ -11,7 +11,6 @@ use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationRes
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
 use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
-use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 use PHPUnit\Framework\TestCase;
 
 final class AttributeValueTypeValidatorRegistryTest extends TestCase
@@ -89,19 +88,6 @@ final class AttributeValueTypeValidatorRegistryTest extends TestCase
 
         $this->expectException(\LogicException::class);
         $registry->validate($this->context(AttributeType::NUMERIC, '42'));
-    }
-
-    public function testAppliesTheCommonItemLimitToBuiltInAndApplicationTypes(): void
-    {
-        $registry = AttributeValueTypeValidatorRegistry::withDefaults([
-            $this->applicationCodeValidator(),
-        ]);
-
-        $builtIn = $registry->validate($this->context(AttributeType::LONG_TEXT_VALUE, str_repeat('ą', 1025)));
-        $application = $registry->validate($this->context('APPLICATION_CODE', str_repeat('ą', 1025)));
-
-        self::assertSame(CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG, $builtIn->errors()[0]->code);
-        self::assertSame(CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG, $application->errors()[0]->code);
     }
 
     private function applicationCodeValidator(): AttributeValueTypeValidatorInterface

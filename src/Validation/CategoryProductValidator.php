@@ -9,7 +9,6 @@ use DevLancer\VonHalsky\Model\Category\AttributeExpectedValue;
 use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Model\Offer\AttributeValue;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
-use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueItemValidator;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
 use DevLancer\VonHalsky\ValueObject\CategoryId;
 
@@ -21,8 +20,6 @@ final class CategoryProductValidator
 
     private readonly AttributeValueTypeValidatorRegistry $attributeValueTypeValidators;
 
-    private readonly AttributeValueItemValidator $attributeValueItemValidator;
-
     /** @param list<AttributeDefinition> $attributeDefinitions */
     public function __construct(
         public readonly CategoryId $categoryId,
@@ -32,7 +29,6 @@ final class CategoryProductValidator
         $this->definitions = self::indexDefinitions($attributeDefinitions);
         $this->attributeValueTypeValidators = $attributeValueTypeValidators
             ?? AttributeValueTypeValidatorRegistry::withDefaults();
-        $this->attributeValueItemValidator = new AttributeValueItemValidator();
     }
 
     /**
@@ -267,7 +263,9 @@ final class CategoryProductValidator
         int $attributeIndex,
         array &$issues,
     ): void {
-        $typeSupported = $this->attributeValueTypeValidators->supports($definition->type);
+        if (!$this->attributeValueTypeValidators->supports($definition->type)) {
+            return;
+        }
 
         foreach (array_keys($attribute->values) as $index) {
             $context = new AttributeValueValidationContext(
@@ -277,10 +275,7 @@ final class CategoryProductValidator
                 $attributeIndex,
                 $index,
             );
-            $result = $typeSupported
-                ? $this->attributeValueTypeValidators->validate($context)
-                : $this->attributeValueItemValidator->validate($context);
-            foreach ($result->issues as $issue) {
+            foreach ($this->attributeValueTypeValidators->validate($context)->issues as $issue) {
                 $issues[] = self::issue(
                     $issue->code,
                     $issue->level,

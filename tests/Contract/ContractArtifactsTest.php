@@ -149,7 +149,7 @@ final class ContractArtifactsTest extends TestCase
         self::assertSame('verified-by-production-contract', self::nestedValue($document, ['source', 'productionStatus']));
 
         $rules = self::listValue($document, 'rules');
-        self::assertCount(20, $rules);
+        self::assertCount(21, $rules);
         foreach ($rules as $ruleValue) {
             $rule = self::objectValue($ruleValue, 'rule');
             self::assertNotSame('', self::requiredString($rule, 'id'));

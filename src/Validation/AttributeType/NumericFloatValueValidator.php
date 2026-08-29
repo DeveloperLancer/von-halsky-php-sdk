@@ -9,6 +9,10 @@ use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 
 final class NumericFloatValueValidator implements AttributeValueTypeValidatorInterface
 {
+    use ValidatesAttributeValueLength;
+
+    private const MAX_LENGTH = 1024;
+
     public function type(): string
     {
         return AttributeType::NUMERIC_FLOAT;
@@ -16,16 +20,19 @@ final class NumericFloatValueValidator implements AttributeValueTypeValidatorInt
 
     public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        if (preg_match('/\A(?:\d+(?:\.\d+)?|\.\d+)\z/D', $context->value) === 1) {
-            return AttributeValueTypeValidationResult::valid();
+        $issues = [];
+        $lengthIssue = $this->maximumLengthIssue($context, self::MAX_LENGTH, AttributeType::NUMERIC_FLOAT);
+        if ($lengthIssue !== null) {
+            $issues[] = $lengthIssue;
         }
-
-        return new AttributeValueTypeValidationResult([
-            new AttributeValueTypeValidationIssue(
+        if (preg_match('/\A(?:\d+(?:\.\d+)?|\.\d+)\z/D', $context->value) !== 1) {
+            $issues[] = new AttributeValueTypeValidationIssue(
                 CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
                 AttributeValueTypeValidationIssue::ERROR,
                 'Value must be a non-negative decimal number using a dot and without a sign.',
-            ),
-        ]);
+            );
+        }
+
+        return new AttributeValueTypeValidationResult($issues);
     }
 }

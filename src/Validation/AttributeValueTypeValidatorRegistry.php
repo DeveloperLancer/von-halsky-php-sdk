@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Validation;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
-use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueItemValidator;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
@@ -23,12 +22,9 @@ final class AttributeValueTypeValidatorRegistry
     /** @var array<string, AttributeValueTypeValidatorInterface> */
     private array $validators = [];
 
-    private readonly AttributeValueItemValidator $attributeValueItemValidator;
-
     /** @param iterable<mixed> $validators */
     public function __construct(iterable $validators)
     {
-        $this->attributeValueItemValidator = new AttributeValueItemValidator();
         foreach ($validators as $validator) {
             if (!$validator instanceof AttributeValueTypeValidatorInterface) {
                 throw new \InvalidArgumentException(sprintf(
@@ -75,13 +71,7 @@ final class AttributeValueTypeValidatorRegistry
             throw new \LogicException(sprintf('No attribute value validator is registered for type "%s".', $type));
         }
 
-        $itemResult = $this->attributeValueItemValidator->validate($context);
-        $typeResult = $validator->validate($context);
-
-        return new AttributeValueTypeValidationResult([
-            ...$itemResult->issues,
-            ...$typeResult->issues,
-        ]);
+        return $validator->validate($context);
     }
 
     public function add(AttributeValueTypeValidatorInterface $validator): self

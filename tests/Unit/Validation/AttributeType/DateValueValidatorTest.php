@@ -6,6 +6,7 @@ namespace DevLancer\VonHalsky\Tests\Unit\Validation\AttributeType;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Validation\AttributeType\DateValueValidator;
+use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -25,6 +26,16 @@ final class DateValueValidatorTest extends TestCase
         $context = AttributeValueValidationContextFactory::create(AttributeType::DATE, $value);
 
         self::assertFalse((new DateValueValidator())->validate($context)->isValid());
+    }
+
+    public function testReportsItsOwnLengthLimitSeparatelyFromTheDateFormat(): void
+    {
+        $validator = new DateValueValidator();
+        $atLimit = $validator->validate(AttributeValueValidationContextFactory::create(AttributeType::DATE, str_repeat('1', 1024)));
+        $aboveLimit = $validator->validate(AttributeValueValidationContextFactory::create(AttributeType::DATE, str_repeat('1', 1025)));
+
+        self::assertNotContains(CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG, array_column($atLimit->errors(), 'code'));
+        self::assertContains(CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG, array_column($aboveLimit->errors(), 'code'));
     }
 
     /** @return iterable<string, array{string}> */

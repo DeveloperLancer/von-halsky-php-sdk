@@ -9,13 +9,15 @@ use DevLancer\VonHalsky\Validation\RequestValidator;
 
 final class UpsertAttribute implements AttributeOperation
 {
+    private const VALUE_MAX_LENGTH = 1024;
+
     /** @param list<string> $values */
     public function __construct(public readonly string $id, public readonly array $values, public readonly ?string $language = null)
     {
         if ($id === '') {
             throw new InvalidRequestException('Offer.attributes.id', 'must not be empty');
         }
-        RequestValidator::attributeValues($values, 'Offer.attributes.values', RequestValidator::ATTRIBUTE_VALUE_MAX_LENGTH);
+        RequestValidator::attributeValues($values, 'Offer.attributes.values', self::VALUE_MAX_LENGTH);
     }
 
     public function jsonSerialize(): array

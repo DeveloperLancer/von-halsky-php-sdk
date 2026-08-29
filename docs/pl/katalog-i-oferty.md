@@ -121,7 +121,7 @@ foreach ($validation->issues as $issue) {
 }
 ```
 
-`values` jest zawsze listą stringów, również dla pojedynczej wartości. Oficjalny wspólny schemat `AttributeValueItem` dopuszcza pusty string, ogranicza każdy element do 1024 znaków i nie ustawia `minItems`, dlatego samo `[]` jest poprawne strukturalnie. Dopuszczalną liczbę elementów określa definicja:
+`values` jest zawsze listą stringów, również dla pojedynczej wartości. Oficjalny wspólny schemat `AttributeValueItem` dopuszcza pusty string, ogranicza każdy element do 1024 znaków i nie ustawia `minItems`, dlatego samo `[]` jest poprawne strukturalnie. SDK zapisuje obecny limit 1024 osobno w każdym wbudowanym walidatorze typu, aby przyszła zmiana jednego typu nie zmieniała automatycznie pozostałych. Dopuszczalną liczbę elementów określa definicja:
 
 | `expectedValue` | Dopuszczalna liczba elementów `values` |
 | --- | --- |
@@ -164,11 +164,11 @@ foreach ($typeValidation->warnings() as $warning) {
 }
 ```
 
-Bezpośrednie wywołanie rejestru sprawdza wspólny limit `AttributeValueItem` oraz regułę typu bieżącej wartości. Nie sprawdza kompletności produktu, krotności atrybutu, wymaganych atrybutów ani przynależności wartości do słownika. Do walidacji danych przed utworzeniem lub aktualizacją oferty używaj `CategoryProductValidator::validate()`.
+Bezpośrednie wywołanie rejestru uruchamia wszystkie reguły wybranego walidatora typu, w tym jego własny limit długości. Nie sprawdza kompletności produktu, krotności atrybutu, wymaganych atrybutów ani przynależności wartości do słownika. Do walidacji danych przed utworzeniem lub aktualizacją oferty używaj `CategoryProductValidator::validate()`.
 
-Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory, aktywne wartości słownikowe oraz znane typy wartości. Każdy element `values`, w tym `TEXT_VALUE` i `LONG_TEXT_VALUE`, ma wspólny limit 1024 znaków z oficjalnego kontraktu. `NUMERIC` przyjmuje nieujemne liczby całkowite bez znaku, `NUMERIC_FLOAT` nieujemne liczby dziesiętne z kropką, `DATE` datę ISO `YYYY-MM-DD`, a `URL` bezwzględny adres HTTP lub HTTPS. Dla słownika przekazuj zlokalizowane `value` opcji zwrócone przez API, a nie ID opcji. Nieznane przyszłe typy definicji powodują ostrzeżenia, natomiast brak zarejestrowanego walidatora dla typu znanego API jest błędem. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
+Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory, aktywne wartości słownikowe oraz znane typy wartości. Każdy wbudowany typ ma obecnie własny limit 1024 znaków. `NUMERIC` przyjmuje nieujemne liczby całkowite bez znaku, `NUMERIC_FLOAT` nieujemne liczby dziesiętne z kropką, `DATE` datę ISO `YYYY-MM-DD`, a `URL` bezwzględny adres HTTP lub HTTPS. Dla słownika przekazuj zlokalizowane `value` opcji zwrócone przez API, a nie ID opcji. Nieznane przyszłe typy definicji powodują ostrzeżenia, natomiast brak zarejestrowanego walidatora dla typu znanego API jest błędem. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
 
-Aplikacja może zarejestrować własny typ. Walidator otrzymuje kategorię, definicję, cały atrybut, bieżącą wartość, indeksy i ścieżkę pola. Zwraca listę błędów i ostrzeżeń, które `CategoryProductValidator` dołącza do wyniku produktu. Rejestr automatycznie dodaje wspólne ograniczenia `AttributeValueItem`, więc własny walidator nie musi powtarzać limitu 1024 znaków:
+Aplikacja może zarejestrować własny typ. Walidator otrzymuje kategorię, definicję, cały atrybut, bieżącą wartość, indeksy i ścieżkę pola. Zwraca listę błędów i ostrzeżeń, które `CategoryProductValidator` dołącza do wyniku produktu. Własny typ sam określa swój limit. Trait `ValidatesAttributeValueLength` udostępnia wspólną mechanikę bez narzucania wspólnej wartości limitu:
 
 ```php
 <?php
@@ -179,11 +179,16 @@ use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationIss
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
+use DevLancer\VonHalsky\Validation\AttributeType\ValidatesAttributeValueLength;
 use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
 use DevLancer\VonHalsky\Validation\CategoryProductValidator;
 
 final class ApplicationCodeValidator implements AttributeValueTypeValidatorInterface
 {
+    use ValidatesAttributeValueLength;
+
+    private const MAX_LENGTH = 64;
+
     public function type(): string
     {
         return 'APPLICATION_CODE';
@@ -191,17 +196,20 @@ final class ApplicationCodeValidator implements AttributeValueTypeValidatorInter
 
     public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        if (preg_match('/\AAPP-\d+\z/D', $context->value) === 1) {
-            return AttributeValueTypeValidationResult::valid();
+        $issues = [];
+        $lengthIssue = $this->maximumLengthIssue($context, self::MAX_LENGTH, $this->type());
+        if ($lengthIssue !== null) {
+            $issues[] = $lengthIssue;
         }
-
-        return new AttributeValueTypeValidationResult([
-            new AttributeValueTypeValidationIssue(
+        if (preg_match('/\AAPP-\d+\z/D', $context->value) !== 1) {
+            $issues[] = new AttributeValueTypeValidationIssue(
                 'application_code_invalid',
                 AttributeValueTypeValidationIssue::ERROR,
                 'Kod aplikacyjny musi mieć format APP-123.',
-            ),
-        ]);
+            );
+        }
+
+        return new AttributeValueTypeValidationResult($issues);
     }
 }
 

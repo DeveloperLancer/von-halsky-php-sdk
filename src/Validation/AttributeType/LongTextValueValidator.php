@@ -6,9 +6,12 @@ namespace DevLancer\VonHalsky\Validation\AttributeType;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
 
-/** LONG_TEXT_VALUE has no additional type rule; the registry enforces the common AttributeValueItem limit. */
 final class LongTextValueValidator implements AttributeValueTypeValidatorInterface
 {
+    use ValidatesAttributeValueLength;
+
+    private const MAX_LENGTH = 1024;
+
     public function type(): string
     {
         return AttributeType::LONG_TEXT_VALUE;
@@ -16,6 +19,8 @@ final class LongTextValueValidator implements AttributeValueTypeValidatorInterfa
 
     public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        return AttributeValueTypeValidationResult::valid();
+        $issue = $this->maximumLengthIssue($context, self::MAX_LENGTH, AttributeType::LONG_TEXT_VALUE);
+
+        return new AttributeValueTypeValidationResult($issue === null ? [] : [$issue]);
     }
 }

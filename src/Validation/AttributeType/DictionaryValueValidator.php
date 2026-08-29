@@ -9,6 +9,10 @@ use DevLancer\VonHalsky\Model\Category\AttributeType;
 /** Dictionary membership is validated separately against category dictionary options. */
 final class DictionaryValueValidator implements AttributeValueTypeValidatorInterface
 {
+    use ValidatesAttributeValueLength;
+
+    private const MAX_LENGTH = 1024;
+
     public function type(): string
     {
         return AttributeType::DICTIONARY;
@@ -16,6 +20,8 @@ final class DictionaryValueValidator implements AttributeValueTypeValidatorInter
 
     public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        return AttributeValueTypeValidationResult::valid();
+        $issue = $this->maximumLengthIssue($context, self::MAX_LENGTH, AttributeType::DICTIONARY);
+
+        return new AttributeValueTypeValidationResult($issue === null ? [] : [$issue]);
     }
 }

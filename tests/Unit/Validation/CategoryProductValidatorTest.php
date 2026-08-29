@@ -245,20 +245,6 @@ final class CategoryProductValidatorTest extends TestCase
         ], self::codes($result->warnings()));
     }
 
-    public function testCommonItemConstraintsStillApplyToAnUnknownFutureType(): void
-    {
-        $validator = $this->validator([
-            $this->definition('future', AttributeExpectedValue::ONE, 'FUTURE_TYPE'),
-        ]);
-
-        $result = $validator->validate($this->product('category-1', [
-            new AttributeValue('future', [str_repeat('ą', 1025)]),
-        ]));
-
-        self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG], self::codes($result->errors()));
-        self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_TYPE_UNSUPPORTED], self::codes($result->warnings()));
-    }
-
     public function testUsesRegisteredValidatorForApplicationDefinedAttributeType(): void
     {
         $registry = AttributeValueTypeValidatorRegistry::withDefaults([

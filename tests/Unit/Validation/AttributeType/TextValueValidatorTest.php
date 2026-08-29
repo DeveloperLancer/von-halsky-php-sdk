@@ -17,10 +17,17 @@ final class TextValueValidatorTest extends TestCase
         self::assertTrue((new TextValueValidator())->validate($context)->isValid());
     }
 
-    public function testAddsNoRuleBeyondTheCommonAttributeValueItemConstraint(): void
+    public function testAcceptsTextAtItsOwnLimit(): void
     {
         $context = AttributeValueValidationContextFactory::create(AttributeType::TEXT_VALUE, str_repeat('ą', 1024));
 
         self::assertTrue((new TextValueValidator())->validate($context)->isValid());
+    }
+
+    public function testRejectsTextAboveItsOwnLimit(): void
+    {
+        $context = AttributeValueValidationContextFactory::create(AttributeType::TEXT_VALUE, str_repeat('ą', 1025));
+
+        self::assertFalse((new TextValueValidator())->validate($context)->isValid());
     }
 }
