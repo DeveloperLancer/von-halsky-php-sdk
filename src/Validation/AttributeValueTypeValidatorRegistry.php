@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Validation;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueItemValidator;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
 use DevLancer\VonHalsky\Validation\AttributeType\DateValueValidator;
 use DevLancer\VonHalsky\Validation\AttributeType\DictionaryValueValidator;
 use DevLancer\VonHalsky\Validation\AttributeType\LongTextValueValidator;
@@ -20,9 +23,12 @@ final class AttributeValueTypeValidatorRegistry
     /** @var array<string, AttributeValueTypeValidatorInterface> */
     private array $validators = [];
 
+    private readonly AttributeValueItemValidator $attributeValueItemValidator;
+
     /** @param iterable<mixed> $validators */
     public function __construct(iterable $validators)
     {
+        $this->attributeValueItemValidator = new AttributeValueItemValidator();
         foreach ($validators as $validator) {
             if (!$validator instanceof AttributeValueTypeValidatorInterface) {
                 throw new \InvalidArgumentException(sprintf(
@@ -61,9 +67,21 @@ final class AttributeValueTypeValidatorRegistry
         return isset($this->validators[$type->value]);
     }
 
-    public function isValid(AttributeType $type, string $value): bool
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        return ($this->validators[$type->value] ?? null)?->isValid($value) ?? true;
+        $type = $context->definition->type->value;
+        $validator = $this->validators[$type] ?? null;
+        if ($validator === null) {
+            throw new \LogicException(sprintf('No attribute value validator is registered for type "%s".', $type));
+        }
+
+        $itemResult = $this->attributeValueItemValidator->validate($context);
+        $typeResult = $validator->validate($context);
+
+        return new AttributeValueTypeValidationResult([
+            ...$itemResult->issues,
+            ...$typeResult->issues,
+        ]);
     }
 
     public function add(AttributeValueTypeValidatorInterface $validator): self

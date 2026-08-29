@@ -14,8 +14,8 @@ final class DictionaryValueValidator implements AttributeValueTypeValidatorInter
         return AttributeType::DICTIONARY;
     }
 
-    public function isValid(string $value): bool
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        return true;
+        return AttributeValueTypeValidationResult::valid();
     }
 }

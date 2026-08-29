@@ -11,7 +11,10 @@ use DevLancer\VonHalsky\Model\Category\AttributeExpectedValue;
 use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Model\Offer\AttributeValue;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationIssue;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
 use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
 use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 use DevLancer\VonHalsky\Validation\CategoryProductValidator;
@@ -65,13 +68,38 @@ final class CategoryProductValidatorTest extends TestCase
         $result = $validator->validate($this->product('category-1', [
             new AttributeValue('one', ['value']),
             new AttributeValue('many', ['first', 'second']),
-            new AttributeValue('any', ['first', 'second']),
+            new AttributeValue('optional', []),
+            new AttributeValue('any', []),
         ]));
 
         self::assertTrue($result->isValid());
         self::assertSame([], $result->issues);
         self::assertSame([], $result->errors());
         self::assertSame([], $result->warnings());
+    }
+
+    public function testEmptyValueListsAreInvalidOnlyForRequiredCardinalities(): void
+    {
+        $validator = $this->validator([
+            $this->definition('optional', AttributeExpectedValue::NULL_OR_ONE),
+            $this->definition('any', AttributeExpectedValue::ANY),
+            $this->definition('one', AttributeExpectedValue::ONE),
+            $this->definition('many', AttributeExpectedValue::AT_LEAST_ONE),
+        ]);
+
+        $result = $validator->validate($this->product('category-1', [
+            new AttributeValue('optional', []),
+            new AttributeValue('any', []),
+            new AttributeValue('one', []),
+            new AttributeValue('many', []),
+        ]));
+
+        self::assertSame([
+            CategoryProductValidationIssue::ATTRIBUTE_CARDINALITY_INVALID,
+            CategoryProductValidationIssue::ATTRIBUTE_CARDINALITY_INVALID,
+        ], self::codes($result->errors()));
+        self::assertSame('one', $result->errors()[0]->attributeId);
+        self::assertSame('many', $result->errors()[1]->attributeId);
     }
 
     public function testReportsMissingRequiredAttributesAndInvalidCardinality(): void
@@ -159,6 +187,21 @@ final class CategoryProductValidatorTest extends TestCase
         self::assertTrue($result->isValid());
     }
 
+    public function testMapsTheCommonAttributeValueLimitWithItsExactPath(): void
+    {
+        $validator = $this->validator([
+            $this->definition('long-text', AttributeExpectedValue::ONE, AttributeType::LONG_TEXT_VALUE),
+        ]);
+
+        $result = $validator->validate($this->product('category-1', [
+            new AttributeValue('long-text', [str_repeat('ą', 1025)]),
+        ]));
+
+        self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG], self::codes($result->errors()));
+        self::assertSame('Product.attributes[0].values[0]', $result->errors()[0]->fieldPath);
+        self::assertSame('long-text', $result->errors()[0]->attributeId);
+    }
+
     public function testReportsEveryValueWithAnInvalidKnownType(): void
     {
         $validator = $this->validator([
@@ -202,6 +245,20 @@ final class CategoryProductValidatorTest extends TestCase
         ], self::codes($result->warnings()));
     }
 
+    public function testCommonItemConstraintsStillApplyToAnUnknownFutureType(): void
+    {
+        $validator = $this->validator([
+            $this->definition('future', AttributeExpectedValue::ONE, 'FUTURE_TYPE'),
+        ]);
+
+        $result = $validator->validate($this->product('category-1', [
+            new AttributeValue('future', [str_repeat('ą', 1025)]),
+        ]));
+
+        self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG], self::codes($result->errors()));
+        self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_TYPE_UNSUPPORTED], self::codes($result->warnings()));
+    }
+
     public function testUsesRegisteredValidatorForApplicationDefinedAttributeType(): void
     {
         $registry = AttributeValueTypeValidatorRegistry::withDefaults([
@@ -211,9 +268,19 @@ final class CategoryProductValidatorTest extends TestCase
                     return 'APPLICATION_CODE';
                 }
 
-                public function isValid(string $value): bool
+                public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
                 {
-                    return $value === 'accepted';
+                    if ($context->value === 'accepted') {
+                        return AttributeValueTypeValidationResult::valid();
+                    }
+
+                    return new AttributeValueTypeValidationResult([
+                        new AttributeValueTypeValidationIssue(
+                            CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+                            AttributeValueTypeValidationIssue::ERROR,
+                            'Application code is invalid.',
+                        ),
+                    ]);
                 }
             },
         ]);
@@ -233,6 +300,50 @@ final class CategoryProductValidatorTest extends TestCase
         self::assertSame([CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID], self::codes($invalid->errors()));
         self::assertSame([], $invalid->warnings());
         self::assertTrue($valid->isValid());
+    }
+
+    public function testMapsMultipleApplicationValidatorIssuesWithValueContext(): void
+    {
+        $registry = AttributeValueTypeValidatorRegistry::withDefaults([
+            new class implements AttributeValueTypeValidatorInterface {
+                public function type(): string
+                {
+                    return 'APPLICATION_CODE';
+                }
+
+                public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
+                {
+                    if ($context->value !== 'second') {
+                        return AttributeValueTypeValidationResult::valid();
+                    }
+
+                    return new AttributeValueTypeValidationResult([
+                        new AttributeValueTypeValidationIssue('application_error', AttributeValueTypeValidationIssue::ERROR, 'Application error.'),
+                        new AttributeValueTypeValidationIssue('application_warning', AttributeValueTypeValidationIssue::WARNING, 'Application warning.'),
+                    ]);
+                }
+            },
+        ]);
+        $validator = new CategoryProductValidator(
+            CategoryId::fromString('category-1'),
+            [
+                $this->definition('text', AttributeExpectedValue::ANY, AttributeType::TEXT_VALUE),
+                $this->definition('application-code', AttributeExpectedValue::ANY, 'APPLICATION_CODE'),
+            ],
+            $registry,
+        );
+
+        $result = $validator->validate($this->product('category-1', [
+            new AttributeValue('text', ['value']),
+            new AttributeValue('application-code', ['first', 'second']),
+        ]));
+
+        self::assertFalse($result->isValid());
+        self::assertSame(['application_error'], self::codes($result->errors()));
+        self::assertSame(['application_warning'], self::codes($result->warnings()));
+        self::assertSame('Product.attributes[1].values[1]', $result->errors()[0]->fieldPath);
+        self::assertSame('application-code', $result->errors()[0]->attributeId);
+        self::assertSame('Application-code', $result->errors()[0]->attributeName);
     }
 
     public function testReportsErrorWhenKnownApiTypeHasNoRegisteredValidator(): void

@@ -10,5 +10,5 @@ interface AttributeValueTypeValidatorInterface
     /** The API attribute-type identifier handled by this validator. */
     public function type(): string;
 
-    public function isValid(string $value): bool;
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult;
 }

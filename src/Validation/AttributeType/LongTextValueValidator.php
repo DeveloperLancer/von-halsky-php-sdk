@@ -6,7 +6,7 @@ namespace DevLancer\VonHalsky\Validation\AttributeType;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
 
-/** LONG_TEXT_VALUE has no confirmed server-side length constraint yet. */
+/** LONG_TEXT_VALUE has no additional type rule; the registry enforces the common AttributeValueItem limit. */
 final class LongTextValueValidator implements AttributeValueTypeValidatorInterface
 {
     public function type(): string
@@ -14,8 +14,8 @@ final class LongTextValueValidator implements AttributeValueTypeValidatorInterfa
         return AttributeType::LONG_TEXT_VALUE;
     }
 
-    public function isValid(string $value): bool
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        return true;
+        return AttributeValueTypeValidationResult::valid();
     }
 }

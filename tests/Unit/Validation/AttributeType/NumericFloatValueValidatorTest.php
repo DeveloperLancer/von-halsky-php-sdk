@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLancer\VonHalsky\Tests\Unit\Validation\AttributeType;
 
+use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Validation\AttributeType\NumericFloatValueValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -13,13 +14,17 @@ final class NumericFloatValueValidatorTest extends TestCase
     #[DataProvider('validValues')]
     public function testAcceptsDotDecimalFormat(string $value): void
     {
-        self::assertTrue((new NumericFloatValueValidator())->isValid($value));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::NUMERIC_FLOAT, $value);
+
+        self::assertTrue((new NumericFloatValueValidator())->validate($context)->isValid());
     }
 
     #[DataProvider('invalidValues')]
     public function testRejectsNonDotDecimalFormat(string $value): void
     {
-        self::assertFalse((new NumericFloatValueValidator())->isValid($value));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::NUMERIC_FLOAT, $value);
+
+        self::assertFalse((new NumericFloatValueValidator())->validate($context)->isValid());
     }
 
     /** @return iterable<string, array{string}> */
@@ -39,6 +44,5 @@ final class NumericFloatValueValidatorTest extends TestCase
         yield 'trailing decimal point' => ['42.'];
         yield 'scientific notation' => ['1e3'];
         yield 'alphabetic' => ['forty-two'];
-        yield 'empty' => [''];
     }
 }

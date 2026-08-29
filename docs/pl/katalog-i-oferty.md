@@ -62,7 +62,156 @@ $validator = new CategoryProductValidator($proposal->categoryId, $definitions);
 $validation = $validator->validate($proposal);
 ```
 
-Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory, aktywne wartości słownikowe oraz znane typy wartości. `TEXT_VALUE` ma lokalny limit 1024 znaków potwierdzony na Stage. `NUMERIC` przyjmuje nieujemne liczby całkowite bez znaku, `NUMERIC_FLOAT` nieujemne liczby dziesiętne z kropką, `DATE` datę ISO `YYYY-MM-DD`, a `URL` bezwzględny adres HTTP lub HTTPS. Dla słownika przekazuj zlokalizowane `value` opcji zwrócone przez API, a nie ID opcji. Nieznane przyszłe typy definicji powodują ostrzeżenia, natomiast brak zarejestrowanego walidatora dla typu znanego API jest błędem. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
+### Utworzenie i walidacja atrybutu
+
+Nie twórz ręcznie `AttributeDefinition`. Pobierz definicje dla wybranej kategorii i użyj ID konkretnej definicji jako ID `AttributeValue`. Poniższy przykład tworzy jedną wartość atrybutu, umieszcza ją w produkcie i uruchamia zalecaną walidację całego `ProductProposal`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Model\Offer\AttributeValue;
+use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Request\ResponseLanguage;
+use DevLancer\VonHalsky\Validation\CategoryProductValidator;
+use DevLancer\VonHalsky\ValueObject\CategoryId;
+use DevLancer\VonHalsky\ValueObject\Ean;
+
+/** @var \DevLancer\VonHalsky\VonHalskyClient $client */
+$categoryId = new CategoryId('leaf-category-id');
+$definitions = $client->categories()->attributes(
+    $categoryId,
+    ResponseLanguage::POLISH,
+)->data;
+
+$attributeId = 'attribute-id-returned-by-api';
+$definition = null;
+foreach ($definitions as $candidate) {
+    if ($candidate->id === $attributeId) {
+        $definition = $candidate;
+        break;
+    }
+}
+
+if ($definition === null) {
+    throw new LogicException('Atrybut nie należy do wybranej kategorii.');
+}
+
+$attribute = new AttributeValue(
+    id: $definition->id,
+    values: ['123'],
+    language: $definition->language,
+);
+
+$proposal = new ProductProposal(
+    name: 'Example product',
+    description: 'This example product description is longer than one hundred characters, so it meets the local offer-form requirement.',
+    brand: 'Example',
+    categoryId: $categoryId,
+    ean: new Ean('5901234123457'),
+    attributes: [$attribute],
+);
+
+$validator = new CategoryProductValidator($categoryId, $definitions);
+$validation = $validator->validate($proposal);
+
+foreach ($validation->issues as $issue) {
+    // Użyj $issue->level, $issue->fieldPath i $issue->message.
+}
+```
+
+`values` jest zawsze listą stringów, również dla pojedynczej wartości. Oficjalny wspólny schemat `AttributeValueItem` dopuszcza pusty string, ogranicza każdy element do 1024 znaków i nie ustawia `minItems`, dlatego samo `[]` jest poprawne strukturalnie. Dopuszczalną liczbę elementów określa definicja:
+
+| `expectedValue` | Dopuszczalna liczba elementów `values` |
+| --- | --- |
+| `NULL_OR_ONE` | 0 lub 1 |
+| `ONE` | dokładnie 1 |
+| `AT_LEAST_ONE` | co najmniej 1 |
+| `ANY` | 0, 1 lub wiele |
+
+Wartości muszą też odpowiadać typowi definicji. Przykładowe `'123'` jest poprawnym kandydatem dla `NUMERIC`, ale nie musi być poprawne dla definicji wybranej w rzeczywistej kategorii. Dla `DICTIONARY` przekaż dokładne `value` aktywnej opcji zwróconej w `$definition->dictionary`, a nie jej ID. Pusta lista w `UpsertAttribute` jest serializowana zgodnie z kontraktem, ale do jednoznacznego usunięcia atrybutu służy `RemoveAttribute`.
+
+Jeśli potrzebujesz sprawdzić wyłącznie format jednej wartości, możesz jawnie utworzyć kontekst i wywołać rejestr typów. Indeksy muszą wskazywać rzeczywistą pozycję atrybutu i wartości w produkcie; w powyższym przykładzie oba wynoszą `0`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
+use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
+
+/** @var \DevLancer\VonHalsky\ValueObject\CategoryId $categoryId */
+/** @var \DevLancer\VonHalsky\Model\Category\AttributeDefinition $definition */
+/** @var \DevLancer\VonHalsky\Model\Offer\AttributeValue $attribute */
+$context = new AttributeValueValidationContext(
+    categoryId: $categoryId,
+    definition: $definition,
+    attribute: $attribute,
+    attributeIndex: 0,
+    valueIndex: 0,
+);
+
+$registry = AttributeValueTypeValidatorRegistry::withDefaults();
+$typeValidation = $registry->validate($context);
+
+foreach ($typeValidation->errors() as $error) {
+    // Ścieżka znajduje się w $context->fieldPath, a opis w $error->message.
+}
+foreach ($typeValidation->warnings() as $warning) {
+    // Ostrzeżenia nie powodują $typeValidation->isValid() === false.
+}
+```
+
+Bezpośrednie wywołanie rejestru sprawdza wspólny limit `AttributeValueItem` oraz regułę typu bieżącej wartości. Nie sprawdza kompletności produktu, krotności atrybutu, wymaganych atrybutów ani przynależności wartości do słownika. Do walidacji danych przed utworzeniem lub aktualizacją oferty używaj `CategoryProductValidator::validate()`.
+
+Walidator sprawdza zgodność kategorii, wymagane atrybuty, krotność, powtórzone lub nieznane identyfikatory, aktywne wartości słownikowe oraz znane typy wartości. Każdy element `values`, w tym `TEXT_VALUE` i `LONG_TEXT_VALUE`, ma wspólny limit 1024 znaków z oficjalnego kontraktu. `NUMERIC` przyjmuje nieujemne liczby całkowite bez znaku, `NUMERIC_FLOAT` nieujemne liczby dziesiętne z kropką, `DATE` datę ISO `YYYY-MM-DD`, a `URL` bezwzględny adres HTTP lub HTTPS. Dla słownika przekazuj zlokalizowane `value` opcji zwrócone przez API, a nie ID opcji. Nieznane przyszłe typy definicji powodują ostrzeżenia, natomiast brak zarejestrowanego walidatora dla typu znanego API jest błędem. Walidacja lokalna nie zastępuje aktualnych reguł biznesowych serwera i nigdy nie jest uruchamiana automatycznie przez tworzenie oferty.
+
+Aplikacja może zarejestrować własny typ. Walidator otrzymuje kategorię, definicję, cały atrybut, bieżącą wartość, indeksy i ścieżkę pola. Zwraca listę błędów i ostrzeżeń, które `CategoryProductValidator` dołącza do wyniku produktu. Rejestr automatycznie dodaje wspólne ograniczenia `AttributeValueItem`, więc własny walidator nie musi powtarzać limitu 1024 znaków:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationIssue;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
+use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
+use DevLancer\VonHalsky\Validation\CategoryProductValidator;
+
+final class ApplicationCodeValidator implements AttributeValueTypeValidatorInterface
+{
+    public function type(): string
+    {
+        return 'APPLICATION_CODE';
+    }
+
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
+    {
+        if (preg_match('/\AAPP-\d+\z/D', $context->value) === 1) {
+            return AttributeValueTypeValidationResult::valid();
+        }
+
+        return new AttributeValueTypeValidationResult([
+            new AttributeValueTypeValidationIssue(
+                'application_code_invalid',
+                AttributeValueTypeValidationIssue::ERROR,
+                'Kod aplikacyjny musi mieć format APP-123.',
+            ),
+        ]);
+    }
+}
+
+$registry = AttributeValueTypeValidatorRegistry::withDefaults([
+    new ApplicationCodeValidator(),
+]);
+$validator = new CategoryProductValidator($proposal->categoryId, $definitions, $registry);
+```
+
+Bezpośrednie wywołanie rejestru dla niezarejestrowanego typu rzuca `LogicException`. Aby nadpisać regułę wbudowaną, usuń ją i dodaj własną przez `remove()->add()`.
 
 ## Budowa poprawnej oferty
 

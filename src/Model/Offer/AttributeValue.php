@@ -14,12 +14,10 @@ final class AttributeValue implements RequestDtoInterface
     /** @param list<string> $values */
     public function __construct(public readonly string $id, public readonly array $values, public readonly ?string $language = null)
     {
-        if ($id === '' || $values === []) {
-            throw new InvalidRequestException('Product.attributes', 'id and at least one value are required');
+        if ($id === '') {
+            throw new InvalidRequestException('Product.attributes.id', 'must not be empty');
         }
-        foreach ($values as $value) {
-            RequestValidator::stringLength($value, 1, 1024, 'Attribute.values');
-        }
+        RequestValidator::attributeValues($values, 'Product.attributes.values');
     }
 
     public function jsonSerialize(): array

@@ -9,6 +9,8 @@ use DevLancer\VonHalsky\Exception\InvalidRequestException;
 /** Shared request-validation rules. */
 final class RequestValidator
 {
+    public const ATTRIBUTE_VALUE_MAX_LENGTH = 1024;
+
     public static function integerRange(int $value, int $minimum, int $maximum, string $fieldPath): void
     {
         if ($value < $minimum || $value > $maximum) {
@@ -24,6 +26,27 @@ final class RequestValidator
         }
         if ($result < $minimum || $result > $maximum) {
             throw new InvalidRequestException($fieldPath, sprintf('must contain between %d and %d characters', $minimum, $maximum));
+        }
+    }
+
+    /** @param array<mixed> $values */
+    public static function attributeValues(array $values, string $fieldPath, ?int $maximumLength = null): void
+    {
+        if (!array_is_list($values)) {
+            throw new InvalidRequestException($fieldPath, 'must be a list');
+        }
+
+        foreach ($values as $index => $value) {
+            if (!is_string($value)) {
+                throw new InvalidRequestException(sprintf('%s[%d]', $fieldPath, $index), 'must be a string');
+            }
+            $characterCount = preg_match_all('/./us', $value);
+            if ($characterCount === false) {
+                throw new InvalidRequestException(sprintf('%s[%d]', $fieldPath, $index), 'must contain valid UTF-8');
+            }
+            if ($maximumLength !== null && $characterCount > $maximumLength) {
+                throw new InvalidRequestException(sprintf('%s[%d]', $fieldPath, $index), sprintf('must contain at most %d characters', $maximumLength));
+            }
         }
     }
 

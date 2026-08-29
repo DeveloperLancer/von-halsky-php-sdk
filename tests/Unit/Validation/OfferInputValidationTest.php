@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Tests\Unit\Validation;
 
 use DevLancer\VonHalsky\Exception\InvalidRequestException;
+use DevLancer\VonHalsky\Model\Offer\AttributeValue;
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
 use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
 use DevLancer\VonHalsky\Model\Offer\Stock;
+use DevLancer\VonHalsky\Model\Offer\UpsertAttribute;
 use DevLancer\VonHalsky\Serialization\RequestNormalizer;
+use DevLancer\VonHalsky\Validation\RequestValidator;
 use DevLancer\VonHalsky\ValueObject\Address;
 use DevLancer\VonHalsky\ValueObject\CategoryId;
 use DevLancer\VonHalsky\ValueObject\CountryCode;
 use DevLancer\VonHalsky\ValueObject\Ean;
 use DevLancer\VonHalsky\ValueObject\Money;
 use DevLancer\VonHalsky\ValueObject\Sku;
-use DevLancer\VonHalsky\Validation\RequestValidator;
 use PHPUnit\Framework\TestCase;
 
 final class OfferInputValidationTest extends TestCase
@@ -184,6 +186,25 @@ final class OfferInputValidationTest extends TestCase
             externalId: str_repeat('E', 256),
             images: [new OfferImage('product.webp', 'https://example.com/product.webp', 1)],
         );
+    }
+
+    public function testAttributeRequestDtosPreserveAnEmptyValueList(): void
+    {
+        self::assertSame([
+            'id' => 'attribute-1',
+            'values' => [],
+        ], (new AttributeValue('attribute-1', []))->jsonSerialize());
+        self::assertSame([
+            'type' => 'upsert',
+            'id' => 'attribute-1',
+            'values' => [],
+        ], (new UpsertAttribute('attribute-1', []))->jsonSerialize());
+    }
+
+    public function testAttributeUpsertRejectsAValueAboveTheCommonContractMaximum(): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        new UpsertAttribute('attribute-1', [str_repeat('ą', 1025)]);
     }
 
     public function testRequiredGpsrSerializesNameAddressAndEmail(): void

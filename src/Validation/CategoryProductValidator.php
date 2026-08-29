@@ -9,6 +9,8 @@ use DevLancer\VonHalsky\Model\Category\AttributeExpectedValue;
 use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Model\Offer\AttributeValue;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueItemValidator;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
 use DevLancer\VonHalsky\ValueObject\CategoryId;
 
 /** Explicitly validates product attributes against definitions for one category. */
@@ -19,6 +21,8 @@ final class CategoryProductValidator
 
     private readonly AttributeValueTypeValidatorRegistry $attributeValueTypeValidators;
 
+    private readonly AttributeValueItemValidator $attributeValueItemValidator;
+
     /** @param list<AttributeDefinition> $attributeDefinitions */
     public function __construct(
         public readonly CategoryId $categoryId,
@@ -28,6 +32,7 @@ final class CategoryProductValidator
         $this->definitions = self::indexDefinitions($attributeDefinitions);
         $this->attributeValueTypeValidators = $attributeValueTypeValidators
             ?? AttributeValueTypeValidatorRegistry::withDefaults();
+        $this->attributeValueItemValidator = new AttributeValueItemValidator();
     }
 
     /**
@@ -107,7 +112,7 @@ final class CategoryProductValidator
             }
 
             $this->validateCardinality($definition, $attribute, $fieldPath, $issues);
-            $this->validateValueTypes($definition, $attribute, $fieldPath, $issues);
+            $this->validateValueTypes($definition, $attribute, $index, $issues);
             $this->validateDictionary($definition, $attribute, $fieldPath, $issues);
         }
 
@@ -190,8 +195,10 @@ final class CategoryProductValidator
     ): void {
         $count = count($attribute->values);
         $valid = match ($definition->expectedValue->value) {
-            AttributeExpectedValue::NULL_OR_ONE, AttributeExpectedValue::ONE => $count === 1,
-            AttributeExpectedValue::AT_LEAST_ONE, AttributeExpectedValue::ANY => $count >= 1,
+            AttributeExpectedValue::NULL_OR_ONE => $count <= 1,
+            AttributeExpectedValue::ONE => $count === 1,
+            AttributeExpectedValue::AT_LEAST_ONE => $count >= 1,
+            AttributeExpectedValue::ANY => true,
             default => true,
         };
 
@@ -257,27 +264,32 @@ final class CategoryProductValidator
     private function validateValueTypes(
         AttributeDefinition $definition,
         AttributeValue $attribute,
-        string $fieldPath,
+        int $attributeIndex,
         array &$issues,
     ): void {
-        foreach ($attribute->values as $index => $value) {
-            if ($this->attributeValueTypeValidators->isValid($definition->type, $value)) {
-                continue;
-            }
+        $typeSupported = $this->attributeValueTypeValidators->supports($definition->type);
 
-            $issues[] = self::issue(
-                CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
-                CategoryProductValidationIssue::ERROR,
-                sprintf(
-                    'Value "%s" for attribute "%s" does not satisfy type "%s".',
-                    $value,
-                    $definition->name,
-                    $definition->type->value,
-                ),
-                sprintf('%s.values[%d]', $fieldPath, $index),
-                $definition->id,
-                $definition->name,
+        foreach (array_keys($attribute->values) as $index) {
+            $context = new AttributeValueValidationContext(
+                $this->categoryId,
+                $definition,
+                $attribute,
+                $attributeIndex,
+                $index,
             );
+            $result = $typeSupported
+                ? $this->attributeValueTypeValidators->validate($context)
+                : $this->attributeValueItemValidator->validate($context);
+            foreach ($result->issues as $issue) {
+                $issues[] = self::issue(
+                    $issue->code,
+                    $issue->level,
+                    $issue->message,
+                    $context->fieldPath,
+                    $definition->id,
+                    $definition->name,
+                );
+            }
         }
     }
 

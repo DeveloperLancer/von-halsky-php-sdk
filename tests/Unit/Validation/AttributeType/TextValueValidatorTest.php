@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace DevLancer\VonHalsky\Tests\Unit\Validation\AttributeType;
 
+use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Validation\AttributeType\TextValueValidator;
 use PHPUnit\Framework\TestCase;
 
 final class TextValueValidatorTest extends TestCase
 {
-    public function testAcceptsTextValueAtConfirmedStageLimit(): void
+    public function testAcceptsEmptyTextBecauseTheContractDefinesNoMinimumLength(): void
     {
-        self::assertTrue((new TextValueValidator())->isValid(str_repeat('ą', 1024)));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::TEXT_VALUE, '');
+
+        self::assertTrue((new TextValueValidator())->validate($context)->isValid());
     }
 
-    public function testRejectsTextValueAboveConfirmedStageLimit(): void
+    public function testAddsNoRuleBeyondTheCommonAttributeValueItemConstraint(): void
     {
-        self::assertFalse((new TextValueValidator())->isValid(str_repeat('ą', 1025)));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::TEXT_VALUE, str_repeat('ą', 1024));
+
+        self::assertTrue((new TextValueValidator())->validate($context)->isValid());
     }
 }

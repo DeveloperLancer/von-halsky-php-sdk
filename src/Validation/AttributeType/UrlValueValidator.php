@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Validation\AttributeType;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
+use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 
 final class UrlValueValidator implements AttributeValueTypeValidatorInterface
 {
@@ -13,14 +14,21 @@ final class UrlValueValidator implements AttributeValueTypeValidatorInterface
         return AttributeType::URL;
     }
 
-    public function isValid(string $value): bool
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
-            return false;
+        if (filter_var($context->value, FILTER_VALIDATE_URL) !== false) {
+            $scheme = parse_url($context->value, PHP_URL_SCHEME);
+            if ($scheme === 'http' || $scheme === 'https') {
+                return AttributeValueTypeValidationResult::valid();
+            }
         }
 
-        $scheme = parse_url($value, PHP_URL_SCHEME);
-
-        return $scheme === 'http' || $scheme === 'https';
+        return new AttributeValueTypeValidationResult([
+            new AttributeValueTypeValidationIssue(
+                CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+                AttributeValueTypeValidationIssue::ERROR,
+                'Value must be an absolute HTTP or HTTPS URL.',
+            ),
+        ]);
     }
 }

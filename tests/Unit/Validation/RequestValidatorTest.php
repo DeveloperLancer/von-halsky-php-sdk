@@ -52,6 +52,32 @@ final class RequestValidatorTest extends TestCase
         yield 'above maximum' => [61];
     }
 
+    public function testAttributeValuesAcceptAnEmptyListEmptyTextAndTheOfficialMaximum(): void
+    {
+        RequestValidator::attributeValues([], 'Offer.attributes.values', 1024);
+        RequestValidator::attributeValues(['', str_repeat('ą', 1024)], 'Offer.attributes.values', 1024);
+
+        self::addToAssertionCount(2);
+    }
+
+    public function testAttributeValuesRejectTextAboveTheOfficialMaximum(): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        RequestValidator::attributeValues([str_repeat('ą', 1025)], 'Offer.attributes.values', 1024);
+    }
+
+    public function testAttributeValuesMustBeAList(): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        RequestValidator::attributeValues(['value' => 'text'], 'Product.attributes.values');
+    }
+
+    public function testAttributeValueItemsMustBeStrings(): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        RequestValidator::attributeValues([123], 'Product.attributes.values');
+    }
+
     /** @param list<int> $items */
     private static function validateCollection(string $kind, array $items): void
     {

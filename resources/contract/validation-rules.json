@@ -173,6 +173,16 @@
             "unit": "items"
         },
         {
+            "constraint": "length",
+            "id": "VAL-018",
+            "maximum": { "inclusive": true, "value": 1024 },
+            "minimum": null,
+            "multipleOf": null,
+            "status": "official-production-contract",
+            "target": "AttributeValueItem",
+            "unit": "characters"
+        },
+        {
             "constraint": "numeric",
             "id": "VAL-019",
             "maximum": { "inclusive": true, "value": 60 },

@@ -62,7 +62,156 @@ $validator = new CategoryProductValidator($proposal->categoryId, $definitions);
 $validation = $validator->validate($proposal);
 ```
 
-The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. `NUMERIC` accepts signed integers, `NUMERIC_FLOAT` signed dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. Unknown future definition types produce warnings. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
+### Create and validate an attribute
+
+Do not construct `AttributeDefinition` manually. Fetch the definitions for the selected category and use the chosen definition ID as the `AttributeValue` ID. The following example creates one attribute value, places it in a product, and runs the recommended validation of the complete `ProductProposal`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Model\Offer\AttributeValue;
+use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Request\ResponseLanguage;
+use DevLancer\VonHalsky\Validation\CategoryProductValidator;
+use DevLancer\VonHalsky\ValueObject\CategoryId;
+use DevLancer\VonHalsky\ValueObject\Ean;
+
+/** @var \DevLancer\VonHalsky\VonHalskyClient $client */
+$categoryId = new CategoryId('leaf-category-id');
+$definitions = $client->categories()->attributes(
+    $categoryId,
+    ResponseLanguage::ENGLISH,
+)->data;
+
+$attributeId = 'attribute-id-returned-by-api';
+$definition = null;
+foreach ($definitions as $candidate) {
+    if ($candidate->id === $attributeId) {
+        $definition = $candidate;
+        break;
+    }
+}
+
+if ($definition === null) {
+    throw new LogicException('The attribute does not belong to the selected category.');
+}
+
+$attribute = new AttributeValue(
+    id: $definition->id,
+    values: ['123'],
+    language: $definition->language,
+);
+
+$proposal = new ProductProposal(
+    name: 'Example product',
+    description: 'This example product description is longer than one hundred characters, so it meets the local offer-form requirement.',
+    brand: 'Example',
+    categoryId: $categoryId,
+    ean: new Ean('5901234123457'),
+    attributes: [$attribute],
+);
+
+$validator = new CategoryProductValidator($categoryId, $definitions);
+$validation = $validator->validate($proposal);
+
+foreach ($validation->issues as $issue) {
+    // Use $issue->level, $issue->fieldPath, and $issue->message.
+}
+```
+
+`values` is always a list of strings, including when an attribute has one value. The official common `AttributeValueItem` schema permits an empty string, limits every item to 1024 characters, and does not set `minItems`, so `[]` is structurally valid. The definition determines the permitted item count:
+
+| `expectedValue` | Permitted `values` item count |
+| --- | --- |
+| `NULL_OR_ONE` | 0 or 1 |
+| `ONE` | exactly 1 |
+| `AT_LEAST_ONE` | at least 1 |
+| `ANY` | 0, 1, or many |
+
+Values must also match the definition type. The example `'123'` is a valid candidate for `NUMERIC`, but it might not be valid for the definition selected in a real category. For `DICTIONARY`, pass the exact active option `value` returned in `$definition->dictionary`, not its ID. An empty `UpsertAttribute` value list is serialized according to the contract, but use `RemoveAttribute` when the intent is to remove an attribute unambiguously.
+
+When only one value's format needs to be checked, create the context explicitly and call the type registry. The indexes must point to the attribute's and value's real positions in the product; both are `0` in the preceding example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
+use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
+
+/** @var \DevLancer\VonHalsky\ValueObject\CategoryId $categoryId */
+/** @var \DevLancer\VonHalsky\Model\Category\AttributeDefinition $definition */
+/** @var \DevLancer\VonHalsky\Model\Offer\AttributeValue $attribute */
+$context = new AttributeValueValidationContext(
+    categoryId: $categoryId,
+    definition: $definition,
+    attribute: $attribute,
+    attributeIndex: 0,
+    valueIndex: 0,
+);
+
+$registry = AttributeValueTypeValidatorRegistry::withDefaults();
+$typeValidation = $registry->validate($context);
+
+foreach ($typeValidation->errors() as $error) {
+    // The path is in $context->fieldPath and the description in $error->message.
+}
+foreach ($typeValidation->warnings() as $warning) {
+    // Warnings do not make $typeValidation->isValid() return false.
+}
+```
+
+Calling the registry directly checks the common `AttributeValueItem` limit and the current value's type rule. It does not check product completeness, attribute cardinality, required attributes, or dictionary membership. Use `CategoryProductValidator::validate()` before creating or updating an offer.
+
+The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. Every `values` item, including `TEXT_VALUE` and `LONG_TEXT_VALUE`, has the official contract's common 1024-character limit. `NUMERIC` accepts unsigned non-negative integers, `NUMERIC_FLOAT` unsigned non-negative dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. Unknown future definition types produce warnings, while a missing validator for an API-defined type is an error. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
+
+An application can register its own attribute type. The validator receives the category, definition, complete attribute, current value, indexes, and field path. It returns a list of errors and warnings that `CategoryProductValidator` adds to the product result. The registry adds the common `AttributeValueItem` constraints automatically, so an application validator does not need to repeat the 1024-character limit:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationIssue;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
+use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
+use DevLancer\VonHalsky\Validation\CategoryProductValidator;
+
+final class ApplicationCodeValidator implements AttributeValueTypeValidatorInterface
+{
+    public function type(): string
+    {
+        return 'APPLICATION_CODE';
+    }
+
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
+    {
+        if (preg_match('/\AAPP-\d+\z/D', $context->value) === 1) {
+            return AttributeValueTypeValidationResult::valid();
+        }
+
+        return new AttributeValueTypeValidationResult([
+            new AttributeValueTypeValidationIssue(
+                'application_code_invalid',
+                AttributeValueTypeValidationIssue::ERROR,
+                'Application code must use the APP-123 format.',
+            ),
+        ]);
+    }
+}
+
+$registry = AttributeValueTypeValidatorRegistry::withDefaults([
+    new ApplicationCodeValidator(),
+]);
+$validator = new CategoryProductValidator($proposal->categoryId, $definitions, $registry);
+```
+
+Calling the registry directly for an unregistered type throws `LogicException`. To replace a built-in rule, remove it and add the application validator through `remove()->add()`.
 
 ## Build a valid offer
 

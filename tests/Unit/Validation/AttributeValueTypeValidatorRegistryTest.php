@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Tests\Unit\Validation;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
+use DevLancer\VonHalsky\Tests\Unit\Validation\AttributeType\AttributeValueValidationContextFactory;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationIssue;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidationResult;
 use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueTypeValidatorInterface;
+use DevLancer\VonHalsky\Validation\AttributeType\AttributeValueValidationContext;
 use DevLancer\VonHalsky\Validation\AttributeValueTypeValidatorRegistry;
+use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 use PHPUnit\Framework\TestCase;
 
 final class AttributeValueTypeValidatorRegistryTest extends TestCase
@@ -14,44 +19,23 @@ final class AttributeValueTypeValidatorRegistryTest extends TestCase
     public function testRegistersApplicationDefinedAttributeType(): void
     {
         $registry = AttributeValueTypeValidatorRegistry::withDefaults([
-            new class implements AttributeValueTypeValidatorInterface {
-                public function type(): string
-                {
-                    return 'APPLICATION_CODE';
-                }
-
-                public function isValid(string $value): bool
-                {
-                    return preg_match('/\AAPP-\d+\z/D', $value) === 1;
-                }
-            },
+            $this->applicationCodeValidator(),
         ]);
         $type = AttributeType::fromString('APPLICATION_CODE');
 
         self::assertTrue($registry->supports($type));
-        self::assertTrue($registry->isValid($type, 'APP-42'));
-        self::assertFalse($registry->isValid($type, 'invalid'));
+        self::assertTrue($registry->validate($this->context('APPLICATION_CODE', 'APP-42'))->isValid());
+        self::assertFalse($registry->validate($this->context('APPLICATION_CODE', 'invalid'))->isValid());
     }
 
     public function testAddsAndRemovesApplicationDefinedAttributeType(): void
     {
         $type = AttributeType::fromString('APPLICATION_CODE');
         $registry = new AttributeValueTypeValidatorRegistry([]);
-        $validator = new class implements AttributeValueTypeValidatorInterface {
-            public function type(): string
-            {
-                return 'APPLICATION_CODE';
-            }
 
-            public function isValid(string $value): bool
-            {
-                return $value === 'accepted';
-            }
-        };
-
-        self::assertSame($registry, $registry->add($validator));
+        self::assertSame($registry, $registry->add($this->applicationCodeValidator()));
         self::assertTrue($registry->supports($type));
-        self::assertFalse($registry->isValid($type, 'invalid'));
+        self::assertFalse($registry->validate($this->context('APPLICATION_CODE', 'invalid'))->isValid());
         self::assertSame($registry, $registry->remove('APPLICATION_CODE'));
         self::assertFalse($registry->supports($type));
     }
@@ -66,17 +50,7 @@ final class AttributeValueTypeValidatorRegistryTest extends TestCase
     public function testRejectsDuplicateValidatorType(): void
     {
         $registry = new AttributeValueTypeValidatorRegistry([]);
-        $validator = new class implements AttributeValueTypeValidatorInterface {
-            public function type(): string
-            {
-                return 'APPLICATION_CODE';
-            }
-
-            public function isValid(string $value): bool
-            {
-                return true;
-            }
-        };
+        $validator = $this->applicationCodeValidator();
         $registry->add($validator);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -93,14 +67,66 @@ final class AttributeValueTypeValidatorRegistryTest extends TestCase
                     return AttributeType::NUMERIC;
                 }
 
-                public function isValid(string $value): bool
+                public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
                 {
-                    return $value === 'application-specific';
+                    if ($context->value === 'application-specific') {
+                        return AttributeValueTypeValidationResult::valid();
+                    }
+
+                    return new AttributeValueTypeValidationResult([
+                        new AttributeValueTypeValidationIssue('application_numeric', AttributeValueTypeValidationIssue::ERROR, 'Application-specific numeric value is invalid.'),
+                    ]);
                 }
             });
 
-        $type = AttributeType::fromString(AttributeType::NUMERIC);
-        self::assertTrue($registry->isValid($type, 'application-specific'));
-        self::assertFalse($registry->isValid($type, '42'));
+        self::assertTrue($registry->validate($this->context(AttributeType::NUMERIC, 'application-specific'))->isValid());
+        self::assertFalse($registry->validate($this->context(AttributeType::NUMERIC, '42'))->isValid());
+    }
+
+    public function testThrowsWhenValidatedTypeHasNoRegisteredValidator(): void
+    {
+        $registry = new AttributeValueTypeValidatorRegistry([]);
+
+        $this->expectException(\LogicException::class);
+        $registry->validate($this->context(AttributeType::NUMERIC, '42'));
+    }
+
+    public function testAppliesTheCommonItemLimitToBuiltInAndApplicationTypes(): void
+    {
+        $registry = AttributeValueTypeValidatorRegistry::withDefaults([
+            $this->applicationCodeValidator(),
+        ]);
+
+        $builtIn = $registry->validate($this->context(AttributeType::LONG_TEXT_VALUE, str_repeat('ą', 1025)));
+        $application = $registry->validate($this->context('APPLICATION_CODE', str_repeat('ą', 1025)));
+
+        self::assertSame(CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG, $builtIn->errors()[0]->code);
+        self::assertSame(CategoryProductValidationIssue::ATTRIBUTE_VALUE_TOO_LONG, $application->errors()[0]->code);
+    }
+
+    private function applicationCodeValidator(): AttributeValueTypeValidatorInterface
+    {
+        return new class implements AttributeValueTypeValidatorInterface {
+            public function type(): string
+            {
+                return 'APPLICATION_CODE';
+            }
+
+            public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
+            {
+                if (preg_match('/\AAPP-\d+\z/D', $context->value) === 1) {
+                    return AttributeValueTypeValidationResult::valid();
+                }
+
+                return new AttributeValueTypeValidationResult([
+                    new AttributeValueTypeValidationIssue('application_code_invalid', AttributeValueTypeValidationIssue::ERROR, 'Application code is invalid.'),
+                ]);
+            }
+        };
+    }
+
+    private function context(string $type, string $value): AttributeValueValidationContext
+    {
+        return AttributeValueValidationContextFactory::create($type, $value);
     }
 }

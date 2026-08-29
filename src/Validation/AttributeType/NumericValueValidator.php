@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Validation\AttributeType;
 
 use DevLancer\VonHalsky\Model\Category\AttributeType;
+use DevLancer\VonHalsky\Validation\CategoryProductValidationIssue;
 
 final class NumericValueValidator implements AttributeValueTypeValidatorInterface
 {
@@ -13,8 +14,18 @@ final class NumericValueValidator implements AttributeValueTypeValidatorInterfac
         return AttributeType::NUMERIC;
     }
 
-    public function isValid(string $value): bool
+    public function validate(AttributeValueValidationContext $context): AttributeValueTypeValidationResult
     {
-        return preg_match('/\A\d+\z/D', $value) === 1;
+        if (preg_match('/\A\d+\z/D', $context->value) === 1) {
+            return AttributeValueTypeValidationResult::valid();
+        }
+
+        return new AttributeValueTypeValidationResult([
+            new AttributeValueTypeValidationIssue(
+                CategoryProductValidationIssue::ATTRIBUTE_TYPE_INVALID,
+                AttributeValueTypeValidationIssue::ERROR,
+                'Value must contain digits only, without a sign.',
+            ),
+        ]);
     }
 }

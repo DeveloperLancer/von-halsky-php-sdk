@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLancer\VonHalsky\Tests\Unit\Validation\AttributeType;
 
+use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Validation\AttributeType\NumericValueValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -13,13 +14,17 @@ final class NumericValueValidatorTest extends TestCase
     #[DataProvider('validValues')]
     public function testAcceptsIntegerFormat(string $value): void
     {
-        self::assertTrue((new NumericValueValidator())->isValid($value));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::NUMERIC, $value);
+
+        self::assertTrue((new NumericValueValidator())->validate($context)->isValid());
     }
 
     #[DataProvider('invalidValues')]
     public function testRejectsNonIntegerFormat(string $value): void
     {
-        self::assertFalse((new NumericValueValidator())->isValid($value));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::NUMERIC, $value);
+
+        self::assertFalse((new NumericValueValidator())->validate($context)->isValid());
     }
 
     /** @return iterable<string, array{string}> */
@@ -38,7 +43,6 @@ final class NumericValueValidatorTest extends TestCase
         yield 'explicit positive sign' => ['+42'];
         yield 'negative sign' => ['-42'];
         yield 'alphabetic' => ['forty-two'];
-        yield 'empty' => [''];
         yield 'whitespace' => [' 42'];
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLancer\VonHalsky\Tests\Unit\Validation\AttributeType;
 
+use DevLancer\VonHalsky\Model\Category\AttributeType;
 use DevLancer\VonHalsky\Validation\AttributeType\DateValueValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -13,13 +14,17 @@ final class DateValueValidatorTest extends TestCase
     #[DataProvider('validValues')]
     public function testAcceptsIsoCalendarDate(string $value): void
     {
-        self::assertTrue((new DateValueValidator())->isValid($value));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::DATE, $value);
+
+        self::assertTrue((new DateValueValidator())->validate($context)->isValid());
     }
 
     #[DataProvider('invalidValues')]
     public function testRejectsInvalidOrNonIsoDate(string $value): void
     {
-        self::assertFalse((new DateValueValidator())->isValid($value));
+        $context = AttributeValueValidationContextFactory::create(AttributeType::DATE, $value);
+
+        self::assertFalse((new DateValueValidator())->validate($context)->isValid());
     }
 
     /** @return iterable<string, array{string}> */
@@ -38,6 +43,5 @@ final class DateValueValidatorTest extends TestCase
         yield 'missing zero padding' => ['2026-8-9'];
         yield 'different separator' => ['2026/08/29'];
         yield 'date time' => ['2026-08-29T12:00:00Z'];
-        yield 'empty' => [''];
     }
 }
