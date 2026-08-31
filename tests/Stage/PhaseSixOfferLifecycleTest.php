@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLancer\VonHalsky\Tests\Stage;
 
+use DevLancer\VonHalsky\Exception\NotFoundException;
 use DevLancer\VonHalsky\Model\Offer\AttributeValue;
 use DevLancer\VonHalsky\Model\Offer\CommandDetails;
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
@@ -16,12 +17,11 @@ use DevLancer\VonHalsky\Model\Offer\OfferStockUpdate;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
 use DevLancer\VonHalsky\Model\Offer\Stock;
-use DevLancer\VonHalsky\Request\OfferListOptions;
 use DevLancer\VonHalsky\Request\OfferEventsOptions;
+use DevLancer\VonHalsky\Request\OfferListOptions;
 use DevLancer\VonHalsky\Request\ProductHintOptions;
 use DevLancer\VonHalsky\Request\ResponseLanguage;
 use DevLancer\VonHalsky\Resource\OffersResource;
-use DevLancer\VonHalsky\Exception\NotFoundException;
 use DevLancer\VonHalsky\ValueObject\CommandId;
 use DevLancer\VonHalsky\ValueObject\Ean;
 use DevLancer\VonHalsky\ValueObject\Money;
