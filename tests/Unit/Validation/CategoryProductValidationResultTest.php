@@ -26,13 +26,13 @@ final class CategoryProductValidationResultTest extends TestCase
         $issue = new CategoryProductValidationIssue('code', CategoryProductValidationIssue::ERROR, 'Message.', 'Product.attributes');
 
         $this->expectException(\InvalidArgumentException::class);
-        new CategoryProductValidationResult(['issue' => $issue]);
+        self::constructWithInvalidArguments(CategoryProductValidationResult::class, [['issue' => $issue]]);
     }
 
     public function testRejectsNonIssueItemsAndInvalidIssueMetadata(): void
     {
         try {
-            new CategoryProductValidationResult([new \stdClass()]);
+            self::constructWithInvalidArguments(CategoryProductValidationResult::class, [[new \stdClass()]]);
             self::fail('Expected a non-issue item to be rejected.');
         } catch (\InvalidArgumentException) {
             self::addToAssertionCount(1);
@@ -40,5 +40,14 @@ final class CategoryProductValidationResultTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
         new CategoryProductValidationIssue('', 'invalid', '', '');
+    }
+
+    /**
+     * @param class-string $class
+     * @param array<int, mixed> $arguments
+     */
+    private static function constructWithInvalidArguments(string $class, array $arguments): object
+    {
+        return (new \ReflectionClass($class))->newInstanceArgs($arguments);
     }
 }

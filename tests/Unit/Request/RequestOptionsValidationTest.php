@@ -34,15 +34,15 @@ final class RequestOptionsValidationTest extends TestCase
     /** @return iterable<string, array{callable, string}> */
     public static function invalidStringListProvider(): iterable
     {
-        yield 'claim states must be a list' => [static fn (): ClaimListOptions => new ClaimListOptions(states: ['state' => 'APPROVED']), 'claims.states'];
-        yield 'claim sort values must be strings' => [static fn (): ClaimListOptions => new ClaimListOptions(sort: [123]), 'claims.sort[0]'];
-        yield 'offer statuses must be a list' => [static fn (): OfferListOptions => new OfferListOptions(statuses: ['status' => 'ACTIVE']), 'offers.statuses'];
-        yield 'offer sort values must be strings' => [static fn (): OfferListOptions => new OfferListOptions(sort: [123]), 'offers.sort[0]'];
-        yield 'order statuses must be a list' => [static fn (): OrderListOptions => new OrderListOptions(statuses: ['status' => 'CREATED']), 'orders.statuses'];
-        yield 'order payment status values must be strings' => [static fn (): OrderListOptions => new OrderListOptions(paymentStatuses: [123]), 'orders.paymentStatuses[0]'];
-        yield 'return statuses must be a list' => [static fn (): ReturnListOptions => new ReturnListOptions(statuses: ['status' => 'ACCEPTED']), 'returns.statuses'];
-        yield 'offer event type values must be strings' => [static fn (): OfferEventsOptions => new OfferEventsOptions(types: [123]), 'offerEvents.types[0]'];
-        yield 'order event types must be a list' => [static fn (): OrderEventsOptions => new OrderEventsOptions(types: ['type' => 'CREATED']), 'orderEvents.types'];
+        yield 'claim states must be a list' => [static fn (): object => self::constructWithInvalidArguments(ClaimListOptions::class, ['states' => ['state' => 'APPROVED']]), 'claims.states'];
+        yield 'claim sort values must be strings' => [static fn (): object => self::constructWithInvalidArguments(ClaimListOptions::class, ['sort' => [123]]), 'claims.sort[0]'];
+        yield 'offer statuses must be a list' => [static fn (): object => self::constructWithInvalidArguments(OfferListOptions::class, ['statuses' => ['status' => 'ACTIVE']]), 'offers.statuses'];
+        yield 'offer sort values must be strings' => [static fn (): object => self::constructWithInvalidArguments(OfferListOptions::class, ['sort' => [123]]), 'offers.sort[0]'];
+        yield 'order statuses must be a list' => [static fn (): object => self::constructWithInvalidArguments(OrderListOptions::class, ['statuses' => ['status' => 'CREATED']]), 'orders.statuses'];
+        yield 'order payment status values must be strings' => [static fn (): object => self::constructWithInvalidArguments(OrderListOptions::class, ['paymentStatuses' => [123]]), 'orders.paymentStatuses[0]'];
+        yield 'return statuses must be a list' => [static fn (): object => self::constructWithInvalidArguments(ReturnListOptions::class, ['statuses' => ['status' => 'ACCEPTED']]), 'returns.statuses'];
+        yield 'offer event type values must be strings' => [static fn (): object => self::constructWithInvalidArguments(OfferEventsOptions::class, ['types' => [123]]), 'offerEvents.types[0]'];
+        yield 'order event types must be a list' => [static fn (): object => self::constructWithInvalidArguments(OrderEventsOptions::class, ['types' => ['type' => 'CREATED']]), 'orderEvents.types'];
     }
 
     #[DataProvider('invalidPaginationProvider')]
@@ -110,5 +110,14 @@ final class RequestOptionsValidationTest extends TestCase
         } catch (InvalidRequestException $exception) {
             self::assertSame($fieldPath, $exception->fieldPath);
         }
+    }
+
+    /**
+     * @param class-string $class
+     * @param array<string, mixed> $arguments
+     */
+    private static function constructWithInvalidArguments(string $class, array $arguments): object
+    {
+        return (new \ReflectionClass($class))->newInstanceArgs($arguments);
     }
 }

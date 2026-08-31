@@ -33,7 +33,7 @@ final class GpsrInfo implements RequestDtoInterface
         return new self(true, null, null, null, null, null, null, null, null, null, []);
     }
 
-    /** @param list<array{title: string, url: string}> $manuals */
+    /** @param array<mixed> $manuals */
     public static function required(
         string $manufacturerName,
         Address $manufacturerAddress,
@@ -45,8 +45,7 @@ final class GpsrInfo implements RequestDtoInterface
         ?string $manufacturerResponsiblePerson = null,
         ?string $batchNumber = null,
         ?bool $ceMarking = null,
-    ): self
-    {
+    ): self {
         RequestValidator::stringLength($manufacturerName, 1, 500, 'Gpsr.manufacturer.name');
         if ($manufacturerAddress->building === null || $manufacturerAddress->building === '') {
             throw new InvalidRequestException('Gpsr.manufacturer.address.building', 'is required');
@@ -73,15 +72,6 @@ final class GpsrInfo implements RequestDtoInterface
         }
         RequestValidator::gpsrManuals($manuals, 'Gpsr.manuals');
         foreach ($manuals as $index => $manual) {
-            if (!is_array($manual) || array_is_list($manual)) {
-                throw new InvalidRequestException(sprintf('Gpsr.manuals[%d]', $index), 'must be an object');
-            }
-            if (!array_key_exists('title', $manual) || !is_string($manual['title'])) {
-                throw new InvalidRequestException(sprintf('Gpsr.manuals[%d].title', $index), 'is required and must be a string');
-            }
-            if (!array_key_exists('url', $manual) || !is_string($manual['url'])) {
-                throw new InvalidRequestException(sprintf('Gpsr.manuals[%d].url', $index), 'is required and must be a string');
-            }
             RequestValidator::stringLength($manual['title'], 5, 500, sprintf('Gpsr.manuals[%d].title', $index));
             RequestValidator::stringLength($manual['url'], 9, 2048, sprintf('Gpsr.manuals[%d].url', $index));
         }

@@ -258,13 +258,18 @@ final class OfferInputValidationTest extends TestCase
         );
 
         $serialized = $gpsr->jsonSerialize();
-        self::assertSame(str_repeat('M', 500), $serialized['manufacturer']['name']);
-        self::assertSame('+481234567890123', $serialized['manufacturer']['phone']);
-        self::assertSame(str_repeat('A', 300), $serialized['manufacturer']['unstructuredAddress']);
-        self::assertSame(str_repeat('P', 500), $serialized['manufacturer']['responsiblePerson']);
-        self::assertSame(str_repeat('B', 500), $serialized['batchNumber']);
-        self::assertTrue($serialized['ceMarking']);
-        self::assertSame(2048, strlen($serialized['manuals'][0]['url']));
+        self::assertFalse($serialized['doesNotRequireGpsrInfo']);
+        self::assertArrayHasKey('manufacturer', $serialized);
+        self::assertArrayHasKey('batchNumber', $serialized);
+        self::assertArrayHasKey('ceMarking', $serialized);
+        self::assertArrayHasKey('manuals', $serialized);
+        self::assertSame(str_repeat('M', 500), $gpsr->manufacturerName);
+        self::assertSame('+481234567890123', $gpsr->manufacturerPhone);
+        self::assertSame(str_repeat('A', 300), $gpsr->manufacturerUnstructuredAddress);
+        self::assertSame(str_repeat('P', 500), $gpsr->manufacturerResponsiblePerson);
+        self::assertSame(str_repeat('B', 500), $gpsr->batchNumber);
+        self::assertTrue($gpsr->ceMarking);
+        self::assertSame(2048, strlen($gpsr->manuals[0]['url']));
     }
 
     #[DataProvider('validManufacturerEmailProvider')]
@@ -313,17 +318,29 @@ final class OfferInputValidationTest extends TestCase
         $image = new OfferImage('product.webp', 'https://example.com/product.webp', 1);
         $request = new CreateOfferRequest(self::minimumProduct(), new Stock(1), new Price(Money::fromDecimal('1.00'), '23%'), images: [$image]);
 
-        self::assertInvalidRequestField('Product.attributes', static fn (): ProductProposal => new ProductProposal(
-            'Product', str_repeat('D', 100), 'Brand', CategoryId::fromString('leaf-1'), new Ean('5901234123457'), attributes: ['attribute' => $attribute],
-        ));
-        self::assertInvalidRequestField('Offer.images[0]', static fn (): CreateOfferRequest => new CreateOfferRequest(
-            self::minimumProduct(), new Stock(1), new Price(Money::fromDecimal('1.00'), '23%'), images: ['invalid'],
-        ));
-        self::assertInvalidRequestField('Offer.images', static fn (): PatchOfferRequest => new PatchOfferRequest(
-            images: OptionalValue::of(['image' => $image]),
-        ));
-        self::assertInvalidRequestField('BatchOffers', static fn (): BatchCreateOffersRequest => new BatchCreateOffersRequest(['offer' => $request]));
-        self::assertInvalidRequestField('Offer.attributes.operations[0]', static fn (): OfferAttributesPatch => new OfferAttributesPatch(['invalid']));
+        self::assertInvalidRequestField('Product.attributes', static fn (): object => self::constructWithInvalidArguments(ProductProposal::class, [
+            'name' => 'Product',
+            'description' => str_repeat('D', 100),
+            'brand' => 'Brand',
+            'categoryId' => CategoryId::fromString('leaf-1'),
+            'ean' => new Ean('5901234123457'),
+            'attributes' => ['attribute' => $attribute],
+        ]));
+        self::assertInvalidRequestField('Offer.images[0]', static fn (): object => self::constructWithInvalidArguments(CreateOfferRequest::class, [
+            'product' => self::minimumProduct(),
+            'stock' => new Stock(1),
+            'price' => new Price(Money::fromDecimal('1.00'), '23%'),
+            'images' => ['invalid'],
+        ]));
+        self::assertInvalidRequestField('Offer.images', static fn (): object => self::constructWithInvalidArguments(PatchOfferRequest::class, [
+            'images' => OptionalValue::of(['image' => $image]),
+        ]));
+        self::assertInvalidRequestField('BatchOffers', static fn (): object => self::constructWithInvalidArguments(BatchCreateOffersRequest::class, [
+            'offers' => ['offer' => $request],
+        ]));
+        self::assertInvalidRequestField('Offer.attributes.operations[0]', static fn (): object => self::constructWithInvalidArguments(OfferAttributesPatch::class, [
+            'operations' => ['invalid'],
+        ]));
     }
 
     public function testRequiredGpsrRejectsValuesOverDocumentedMaximums(): void
@@ -422,6 +439,15 @@ final class OfferInputValidationTest extends TestCase
         } catch (InvalidRequestException $exception) {
             self::assertSame($fieldPath, $exception->fieldPath);
         }
+    }
+
+    /**
+     * @param class-string $class
+     * @param array<string, mixed> $arguments
+     */
+    private static function constructWithInvalidArguments(string $class, array $arguments): object
+    {
+        return (new \ReflectionClass($class))->newInstanceArgs($arguments);
     }
 
     private static function minimumProduct(): ProductProposal

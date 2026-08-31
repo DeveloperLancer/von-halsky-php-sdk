@@ -140,7 +140,7 @@ final class PhaseSixResourcesTest extends TestCase
         $offers = $sdk->forOrganization(OrganizationId::fromString('organization-1'))->offers();
 
         try {
-            $offers->updatePrices(['not-an-update']);
+            self::invokeWithInvalidArguments($offers, 'updatePrices', [['not-an-update']]);
             self::fail('Expected malformed price updates to be rejected.');
         } catch (InvalidRequestException $exception) {
             self::assertSame('offers.prices[0]', $exception->fieldPath);
@@ -274,5 +274,11 @@ final class PhaseSixResourcesTest extends TestCase
             ),
             $http,
         ];
+    }
+
+    /** @param array<int, mixed> $arguments */
+    private static function invokeWithInvalidArguments(object $object, string $method, array $arguments): mixed
+    {
+        return (new \ReflectionMethod($object, $method))->invokeArgs($object, $arguments);
     }
 }

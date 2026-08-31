@@ -75,11 +75,26 @@ final class RequestValidator
         }
     }
 
-    /** @param array<mixed> $manuals */
+    /**
+     * @param array<mixed> $manuals
+     * @phpstan-assert list<array{title: string, url: string}> $manuals
+     */
     public static function gpsrManuals(array $manuals, string $fieldPath = 'GpsrInfo.manuals'): void
     {
         self::list($manuals, $fieldPath);
         self::itemLimit($manuals, 20, $fieldPath);
+
+        foreach ($manuals as $index => $manual) {
+            if (!is_array($manual) || array_is_list($manual)) {
+                throw new InvalidRequestException(sprintf('%s[%d]', $fieldPath, $index), 'must be an object');
+            }
+            if (!array_key_exists('title', $manual) || !is_string($manual['title'])) {
+                throw new InvalidRequestException(sprintf('%s[%d].title', $fieldPath, $index), 'is required and must be a string');
+            }
+            if (!array_key_exists('url', $manual) || !is_string($manual['url'])) {
+                throw new InvalidRequestException(sprintf('%s[%d].url', $fieldPath, $index), 'is required and must be a string');
+            }
+        }
     }
 
     /** @param array<mixed> $attributes */
