@@ -240,11 +240,14 @@ Najważniejsze reguły formularza oferty sprawdzane lokalnie:
 | Opis stawki podatku | 1–100 znaków                                                                                                |
 | Dni do wysyłki | 0–60, jeśli podano                                                                                          |
 | Tworzenie grupowe | 1–500 ofert                                                                                                 |
-| GPSR producenta | Nazwa, e-mail i osoba odpowiedzialna: maks. 500; adres niestrukturalny: maks. 300; telefon: `+` i 3–15 cyfr |
+| GPSR producenta | Nazwa i e-mail są wymagane i mają maks. 500 znaków; adres niestrukturalny ma maks. 300; telefon: `+` i 3–15 cyfr |
+| GPSR osoby odpowiedzialnej | Opcjonalne dane strukturalne: nazwa i e-mail maks. 500; adres niestrukturalny maks. 300; telefon: `+` i 3–15 cyfr |
 | Informacje GPSR | Informacja o bezpieczeństwie: maks. 100000; numer partii: maks. 500; oznaczenie CE: wartość logiczna        |
 | Instrukcje GPSR | Najwyżej 20; tytuł 5–500, URL 9–2048 znaków                                                                 |
 
-`GpsrInfo::required()` wymaga nazwy producenta, jego pełnego adresu oraz poprawnego adresu e-mail, a także niepustej informacji o bezpieczeństwie. `GpsrInfo::notRequired()` zapisuje jawne wyłączenie przewidziane przez kontrakt; nie używaj go wyłącznie w celu obejścia brakujących danych zgodności.
+`GpsrInfo::required()` przyjmuje typowany `Manufacturer` oraz niepustą informację o bezpieczeństwie. Producent wymaga nazwy i poprawnego e-maila; kraj, adres, telefon, adres niestrukturalny i dane `ResponsiblePerson` są opcjonalne. `GpsrInfo::notRequired()` zapisuje jawne wyłączenie przewidziane przez kontrakt; nie używaj go wyłącznie w celu obejścia brakujących danych zgodności.
+
+Aktualizacja SDK dla API 1.6.3 usuwa płaskie argumenty `GpsrInfo::required()` i przestarzałe tekstowe pole `responsiblePerson`. Zmień wywołanie na `Manufacturer`, a dane osoby odpowiedzialnej przekaż przez `responsiblePersonDetails`.
 
 ## Formatowanie opisu produktu
 
@@ -267,9 +270,11 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
+use DevLancer\VonHalsky\Model\Offer\Manufacturer;
 use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Model\Offer\ResponsiblePerson;
 use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\ValueObject\Ean;
 use DevLancer\VonHalsky\ValueObject\Address;
@@ -291,9 +296,17 @@ $response = $shop->offers()->create(new CreateOfferRequest(
     stock: new Stock(10),
     price: new Price(Money::fromDecimal('49.90'), '23%'),
     gpsr: GpsrInfo::required(
-        'Example manufacturer',
-        new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
-        'manufacturer@example.com',
+        new Manufacturer(
+            'Example manufacturer',
+            'manufacturer@example.com',
+            countryCode: new CountryCode('PL'),
+            address: new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
+            responsiblePersonDetails: new ResponsiblePerson(
+                name: 'EU Product Compliance Ltd.',
+                email: 'responsible@example.com',
+                countryCode: new CountryCode('PL'),
+            ),
+        ),
         'Keep this product away from children.',
     ),
     daysToShip: 2,

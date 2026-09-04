@@ -9,11 +9,13 @@ use DevLancer\VonHalsky\Model\Offer\AttributeValue;
 use DevLancer\VonHalsky\Model\Offer\BatchCreateOffersRequest;
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
+use DevLancer\VonHalsky\Model\Offer\Manufacturer;
 use DevLancer\VonHalsky\Model\Offer\OfferAttributesPatch;
 use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\PatchOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Model\Offer\ResponsiblePerson;
 use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\Model\Offer\UpsertAttribute;
 use DevLancer\VonHalsky\Model\OptionalValue;
@@ -215,9 +217,11 @@ final class OfferInputValidationTest extends TestCase
     public function testRequiredGpsrSerializesNameAddressAndEmail(): void
     {
         $gpsr = GpsrInfo::required(
-            'Example manufacturer',
-            new Address('Example Street', 'Warsaw', '00-001', new CountryCode('pl'), '10'),
-            'manufacturer@example.com',
+            new Manufacturer(
+                'Example manufacturer',
+                'manufacturer@example.com',
+                address: new Address('Example Street', 'Warsaw', '00-001', new CountryCode('pl'), '10'),
+            ),
             'Keep this product away from children.',
         );
 
@@ -225,6 +229,7 @@ final class OfferInputValidationTest extends TestCase
             'doesNotRequireGpsrInfo' => false,
             'manufacturer' => [
                 'name' => 'Example manufacturer',
+                'email' => 'manufacturer@example.com',
                 'address' => [
                     'street' => 'Example Street',
                     'city' => 'Warsaw',
@@ -232,7 +237,6 @@ final class OfferInputValidationTest extends TestCase
                     'countryCode' => 'PL',
                     'building' => '10',
                 ],
-                'email' => 'manufacturer@example.com',
             ],
             'safetyInformation' => 'Keep this product away from children.',
             'manuals' => [],
@@ -242,17 +246,27 @@ final class OfferInputValidationTest extends TestCase
     public function testRequiredGpsrSupportsAllBoundedContractFields(): void
     {
         $gpsr = GpsrInfo::required(
-            str_repeat('M', 500),
-            new Address(str_repeat('S', 255), str_repeat('C', 255), '1234567890', new CountryCode('PL'), '1234567890', '1234567890', str_repeat('R', 100)),
-            self::maximumLengthEmail(),
+            new Manufacturer(
+                str_repeat('M', 500),
+                self::maximumLengthEmail(),
+                '+481234567890123',
+                new CountryCode('PL'),
+                new Address(str_repeat('S', 255), str_repeat('C', 255), '1234567890', new CountryCode('PL'), '1234567890', '1234567890', str_repeat('R', 100)),
+                str_repeat('A', 300),
+                new ResponsiblePerson(
+                    str_repeat('P', 500),
+                    self::maximumLengthEmail(),
+                    '+481234567890123',
+                    new CountryCode('PL'),
+                    new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
+                    str_repeat('U', 300),
+                ),
+            ),
             str_repeat('I', 100000),
             [[
                 'title' => str_repeat('T', 500),
                 'url' => 'https://' . str_repeat('u', 2037) . '.pl',
             ]],
-            str_repeat('A', 300),
-            '+481234567890123',
-            str_repeat('P', 500),
             str_repeat('B', 500),
             true,
         );
@@ -263,10 +277,14 @@ final class OfferInputValidationTest extends TestCase
         self::assertArrayHasKey('batchNumber', $serialized);
         self::assertArrayHasKey('ceMarking', $serialized);
         self::assertArrayHasKey('manuals', $serialized);
-        self::assertSame(str_repeat('M', 500), $gpsr->manufacturerName);
-        self::assertSame('+481234567890123', $gpsr->manufacturerPhone);
-        self::assertSame(str_repeat('A', 300), $gpsr->manufacturerUnstructuredAddress);
-        self::assertSame(str_repeat('P', 500), $gpsr->manufacturerResponsiblePerson);
+        self::assertSame(str_repeat('M', 500), $gpsr->manufacturer?->name);
+        self::assertSame('+481234567890123', $gpsr->manufacturer?->phone);
+        self::assertSame(str_repeat('A', 300), $gpsr->manufacturer?->unstructuredAddress);
+        self::assertSame(str_repeat('P', 500), $gpsr->manufacturer?->responsiblePersonDetails?->name);
+        self::assertSame('PL', $serialized['manufacturer']['countryCode']);
+        self::assertSame(str_repeat('P', 500), $serialized['manufacturer']['responsiblePersonDetails']['name']);
+        self::assertSame(str_repeat('U', 300), $serialized['manufacturer']['responsiblePersonDetails']['unstructuredAddress']);
+        self::assertArrayNotHasKey('responsiblePerson', $serialized['manufacturer']);
         self::assertSame(str_repeat('B', 500), $gpsr->batchNumber);
         self::assertTrue($gpsr->ceMarking);
         self::assertSame(2048, strlen($gpsr->manuals[0]['url']));
@@ -276,22 +294,20 @@ final class OfferInputValidationTest extends TestCase
     public function testRequiredGpsrAcceptsValidManufacturerEmail(string $email): void
     {
         $gpsr = GpsrInfo::required(
-            'Example manufacturer',
-            self::manufacturerAddress(),
-            $email,
+            new Manufacturer('Example manufacturer', $email, address: self::manufacturerAddress()),
             'Safe product.',
         );
 
-        self::assertSame($email, $gpsr->manufacturerEmail);
+        self::assertSame($email, $gpsr->manufacturer?->email);
     }
 
     #[DataProvider('invalidManufacturerEmailProvider')]
     public function testRequiredGpsrRejectsInvalidManufacturerEmail(string $email): void
     {
         $this->expectException(InvalidRequestException::class);
-        $this->expectExceptionMessage('Gpsr.manufacturer.email');
+        $this->expectExceptionMessage('Manufacturer.email');
 
-        GpsrInfo::required('Example manufacturer', self::manufacturerAddress(), $email, 'Safe product.');
+        new Manufacturer('Example manufacturer', $email, address: self::manufacturerAddress());
     }
 
     public function testRequiredGpsrRejectsMalformedManualEntries(): void
@@ -304,7 +320,7 @@ final class OfferInputValidationTest extends TestCase
             [['title' => 'Manual title', 'url' => 123]],
         ] as $manuals) {
             try {
-                GpsrInfo::required('Example manufacturer', self::manufacturerAddress(), 'manufacturer@example.com', 'Safe product.', $manuals);
+                GpsrInfo::required(new Manufacturer('Example manufacturer', 'manufacturer@example.com', address: self::manufacturerAddress()), 'Safe product.', $manuals);
                 self::fail('Expected malformed GPSR manuals to be rejected.');
             } catch (InvalidRequestException $exception) {
                 self::assertStringStartsWith('Gpsr.manuals', $exception->fieldPath);
@@ -346,46 +362,86 @@ final class OfferInputValidationTest extends TestCase
     public function testRequiredGpsrRejectsValuesOverDocumentedMaximums(): void
     {
         $this->expectException(InvalidRequestException::class);
-        GpsrInfo::required(
-            str_repeat('M', 501),
-            new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
-            'manufacturer@example.com',
-            'Safe product.',
-        );
+        new Manufacturer(str_repeat('M', 501), 'manufacturer@example.com');
     }
 
     public function testRequiredGpsrRejectsAnInvalidManufacturerPhone(): void
     {
         $this->expectException(InvalidRequestException::class);
-        GpsrInfo::required(
-            'Example manufacturer',
-            new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
-            'manufacturer@example.com',
-            'Safe product.',
-            manufacturerPhone: '48123456789',
-        );
+        new Manufacturer('Example manufacturer', 'manufacturer@example.com', phone: '48123456789');
     }
 
     public function testRequiredGpsrRejectsSafetyInformationOverOneHundredThousandCharacters(): void
     {
         $this->expectException(InvalidRequestException::class);
         GpsrInfo::required(
-            'Example manufacturer',
-            new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
-            'manufacturer@example.com',
+            new Manufacturer('Example manufacturer', 'manufacturer@example.com'),
             str_repeat('S', 100001),
         );
     }
 
-    public function testRequiredGpsrRejectsAnAddressWithoutBuildingNumber(): void
+    public function testResponsiblePersonSerializesOnlySuppliedFields(): void
+    {
+        self::assertSame([
+            'email' => 'responsible@example.com',
+            'countryCode' => 'PL',
+        ], (new ResponsiblePerson(email: 'responsible@example.com', countryCode: new CountryCode('PL')))->jsonSerialize());
+    }
+
+    public function testResponsiblePersonAcceptsEmptyOptionalTextFieldsAllowedByTheContract(): void
+    {
+        self::assertSame([
+            'name' => '',
+            'unstructuredAddress' => '',
+        ], (new ResponsiblePerson(name: '', unstructuredAddress: ''))->jsonSerialize());
+    }
+
+    public function testResponsiblePersonRejectsAnInvalidEmail(): void
     {
         $this->expectException(InvalidRequestException::class);
-        GpsrInfo::required(
+        $this->expectExceptionMessage('ResponsiblePerson.email');
+        new ResponsiblePerson(email: 'not-an-email');
+    }
+
+    public function testResponsiblePersonRejectsAnUnstructuredAddressOverTheContractMaximum(): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        $this->expectExceptionMessage('ResponsiblePerson.unstructuredAddress');
+        new ResponsiblePerson(unstructuredAddress: str_repeat('A', 301));
+    }
+
+    public function testManufacturerRejectsAnAddressWithoutBuildingNumber(): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        $this->expectExceptionMessage('Manufacturer.address.building');
+        new Manufacturer(
             'Example manufacturer',
-            new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL')),
             'manufacturer@example.com',
-            'Keep this product away from children.',
+            address: new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL')),
         );
+    }
+
+    public function testResponsiblePersonRejectsAnAddressWithoutBuildingNumber(): void
+    {
+        $this->expectException(InvalidRequestException::class);
+        $this->expectExceptionMessage('ResponsiblePerson.address.building');
+        new ResponsiblePerson(
+            address: new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL')),
+        );
+    }
+
+    public function testGpsrNoLongerExposesTheLegacyResponsiblePersonProperty(): void
+    {
+        $gpsr = GpsrInfo::required(new Manufacturer('Example manufacturer', 'manufacturer@example.com'), 'Safe product.');
+
+        self::assertFalse(property_exists($gpsr, 'manufacturerResponsiblePerson'));
+        self::assertArrayNotHasKey('responsiblePerson', $gpsr->jsonSerialize()['manufacturer']);
+        $parameters = (new \ReflectionMethod(GpsrInfo::class, 'required'))->getParameters();
+        $type = $parameters[0]->getType();
+        if (!$type instanceof \ReflectionNamedType) {
+            self::fail('GpsrInfo::required() must require a Manufacturer.');
+        }
+        self::assertSame(Manufacturer::class, $type->getName());
     }
 
     public function testAddressPostCodeUsesTheDocumentedThreeToTenCharacterRange(): void

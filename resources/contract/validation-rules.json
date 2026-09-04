@@ -1,12 +1,18 @@
 {
-    "productionContractVersion": "1.6.2",
+    "productionContractVersion": "1.6.3",
     "releaseVersion": "1.6.0",
     "rules": [
         {
             "constraint": "numeric",
             "id": "VAL-001",
-            "maximum": { "inclusive": true, "value": 10000 },
-            "minimum": { "inclusive": true, "value": 1 },
+            "maximum": {
+                "inclusive": true,
+                "value": 10000
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 1
+            },
             "multipleOf": null,
             "status": "official-production-contract",
             "target": "Dimension.width",
@@ -15,8 +21,14 @@
         {
             "constraint": "numeric",
             "id": "VAL-002",
-            "maximum": { "inclusive": true, "value": 10000 },
-            "minimum": { "inclusive": true, "value": 1 },
+            "maximum": {
+                "inclusive": true,
+                "value": 10000
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 1
+            },
             "multipleOf": null,
             "status": "official-production-contract",
             "target": "Dimension.height",
@@ -25,8 +37,14 @@
         {
             "constraint": "numeric",
             "id": "VAL-003",
-            "maximum": { "inclusive": true, "value": 10000 },
-            "minimum": { "inclusive": true, "value": 1 },
+            "maximum": {
+                "inclusive": true,
+                "value": 10000
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 1
+            },
             "multipleOf": null,
             "status": "official-production-contract",
             "target": "Dimension.length",
@@ -35,8 +53,14 @@
         {
             "constraint": "numeric",
             "id": "VAL-004",
-            "maximum": { "inclusive": true, "value": 1000000 },
-            "minimum": { "inclusive": true, "value": 1 },
+            "maximum": {
+                "inclusive": true,
+                "value": 1000000
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 1
+            },
             "multipleOf": null,
             "status": "official-production-contract",
             "target": "Dimension.weight",
@@ -45,8 +69,14 @@
         {
             "constraint": "numeric",
             "id": "VAL-005",
-            "maximum": { "inclusive": true, "value": 999999.99 },
-            "minimum": { "inclusive": true, "value": 0.01 },
+            "maximum": {
+                "inclusive": true,
+                "value": 999999.99
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 0.01
+            },
             "multipleOf": 0.01,
             "status": "official-production-contract",
             "target": "Money.amount",
@@ -55,8 +85,14 @@
         {
             "constraint": "length",
             "id": "VAL-006",
-            "maximum": { "inclusive": true, "value": 255 },
-            "minimum": { "inclusive": true, "value": 2 },
+            "maximum": {
+                "inclusive": true,
+                "value": 255
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 2
+            },
             "multipleOf": null,
             "status": "official-production-contract",
             "target": "Street",
@@ -65,8 +101,14 @@
         {
             "constraint": "length",
             "id": "VAL-007",
-            "maximum": { "inclusive": true, "value": 255 },
-            "minimum": { "inclusive": true, "value": 2 },
+            "maximum": {
+                "inclusive": true,
+                "value": 255
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 2
+            },
             "multipleOf": null,
             "status": "official-production-contract",
             "target": "City",
@@ -75,7 +117,10 @@
         {
             "constraint": "length",
             "id": "VAL-008",
-            "maximum": { "inclusive": true, "value": 10 },
+            "maximum": {
+                "inclusive": true,
+                "value": 10
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -85,7 +130,10 @@
         {
             "constraint": "length",
             "id": "VAL-009",
-            "maximum": { "inclusive": true, "value": 10 },
+            "maximum": {
+                "inclusive": true,
+                "value": 10
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -95,7 +143,10 @@
         {
             "constraint": "length",
             "id": "VAL-010",
-            "maximum": { "inclusive": true, "value": 100 },
+            "maximum": {
+                "inclusive": true,
+                "value": 100
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -105,7 +156,10 @@
         {
             "constraint": "length",
             "id": "VAL-011",
-            "maximum": { "inclusive": true, "value": 14 },
+            "maximum": {
+                "inclusive": true,
+                "value": 14
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -115,7 +169,10 @@
         {
             "constraint": "length",
             "id": "VAL-012",
-            "maximum": { "inclusive": true, "value": 255 },
+            "maximum": {
+                "inclusive": true,
+                "value": 255
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -125,7 +182,10 @@
         {
             "constraint": "length",
             "id": "VAL-013",
-            "maximum": { "inclusive": true, "value": 255 },
+            "maximum": {
+                "inclusive": true,
+                "value": 255
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -135,7 +195,10 @@
         {
             "constraint": "items",
             "id": "VAL-014",
-            "maximum": { "inclusive": true, "value": 20 },
+            "maximum": {
+                "inclusive": true,
+                "value": 20
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -145,7 +208,10 @@
         {
             "constraint": "items",
             "id": "VAL-015",
-            "maximum": { "inclusive": true, "value": 20 },
+            "maximum": {
+                "inclusive": true,
+                "value": 20
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -155,7 +221,10 @@
         {
             "constraint": "items",
             "id": "VAL-016",
-            "maximum": { "inclusive": true, "value": 120 },
+            "maximum": {
+                "inclusive": true,
+                "value": 120
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -165,7 +234,10 @@
         {
             "constraint": "items",
             "id": "VAL-017",
-            "maximum": { "inclusive": true, "value": 120 },
+            "maximum": {
+                "inclusive": true,
+                "value": 120
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -175,7 +247,10 @@
         {
             "constraint": "length",
             "id": "VAL-018",
-            "maximum": { "inclusive": true, "value": 1024 },
+            "maximum": {
+                "inclusive": true,
+                "value": 1024
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -185,8 +260,14 @@
         {
             "constraint": "numeric",
             "id": "VAL-019",
-            "maximum": { "inclusive": true, "value": 60 },
-            "minimum": { "inclusive": true, "value": 0 },
+            "maximum": {
+                "inclusive": true,
+                "value": 60
+            },
+            "minimum": {
+                "inclusive": true,
+                "value": 0
+            },
             "multipleOf": null,
             "status": "official-production-contract",
             "target": "ShippingTime.daysToShip",
@@ -195,7 +276,10 @@
         {
             "constraint": "items",
             "id": "VAL-020",
-            "maximum": { "inclusive": true, "value": 500 },
+            "maximum": {
+                "inclusive": true,
+                "value": 500
+            },
             "minimum": null,
             "multipleOf": null,
             "status": "official-production-contract",
@@ -218,10 +302,10 @@
         }
     ],
     "source": {
-        "checkedAt": "2026-08-23",
+        "checkedAt": "2026-09-04",
         "defaultForRulesWithoutSourceOverride": true,
         "productionStatus": "verified-by-production-contract",
-        "releaseVersion": "1.6.2",
+        "releaseVersion": "1.6.3",
         "url": "https://inpsa-api-portal.inpost-group.com/gokart-api.html"
     }
 }

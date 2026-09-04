@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- GPSR manufacturer input now uses typed `Manufacturer` and `ResponsiblePerson` models for API 1.6.3. The flat `GpsrInfo::required()` signature and deprecated `responsiblePerson` field were removed; use `responsiblePersonDetails` instead.
 - Offer patch validation now rejects `null` for required offer/product members, applies the product text limits used during creation, and leaves one-time external ID/EAN assignment decisions to the API.
 - Local OAuth failures now use `AuthenticationFlowException`; `AuthenticationException` represents an HTTP 401 API response.
 - Attachment uploads validate the documented type/MIME combinations while accepting all documented image filename extensions.

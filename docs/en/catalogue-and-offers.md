@@ -240,11 +240,14 @@ The most important locally enforced offer-form rules are:
 | Tax-rate description | 1–100 characters                                                                                                |
 | Days to ship | 0–60 when supplied                                                                                              |
 | Batch creation | 1–500 offers                                                                                                    |
-| GPSR manufacturer | Name, email, and responsible person: at most 500; unstructured address: at most 300; phone: `+` and 3–15 digits |
+| GPSR manufacturer | Name and email are required and at most 500 characters; unstructured address is at most 300; phone is `+` and 3–15 digits |
+| GPSR responsible person | Optional structured details: name and email at most 500; unstructured address at most 300; phone is `+` and 3–15 digits |
 | GPSR information | Safety information: at most 100000; batch number: at most 500; CE marking: boolean                              |
 | GPSR manuals | At most 20; each title 5–500 and URL 9–2048 characters                                                          |
 
-`GpsrInfo::required()` additionally requires a manufacturer name, full address, valid email, and non-empty safety information. `GpsrInfo::notRequired()` serializes the explicit contract exemption; do not use it merely to bypass missing compliance data.
+`GpsrInfo::required()` accepts a typed `Manufacturer` and non-empty safety information. A manufacturer needs a name and valid email; country, address, phone, unstructured address, and `ResponsiblePerson` details are optional. `GpsrInfo::notRequired()` serializes the explicit contract exemption; do not use it merely to bypass missing compliance data.
+
+The SDK update for API 1.6.3 removes the flat `GpsrInfo::required()` arguments and the deprecated text `responsiblePerson`. Migrate to `Manufacturer` and pass structured data through `responsiblePersonDetails`.
 
 ## Product description formatting
 
@@ -267,9 +270,11 @@ declare(strict_types=1);
 
 use DevLancer\VonHalsky\Model\Offer\CreateOfferRequest;
 use DevLancer\VonHalsky\Model\Offer\GpsrInfo;
+use DevLancer\VonHalsky\Model\Offer\Manufacturer;
 use DevLancer\VonHalsky\Model\Offer\OfferImage;
 use DevLancer\VonHalsky\Model\Offer\Price;
 use DevLancer\VonHalsky\Model\Offer\ProductProposal;
+use DevLancer\VonHalsky\Model\Offer\ResponsiblePerson;
 use DevLancer\VonHalsky\Model\Offer\Stock;
 use DevLancer\VonHalsky\ValueObject\Ean;
 use DevLancer\VonHalsky\ValueObject\Address;
@@ -291,9 +296,17 @@ $result = $shop->offers()->create(new CreateOfferRequest(
     stock: new Stock(10),
     price: new Price(Money::fromDecimal('49.90'), '23%'),
     gpsr: GpsrInfo::required(
-        'Example manufacturer',
-        new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
-        'manufacturer@example.com',
+        new Manufacturer(
+            'Example manufacturer',
+            'manufacturer@example.com',
+            countryCode: new CountryCode('PL'),
+            address: new Address('Example Street', 'Warsaw', '00-001', new CountryCode('PL'), '10'),
+            responsiblePersonDetails: new ResponsiblePerson(
+                name: 'EU Product Compliance Ltd.',
+                email: 'responsible@example.com',
+                countryCode: new CountryCode('PL'),
+            ),
+        ),
         'Keep this product away from children.',
     ),
     daysToShip: 2,

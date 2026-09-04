@@ -168,7 +168,7 @@ function contractWriteJson(string $target, mixed $value): void
         throw new RuntimeException('Unable to encode JSON: ' . $exception->getMessage(), 0, $exception);
     }
 
-    if (file_put_contents($target, $json . PHP_EOL) === false) {
+    if (file_put_contents($target, $json . "\n") === false) {
         throw new RuntimeException(sprintf('Unable to write "%s".', $target));
     }
 }
