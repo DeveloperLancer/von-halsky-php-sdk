@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Complete typed offer merge-patch support, including partial product, dimensions, affiliation URL, post-sale policies, and one-time external ID/EAN safeguards.
 - Explicit category product validation from caller-supplied or API-fetched attribute definitions.
 - Local official-offer-form validation for product name and description, SKU, offer images, and manufacturer GPSR address data.
 - `Sku` value object and typed manufacturer address support in `GpsrInfo::required()`.
