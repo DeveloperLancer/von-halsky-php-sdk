@@ -309,6 +309,8 @@ HTTP 201 potwierdza przyjęcie `CommandHandle`, a nie dostępność oferty. Zapi
 
 Do grupowych zmian cen i stanów używaj odpowiednich obiektów danych, do semantyki merge patch — `PatchOfferRequest` z `OptionalValue`, a do atrybutów — uporządkowanych operacji `UpsertAttribute` i `RemoveAttribute`. Udane synchroniczne `patch()` oraz przyjęty `CommandHandle` mają inne znaczenie; typ wyniku podają strony [referencji ofert](./reference/offers/README.md).
 
+Zagnieżdżony `product` w `patch()` służy przede wszystkim poprawianiu nieprawidłowej oferty `PENDING`. Dla oferty `PUBLISHED` aktualizuj zasadniczo cenę i stan; serwer może odrzucić albo ponownie zweryfikować istotną zmianę danych produktu. SDK nie zamyka ani nie otwiera oferty automatycznie.
+
 Tworzenie, aktualizacja, zamknięcie, ponowne otwarcie, wysyłanie i usuwanie zmieniają stan zewnętrzny. SDK nie ponawia ich automatycznie. W Stage uruchamiaj je wyłącznie po jawnym włączeniu operacji zapisu, na danych syntetycznych, i zapisuj własny `commandId` lub identyfikator audytu. Po niejednoznacznym błędzie transportu najpierw uzgodnij stan, a dopiero potem rozważ kolejne żądanie zapisu.
 
 ## Odpowiedzialność za strumienie załączników

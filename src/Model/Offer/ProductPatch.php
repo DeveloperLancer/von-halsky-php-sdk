@@ -17,13 +17,13 @@ use DevLancer\VonHalsky\ValueObject\Sku;
 /** Partial product data for an offer merge patch. */
 final class ProductPatch implements RequestDtoInterface
 {
-    /** @var OptionalValue<string|null> */
+    /** @var OptionalValue<string> */
     public readonly OptionalValue $name;
-    /** @var OptionalValue<string|null> */
+    /** @var OptionalValue<string> */
     public readonly OptionalValue $description;
-    /** @var OptionalValue<string|null> */
+    /** @var OptionalValue<string> */
     public readonly OptionalValue $brand;
-    /** @var OptionalValue<CategoryId|null> */
+    /** @var OptionalValue<CategoryId> */
     public readonly OptionalValue $categoryId;
     /** @var OptionalValue<list<AttributeValue>|null> */
     public readonly OptionalValue $attributes;
@@ -41,11 +41,11 @@ final class ProductPatch implements RequestDtoInterface
     public readonly OptionalValue $dimension;
 
     /**
-     * @param OptionalValue<CategoryId|Category|null>|null $categoryId
+     * @param OptionalValue<CategoryId|Category>|null $categoryId
      * @param OptionalValue<list<AttributeValue>|null>|null $attributes
-     * @param OptionalValue<string|null>|null $name
-     * @param OptionalValue<string|null>|null $description
-     * @param OptionalValue<string|null>|null $brand
+     * @param OptionalValue<string>|null $name
+     * @param OptionalValue<string>|null $description
+     * @param OptionalValue<string>|null $brand
      * @param OptionalValue<string|null>|null $model
      * @param OptionalValue<string|null>|null $superModel
      * @param OptionalValue<Sku|null>|null $sku
@@ -78,12 +78,12 @@ final class ProductPatch implements RequestDtoInterface
         $this->ean = $ean ?? OptionalValue::undefined();
         $this->dimension = $dimension ?? OptionalValue::undefined();
 
-        $this->validateString($this->name, 150, 'Product.name');
-        $this->validateString($this->description, 100000, 'Product.description');
-        $this->validateString($this->brand, 100, 'Product.brand');
+        $this->validateRequiredString($this->name, 7, 150, 'Product.name');
+        $this->validateRequiredString($this->description, 100, 100000, 'Product.description');
+        $this->validateRequiredString($this->brand, 1, 100, 'Product.brand');
         $this->validateAttributes();
-        $this->validateString($this->model, 100, 'Product.model');
-        $this->validateString($this->superModel, 100, 'Product.superModel');
+        $this->validateString($this->model, 1, 100, 'Product.model');
+        $this->validateString($this->superModel, 1, 100, 'Product.superModel');
         $this->validateInstance($this->sku, Sku::class, 'Product.sku');
         $this->validateInstance($this->manufacturerProductNumber, ManufacturerProductNumber::class, 'Product.manufacturerProductNumber');
         $this->validateEan();
@@ -108,8 +108,8 @@ final class ProductPatch implements RequestDtoInterface
     }
 
     /**
-     * @param OptionalValue<CategoryId|Category|null> $categoryId
-     * @return OptionalValue<CategoryId|null>
+     * @param OptionalValue<CategoryId|Category> $categoryId
+     * @return OptionalValue<CategoryId>
      */
     private function category(OptionalValue $categoryId): OptionalValue
     {
@@ -117,7 +117,7 @@ final class ProductPatch implements RequestDtoInterface
             return OptionalValue::undefined();
         }
         if ($categoryId->isNull()) {
-            return OptionalValue::null();
+            throw new InvalidRequestException('Product.categoryId', 'must be omitted or assigned a non-null value');
         }
         $value = $categoryId->value();
         if ($value instanceof Category) {
@@ -131,7 +131,7 @@ final class ProductPatch implements RequestDtoInterface
     }
 
     /** @param OptionalValue<mixed> $value */
-    private function validateString(OptionalValue $value, int $maximum, string $fieldPath): void
+    private function validateString(OptionalValue $value, int $minimum, int $maximum, string $fieldPath): void
     {
         if (!$value->isDefined() || $value->isNull()) {
             return;
@@ -140,7 +140,20 @@ final class ProductPatch implements RequestDtoInterface
             throw new InvalidRequestException($fieldPath, 'must be a string');
         }
 
-        RequestValidator::stringLength($value->value(), 0, $maximum, $fieldPath);
+        RequestValidator::stringLength($value->value(), $minimum, $maximum, $fieldPath);
+    }
+
+    /** @param OptionalValue<mixed> $value */
+    private function validateRequiredString(OptionalValue $value, int $minimum, int $maximum, string $fieldPath): void
+    {
+        if (!$value->isDefined()) {
+            return;
+        }
+        if ($value->isNull()) {
+            throw new InvalidRequestException($fieldPath, 'must be omitted or assigned a non-null value');
+        }
+
+        $this->validateString($value, $minimum, $maximum, $fieldPath);
     }
 
     private function validateAttributes(): void
@@ -172,7 +185,7 @@ final class ProductPatch implements RequestDtoInterface
             return;
         }
         if ($this->ean->isNull()) {
-            throw new InvalidRequestException('Product.ean', 'cannot be cleared after it has been assigned');
+            throw new InvalidRequestException('Product.ean', 'must be omitted or assigned a non-null value');
         }
         if (!($this->ean->value() instanceof Ean)) {
             throw new InvalidRequestException('Product.ean', 'must be an Ean');

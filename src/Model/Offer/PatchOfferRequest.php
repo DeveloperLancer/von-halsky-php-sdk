@@ -14,11 +14,11 @@ final class PatchOfferRequest implements RequestDtoInterface
 {
     /** @var OptionalValue<string> */
     public readonly OptionalValue $externalId;
-    /** @var OptionalValue<ProductPatch|null> */
+    /** @var OptionalValue<ProductPatch> */
     public readonly OptionalValue $product;
-    /** @var OptionalValue<Price|null> */
+    /** @var OptionalValue<Price> */
     public readonly OptionalValue $price;
-    /** @var OptionalValue<Stock|null> */
+    /** @var OptionalValue<Stock> */
     public readonly OptionalValue $stock;
     /** @var OptionalValue<GpsrInfo|null> */
     public readonly OptionalValue $gpsr;
@@ -32,13 +32,13 @@ final class PatchOfferRequest implements RequestDtoInterface
     public readonly OptionalValue $postSale;
 
     /**
-     * @param OptionalValue<Price|null>|null    $price
-     * @param OptionalValue<Stock|null>|null    $stock
+     * @param OptionalValue<Price>|null         $price
+     * @param OptionalValue<Stock>|null         $stock
      * @param OptionalValue<GpsrInfo|null>|null $gpsr
      * @param OptionalValue<int>|null           $daysToShip
      * @param OptionalValue<list<OfferImage>|null>|null $images
      * @param OptionalValue<string>|null        $externalId
-     * @param OptionalValue<ProductPatch|null>|null $product
+     * @param OptionalValue<ProductPatch>|null  $product
      * @param OptionalValue<string|null>|null   $affiliationProductUrl
      * @param OptionalValue<PostSalePatch|null>|null $postSale
      */
@@ -63,7 +63,9 @@ final class PatchOfferRequest implements RequestDtoInterface
         $this->affiliationProductUrl = $affiliationProductUrl ?? OptionalValue::undefined();
         $this->postSale = $postSale ?? OptionalValue::undefined();
         $this->validateExternalId();
-        $this->validateInstance($this->product, ProductPatch::class, 'Offer.product');
+        $this->validateRequiredInstance($this->product, ProductPatch::class, 'Offer.product');
+        $this->validateRequiredInstance($this->price, Price::class, 'Offer.price');
+        $this->validateRequiredInstance($this->stock, Stock::class, 'Offer.stock');
         if ($this->daysToShip->isDefined() && !$this->daysToShip->isNull()) {
             if (!is_int($this->daysToShip->value())) {
                 throw new InvalidRequestException('ShippingTime.daysToShip', 'must be an integer');
@@ -109,7 +111,7 @@ final class PatchOfferRequest implements RequestDtoInterface
             return;
         }
         if ($this->externalId->isNull()) {
-            throw new InvalidRequestException('Offer.externalId', 'cannot be cleared after it has been assigned');
+            throw new InvalidRequestException('Offer.externalId', 'must be omitted or assigned a non-null value');
         }
         if (!is_string($this->externalId->value())) {
             throw new InvalidRequestException('Offer.externalId', 'must be a string');
@@ -125,6 +127,23 @@ final class PatchOfferRequest implements RequestDtoInterface
     private function validateInstance(OptionalValue $value, string $type, string $fieldPath): void
     {
         if ($value->isDefined() && !$value->isNull() && !($value->value() instanceof $type)) {
+            throw new InvalidRequestException($fieldPath, sprintf('must be an instance of %s', $type));
+        }
+    }
+
+    /**
+     * @param OptionalValue<mixed> $value
+     * @param class-string $type
+     */
+    private function validateRequiredInstance(OptionalValue $value, string $type, string $fieldPath): void
+    {
+        if (!$value->isDefined()) {
+            return;
+        }
+        if ($value->isNull()) {
+            throw new InvalidRequestException($fieldPath, 'must be omitted or assigned a non-null value');
+        }
+        if (!($value->value() instanceof $type)) {
             throw new InvalidRequestException($fieldPath, sprintf('must be an instance of %s', $type));
         }
     }

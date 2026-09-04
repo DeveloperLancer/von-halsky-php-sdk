@@ -24,11 +24,12 @@ final class PatchOfferRequestTest extends TestCase
 {
     public function testNormalizesACompleteNestedOfferPatchWithoutUndefinedFields(): void
     {
+        $description = str_repeat('Updated product description. ', 4);
         $request = new PatchOfferRequest(
             externalId: OptionalValue::of('merchant-offer-42'),
             product: OptionalValue::of(new ProductPatch(
                 name: OptionalValue::of('Updated product'),
-                description: OptionalValue::of('Updated description'),
+                description: OptionalValue::of($description),
                 brand: OptionalValue::of('Updated brand'),
                 categoryId: OptionalValue::of($this->leafCategory()),
                 attributes: OptionalValue::of([new AttributeValue('attribute-1', ['red'])]),
@@ -53,7 +54,7 @@ final class PatchOfferRequestTest extends TestCase
             'externalId' => 'merchant-offer-42',
             'product' => [
                 'name' => 'Updated product',
-                'description' => 'Updated description',
+                'description' => $description,
                 'brand' => 'Updated brand',
                 'categoryId' => 'leaf-category',
                 'attributes' => [['id' => 'attribute-1', 'values' => ['red']]],
@@ -75,13 +76,13 @@ final class PatchOfferRequestTest extends TestCase
     public function testNestedPatchPreservesExplicitNullWithoutSendingUndefinedSiblings(): void
     {
         $request = new PatchOfferRequest(
-            product: OptionalValue::of(new ProductPatch(description: OptionalValue::null())),
+            product: OptionalValue::of(new ProductPatch(model: OptionalValue::null())),
             affiliationProductUrl: OptionalValue::null(),
             postSale: OptionalValue::of(new PostSalePatch(returnPolicy: OptionalValue::null())),
         );
 
         self::assertSame([
-            'product' => ['description' => null],
+            'product' => ['model' => null],
             'affiliationProductUrl' => null,
             'postSale' => ['returnPolicy' => null],
         ], (new RequestNormalizer())->normalize($request));
@@ -91,10 +92,61 @@ final class PatchOfferRequestTest extends TestCase
     {
         $this->assertInvalidField('Offer.externalId', static fn (): object => self::constructWithArguments(PatchOfferRequest::class, [
             'externalId' => OptionalValue::null(),
-        ]));
+        ]), 'must be omitted or assigned a non-null value');
         $this->assertInvalidField('Product.ean', static fn (): object => self::constructWithArguments(ProductPatch::class, [
             'ean' => OptionalValue::null(),
-        ]));
+        ]), 'must be omitted or assigned a non-null value');
+    }
+
+    public function testRequiredOfferMembersCannotBeCleared(): void
+    {
+        foreach ([
+            'product' => 'Offer.product',
+            'price' => 'Offer.price',
+            'stock' => 'Offer.stock',
+        ] as $argument => $fieldPath) {
+            $this->assertInvalidField($fieldPath, static fn (): object => self::constructWithArguments(PatchOfferRequest::class, [
+                $argument => OptionalValue::null(),
+            ]));
+        }
+    }
+
+    public function testRequiredProductMembersCannotBeCleared(): void
+    {
+        foreach (['name', 'description', 'brand', 'categoryId'] as $argument) {
+            $this->assertInvalidField('Product.' . $argument, static fn (): object => self::constructWithArguments(ProductPatch::class, [
+                $argument => OptionalValue::null(),
+            ]));
+        }
+    }
+
+    public function testProductTextLimitsMatchProductProposal(): void
+    {
+        foreach ([
+            ['name', 'Product.name', str_repeat('n', 6)],
+            ['name', 'Product.name', str_repeat('n', 151)],
+            ['description', 'Product.description', str_repeat('d', 99)],
+            ['description', 'Product.description', str_repeat('d', 100001)],
+            ['brand', 'Product.brand', ''],
+            ['brand', 'Product.brand', str_repeat('b', 101)],
+            ['model', 'Product.model', ''],
+            ['model', 'Product.model', str_repeat('m', 101)],
+            ['superModel', 'Product.superModel', ''],
+            ['superModel', 'Product.superModel', str_repeat('s', 101)],
+        ] as [$argument, $fieldPath, $invalidValue]) {
+            $this->assertInvalidField($fieldPath, static fn (): object => self::constructWithArguments(ProductPatch::class, [
+                $argument => OptionalValue::of($invalidValue),
+            ]));
+        }
+
+        new ProductPatch(
+            name: OptionalValue::of(str_repeat('n', 150)),
+            description: OptionalValue::of(str_repeat('d', 100000)),
+            brand: OptionalValue::of(str_repeat('b', 100)),
+            model: OptionalValue::of(str_repeat('m', 100)),
+            superModel: OptionalValue::of(str_repeat('s', 100)),
+        );
+        self::addToAssertionCount(1);
     }
 
     public function testProductPatchRejectsInvalidNestedValues(): void
@@ -134,13 +186,16 @@ final class PatchOfferRequestTest extends TestCase
         );
     }
 
-    private function assertInvalidField(string $fieldPath, callable $operation): void
+    private function assertInvalidField(string $fieldPath, callable $operation, ?string $reason = null): void
     {
         try {
             $operation();
             self::fail(sprintf('Expected invalid request field "%s".', $fieldPath));
         } catch (InvalidRequestException $exception) {
             self::assertSame($fieldPath, $exception->fieldPath);
+            if ($reason !== null) {
+                self::assertSame($reason, $exception->reason);
+            }
         }
     }
 

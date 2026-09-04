@@ -85,7 +85,7 @@ final class PhaseSixResourcesTest extends TestCase
         self::assertSame('stock-command', $offers->updateStocks([new OfferStockUpdate($offerId, new Stock(5))])->data[0]->commandId->value);
         self::assertSame('offer-1', $offers->get($offerId)->data->id->value);
         $offers->patch($offerId, new PatchOfferRequest(
-            price: OptionalValue::null(),
+            price: OptionalValue::of(new Price(Money::fromDecimal('19.99'), '23%')),
             stock: OptionalValue::of(new Stock(2)),
             images: OptionalValue::of([new OfferImage('image.png', 'https://example.com/image.png', 1)]),
         ));
@@ -110,7 +110,7 @@ final class PhaseSixResourcesTest extends TestCase
         self::assertStringContainsString('name="file"; filename="manual.pdf"', (string) $http->requestAt(12)->getBody());
         self::assertSame('application/merge-patch+json', $http->requestAt(10)->getHeaderLine('Content-Type'));
         self::assertSame([
-            'price' => null,
+            'price' => ['grossPrice' => ['amount' => 19.99, 'currency' => 'PLN'], 'taxRateInfo' => '23%'],
             'stock' => ['quantity' => 2, 'unit' => 'UNIT'],
             'images' => [['fileName' => 'image.png', 'fileUrl' => 'https://example.com/image.png', 'priority' => 1]],
         ], json_decode((string) $http->requestAt(10)->getBody(), true, 512, JSON_THROW_ON_ERROR));

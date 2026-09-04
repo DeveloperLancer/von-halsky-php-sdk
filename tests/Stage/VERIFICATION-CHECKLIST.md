@@ -40,6 +40,9 @@ This checklist records observed behavior of the real Stage API. It is not an API
 | Gross price: 1000000 | Rejected | rejected |
 | SKU length | Local SDK code and unit test enforce 100 characters | locally confirmed |
 | Product name, brand, model, supermodel, EAN and tax-rate boundaries |  | pending |
+| PATCH `null` for required offer and product members | Rejected locally before network I/O | locally confirmed |
+| PATCH first assignment and repeated assignment of external ID and EAN |  | pending |
+| Product PATCH behavior for `PENDING` and `PUBLISHED` offers |  | pending |
 
 ## GPSR fields
 

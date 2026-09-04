@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Complete typed offer merge-patch support, including partial product, dimensions, affiliation URL, post-sale policies, and one-time external ID/EAN safeguards.
+- Complete typed offer merge-patch support, including partial product, dimensions, affiliation URL, post-sale policies, required-member safeguards, and one-time external ID/EAN safeguards.
 - Explicit category product validation from caller-supplied or API-fetched attribute definitions.
 - Local official-offer-form validation for product name and description, SKU, offer images, and manufacturer GPSR address data.
 - `Sku` value object and typed manufacturer address support in `GpsrInfo::required()`.
@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Offer patch validation now rejects `null` for required offer/product members, applies the product text limits used during creation, and leaves one-time external ID/EAN assignment decisions to the API.
 - Local OAuth failures now use `AuthenticationFlowException`; `AuthenticationException` represents an HTTP 401 API response.
 - Attachment uploads validate the documented type/MIME combinations while accepting all documented image filename extensions.
 - Empty offer-attribute operation lists are accepted as documented no-op requests.

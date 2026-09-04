@@ -309,6 +309,8 @@ HTTP 201 confirms command acceptance, not offer availability. Persist the comman
 
 Use batch DTOs for price and stock updates, `PatchOfferRequest` with `OptionalValue` for merge-patch semantics, and ordered `UpsertAttribute`/`RemoveAttribute` operations for attributes. A successful synchronous `patch()` and an accepted asynchronous command have different meanings; the individual [offer operation pages](./reference/offers/README.md) identify the returned type.
 
+The nested `product` in `patch()` is intended primarily for correcting an invalid `PENDING` offer. For a `PUBLISHED` offer, generally update price and stock; the server may reject or revalidate substantial product changes. The SDK does not close or reopen the offer automatically.
+
 All create, update, close, reopen, upload, and delete calls change remote state. They are not automatically retried. Exercise them in Stage only after an explicit write opt-in, use synthetic data, and record your application command or audit ID so an ambiguous transport failure can be reconciled before another write.
 
 ## Own attachment streams
