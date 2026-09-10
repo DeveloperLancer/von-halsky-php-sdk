@@ -56,4 +56,4 @@ Zapisuj `correlationId`, `operationId`, ID organizacji, własny identyfikator ż
 
 Załączniki celowo nie są buforowane. Wywołujący odpowiada za strumienie przekazane do `upload()` i zwrócone przez `download()`. Zamykaj je w `finally`, kopiuj do miejsc z ograniczonym rozmiarem i wymuszaj limity czasu poza SDK. Pozostawiony strumień odpowiedzi może zatrzymać połączenie i ostatecznie wyczerpać pulę procesów.
 
-Przed wydaniem skorzystaj z [listy gotowości produkcyjnej](./checklista-produkcyjna.md).
+Przed wydaniem skorzystaj z [listy gotowości produkcyjnej](./production-checklist.md).

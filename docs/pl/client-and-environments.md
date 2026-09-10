@@ -84,4 +84,4 @@ $orders = $shop->orders();
 
 ## Język i strumienie
 
-Większość metod przyjmuje opcjonalne `ResponseLanguage`; SDK przesyła je jako `Accept-Language`. Załączniki korzystają bezpośrednio ze strumieni: wywołujący odpowiada za zamknięcie strumienia przekazanego do `upload()` oraz zwróconego przez `download()`. Zobacz [referencję załączników](./reference/attachments/README.md) i [niezawodność](./niezawodnosc.md).
+Większość metod przyjmuje opcjonalne `ResponseLanguage`; SDK przesyła je jako `Accept-Language`. Załączniki korzystają bezpośrednio ze strumieni: wywołujący odpowiada za zamknięcie strumienia przekazanego do `upload()` oraz zwróconego przez `download()`. Zobacz [referencję załączników](./reference/attachments/README.md) i [niezawodność](./reliability.md).

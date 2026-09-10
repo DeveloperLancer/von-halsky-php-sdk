@@ -1,6 +1,6 @@
 # Referencja operacji SDK
 
-Pełna polska referencja publicznych metod zasobów SDK. Każda strona zawiera zakres, sygnaturę, wynik, ważne zachowanie i przykład. Wspólne informacje o `ApiResponse`, paginacji i wyjątkach są w [zasadach wspólnych](./wspolne-zasady.md).
+Pełna polska referencja publicznych metod zasobów SDK. Każda strona zawiera zakres, sygnaturę, wynik, ważne zachowanie i przykład. Wspólne informacje o `ApiResponse`, paginacji i wyjątkach są w [zasadach wspólnych](./common-rules.md).
 
 - [Organizations](./organizations/README.md) — 1 metoda
 - [Categories](./categories/README.md) — 3 metody

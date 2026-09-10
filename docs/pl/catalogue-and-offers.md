@@ -19,7 +19,7 @@ $categories = $client->categories()->list(
 )->data;
 ```
 
-Przekazanie pobranego obiektu `Category` do `ProductProposal` uruchamia `Category::requireLeaf()` i lokalnie odrzuca znany obiekt, który nie jest `leaf category`. Sam `CategoryId` nie pozwala tego stwierdzić, dlatego SDK ufa wywołującemu, a serwer pozostaje źródłem rozstrzygającym. Przy tworzeniu produktu preferuj świeżo pobraną kategorię. Nieznane wartości wyliczeń odpowiedzi są zachowywane; opisuje to przewodnik [odpowiedzi i błędy](./odpowiedzi-i-bledy.md).
+Przekazanie pobranego obiektu `Category` do `ProductProposal` uruchamia `Category::requireLeaf()` i lokalnie odrzuca znany obiekt, który nie jest `leaf category`. Sam `CategoryId` nie pozwala tego stwierdzić, dlatego SDK ufa wywołującemu, a serwer pozostaje źródłem rozstrzygającym. Przy tworzeniu produktu preferuj świeżo pobraną kategorię. Nieznane wartości wyliczeń odpowiedzi są zachowywane; opisuje to przewodnik [odpowiedzi i błędy](./responses-and-errors.md).
 
 ## Jawna walidacja wymagań kategorii
 
@@ -347,4 +347,4 @@ try {
 }
 ```
 
-SDK sprawdza udokumentowaną kombinację typu załącznika i MIME. Aplikacja odpowiada za ścieżkę docelową, limit rozmiaru, rzeczywistą zawartość pliku i zasady ochrony przed złośliwymi plikami. Zobacz [referencję załączników](./reference/attachments/README.md) i [niezawodność produkcyjną](./niezawodnosc.md).
+SDK sprawdza udokumentowaną kombinację typu załącznika i MIME. Aplikacja odpowiada za ścieżkę docelową, limit rozmiaru, rzeczywistą zawartość pliku i zasady ochrony przed złośliwymi plikami. Zobacz [referencję załączników](./reference/attachments/README.md) i [niezawodność produkcyjną](./reliability.md).

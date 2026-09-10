@@ -11,7 +11,7 @@ Zwraca organizacje dostępne dla obecnego access tokenu.
 
 ## Zachowanie
 
-Wybierz ID organizacji jawnie przed pracą na ofertach lub zamówieniach. Pola modelu mogą być `null`, jeśli tak stanowi odpowiedź API. Błędy opisują [zasady wspólne](../wspolne-zasady.md).
+Wybierz ID organizacji jawnie przed pracą na ofertach lub zamówieniach. Pola modelu mogą być `null`, jeśli tak stanowi odpowiedź API. Błędy opisują [zasady wspólne](../common-rules.md).
 
 ## Przykład
 

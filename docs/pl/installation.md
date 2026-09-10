@@ -36,7 +36,7 @@ $client = VonHalskyClient::create(new StaticTokenProvider($token), Environment::
 $organizations = $client->organizations()->list()->data;
 ```
 
-Przykładowy token nie może być rzeczywistym sekretem. Nie zapisuj tokenów, sekretów klientów ani danych klientów w kodzie, logach lub wyjątkach. Sposób pozyskiwania i odświeżania tokenów opisuje [OAuth 2.0 i cykl życia tokenów](./uwierzytelnianie.md).
+Przykładowy token nie może być rzeczywistym sekretem. Nie zapisuj tokenów, sekretów klientów ani danych klientów w kodzie, logach lub wyjątkach. Sposób pozyskiwania i odświeżania tokenów opisuje [OAuth 2.0 i cykl życia tokenów](./authentication.md).
 
 ## Wybór organizacji
 
@@ -54,4 +54,4 @@ $organization = $client->forOrganization(OrganizationId::fromString('organizatio
 $orders = $organization->orders()->list()->data;
 ```
 
-Kontekst nie zmienia `$client`, więc można bezpiecznie przechowywać osobne konteksty dla różnych organizacji. Następnie przejdź do [klienta, środowisk i kontekstów organizacji](./klient-i-srodowiska.md).
+Kontekst nie zmienia `$client`, więc można bezpiecznie przechowywać osobne konteksty dla różnych organizacji. Następnie przejdź do [klienta, środowisk i kontekstów organizacji](./client-and-environments.md).
