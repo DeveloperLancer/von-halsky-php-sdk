@@ -1,5 +1,5 @@
 {
-    "contractVersion": "1.6.3",
+    "contractVersion": "1.6.9",
     "implementedOperations": [
         {
             "operationId": "getCategoriesV1",

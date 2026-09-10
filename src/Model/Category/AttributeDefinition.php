@@ -18,6 +18,7 @@ final class AttributeDefinition implements ResponseDtoInterface
         public readonly ?string $description,
         public readonly ?string $language,
         public readonly ?AttributeDictionary $dictionary,
+        public readonly ?AttributeUnitOfMeasureDetails $unitOfMeasureDetails = null,
         private readonly array $additionalData = [],
     ) {
     }

@@ -11,6 +11,7 @@ use DevLancer\VonHalsky\Environment\Environment;
 use DevLancer\VonHalsky\Http\HttpClientDependencies;
 use DevLancer\VonHalsky\Model\Order\RefundRequest;
 use DevLancer\VonHalsky\Model\PostSale\ResolutionDescription;
+use DevLancer\VonHalsky\Model\ReturnOrder\ReturnStatus;
 use DevLancer\VonHalsky\Request\ClaimListOptions;
 use DevLancer\VonHalsky\Request\OrderEventsOptions;
 use DevLancer\VonHalsky\Request\OrderListOptions;
@@ -90,6 +91,23 @@ final class PhaseSevenResourcesTest extends TestCase
         self::assertSame('/inpsa/v1/organizations/organization%2F1/orders/order%2F1/refund', $http->requestAt(12)->getUri()->getPath());
         self::assertSame(['amount' => ['amount' => 12.34, 'currency' => 'PLN']], json_decode((string) $http->requestAt(12)->getBody(), true, 512, JSON_THROW_ON_ERROR));
         self::assertSame('/inpsa/v2/orders/delivery-methods', $http->requestAt(18)->getUri()->getPath());
+    }
+
+    public function testHydratesNewReturnStatusAsKnown(): void
+    {
+        $return = $this->return();
+        $return['status'] = ReturnStatus::NEW;
+        [$sdk] = $this->client($this->json($return));
+
+        $status = $sdk->forOrganization(OrganizationId::fromString('organization-1'))
+            ->returns()
+            ->get(ReturnId::fromString('return-1'))
+            ->data
+            ->status;
+
+        self::assertSame(ReturnStatus::NEW, $status->value);
+        self::assertTrue($status->isKnown());
+        self::assertSame(ReturnStatus::NEW, $status->knownValue());
     }
 
     /** @return array<string, mixed> */

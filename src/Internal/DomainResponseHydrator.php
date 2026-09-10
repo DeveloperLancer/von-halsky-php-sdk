@@ -10,6 +10,7 @@ use DevLancer\VonHalsky\Model\Category\AttributeDictionary;
 use DevLancer\VonHalsky\Model\Category\AttributeDictionaryOption;
 use DevLancer\VonHalsky\Model\Category\AttributeExpectedValue;
 use DevLancer\VonHalsky\Model\Category\AttributeType;
+use DevLancer\VonHalsky\Model\Category\AttributeUnitOfMeasureDetails;
 use DevLancer\VonHalsky\Model\Category\Category;
 use DevLancer\VonHalsky\Model\Category\CategoryRelation;
 use DevLancer\VonHalsky\Model\Organization\Organization;
@@ -115,6 +116,7 @@ final class DomainResponseHydrator
             $path = sprintf('$[%d]', $index);
             $item = self::object($item, $path);
             $dictionary = self::nullableObject($item, 'dictionary', $path);
+            $unitOfMeasureDetails = self::nullableObject($item, 'unitOfMeasureDetails', $path);
             $result[] = new AttributeDefinition(
                 ResponseHydrator::string($item, 'id', $path),
                 ResponseHydrator::string($item, 'name', $path),
@@ -123,9 +125,10 @@ final class DomainResponseHydrator
                 self::nullableString($item, 'description', $path),
                 self::nullableString($item, 'lang', $path),
                 $dictionary === null ? null : self::dictionary($dictionary, $path . '.dictionary'),
+                $unitOfMeasureDetails === null ? null : self::unitOfMeasureDetails($unitOfMeasureDetails, $path . '.unitOfMeasureDetails'),
                 ResponseHydrator::additionalData(
                     $item,
-                    ['id', 'name', 'type', 'expectedValue', 'description', 'lang', 'dictionary'],
+                    ['id', 'name', 'type', 'expectedValue', 'description', 'lang', 'dictionary', 'unitOfMeasureDetails'],
                 ),
             );
         }
@@ -154,6 +157,18 @@ final class DomainResponseHydrator
             ResponseHydrator::string($data, 'name', $path),
             $options,
             ResponseHydrator::additionalData($data, ['id', 'name', 'options']),
+        );
+    }
+
+    /** @param array<string, mixed> $data */
+    private static function unitOfMeasureDetails(array $data, string $path): AttributeUnitOfMeasureDetails
+    {
+        return new AttributeUnitOfMeasureDetails(
+            ResponseHydrator::string($data, 'code', $path),
+            ResponseHydrator::string($data, 'symbol', $path),
+            ResponseHydrator::string($data, 'group', $path),
+            ResponseHydrator::string($data, 'translation', $path),
+            ResponseHydrator::additionalData($data, ['code', 'symbol', 'group', 'translation']),
         );
     }
 

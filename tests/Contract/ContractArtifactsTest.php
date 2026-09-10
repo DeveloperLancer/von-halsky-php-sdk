@@ -13,7 +13,7 @@ use RuntimeException;
 #[CoversNothing]
 final class ContractArtifactsTest extends TestCase
 {
-    private const PRODUCTION_HASH = '3458b7f7f1b8ea5213eafcbcb61ecc2fcd3809bf3f9e277795ec3645d23ada7f';
+    private const PRODUCTION_HASH = '24f4ef4698dca373678d60f4f00730d28396650263058373b8a0a6bc863eb278';
 
     #[Test]
     public function lockReferencesOnlyOfficialSourcesAndLocalDerivatives(): void
@@ -21,7 +21,7 @@ final class ContractArtifactsTest extends TestCase
         $lock = self::readObject('contract-lock.json');
 
         self::assertSame('3.0.3', $lock['openApiVersion'] ?? null);
-        self::assertSame('1.6.3', $lock['productionContractVersion'] ?? null);
+        self::assertSame('1.6.9', $lock['productionContractVersion'] ?? null);
         self::assertSame(self::PRODUCTION_HASH, $lock['productionSha256'] ?? null);
         self::assertFalse(self::nestedValue($lock, ['redistribution', 'fullOpenApiCommitted']));
 
@@ -39,7 +39,7 @@ final class ContractArtifactsTest extends TestCase
     {
         $manifest = self::readObject('operations.json');
         self::assertSame(self::PRODUCTION_HASH, $manifest['generatedFromSha256'] ?? null);
-        self::assertSame(173, self::nestedValue($manifest, ['summary', 'schemas']));
+        self::assertSame(174, self::nestedValue($manifest, ['summary', 'schemas']));
 
         $operations = self::listValue($manifest, 'operations');
         self::assertCount(43, $operations);
@@ -132,7 +132,7 @@ final class ContractArtifactsTest extends TestCase
             self::listValue($diff, 'operationChanges'),
             self::listValue($diff, 'schemaChanges'),
         );
-        self::assertCount(28, $changes);
+        self::assertCount(31, $changes);
         foreach ($changes as $changeValue) {
             $change = self::objectValue($changeValue, 'change');
             self::assertContains(

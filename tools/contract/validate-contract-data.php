@@ -276,8 +276,8 @@ function validateManifest(array $manifest, array $lock, array &$errors): void
         $errors[] = 'operations.json must record the documented OAuth scopes for every scoped operation.';
     }
     $summary = contractOptionalObject($manifest, 'summary');
-    if (($summary['schemas'] ?? null) !== 173) {
-        $errors[] = 'operations.json must record 173 production schemas.';
+    if (($summary['schemas'] ?? null) !== 174) {
+        $errors[] = 'operations.json must record 174 production schemas.';
     }
 }
 

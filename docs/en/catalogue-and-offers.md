@@ -166,7 +166,7 @@ foreach ($typeValidation->warnings() as $warning) {
 
 Calling the registry directly runs every rule of the selected type validator, including its independent length limit and, for `DICTIONARY`, membership in the active dictionary options. It does not check product completeness, attribute cardinality, or required attributes. Use `CategoryProductValidator::validate()` before creating or updating an offer.
 
-The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. Every built-in type currently owns an independent 1024-character limit. `NUMERIC` accepts unsigned non-negative integers, `NUMERIC_FLOAT` unsigned non-negative dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. Unknown future definition types produce warnings, while a missing validator for an API-defined type is an error. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
+The validator checks category identity, required attributes, cardinality, duplicate or unknown attribute IDs, active dictionary values, and known value types. Every built-in type currently owns an independent 1024-character limit. `NUMERIC` accepts unsigned non-negative integers, `NUMERIC_FLOAT` unsigned non-negative dot-decimal values, `DATE` ISO `YYYY-MM-DD`, and `URL` absolute HTTP or HTTPS URLs. Dictionary inputs use the localized option `value` returned by the API, not the option ID. When a definition represents a measurable value, the API may include `unitOfMeasureDetails` (`code`, `symbol`, `group`, `translation`); express the attribute value in that unit. Local product validation does not convert units. Unknown future definition types produce warnings, while a missing validator for an API-defined type is an error. Local validation does not replace the server's current business rules and is never invoked automatically by offer creation.
 
 An application can register its own attribute type. The validator receives the category, definition, complete attribute, current value, indexes, and field path. It returns a list of errors and warnings that `CategoryProductValidator` adds to the product result. A custom type owns its limit. The `ValidatesAttributeValueLength` trait provides shared mechanics without imposing one shared limit value:
 
@@ -247,7 +247,7 @@ The most important locally enforced offer-form rules are:
 
 `GpsrInfo::required()` accepts a typed `Manufacturer` and non-empty safety information. A manufacturer needs a name and valid email; country, address, phone, unstructured address, and `ResponsiblePerson` details are optional. `GpsrInfo::notRequired()` serializes the explicit contract exemption; do not use it merely to bypass missing compliance data.
 
-The SDK update for API 1.6.3 removes the flat `GpsrInfo::required()` arguments and the deprecated text `responsiblePerson`. Migrate to `Manufacturer` and pass structured data through `responsiblePersonDetails`.
+The SDK update for API 1.6.3 removes the flat `GpsrInfo::required()` arguments and the deprecated text `responsiblePerson`. Migrate to `Manufacturer` and pass structured data through `responsiblePersonDetails`. API 1.6.9 still documents the deprecated `responsiblePerson` string on the manufacturer schema; the SDK does not serialize it.
 
 ## Product description formatting
 

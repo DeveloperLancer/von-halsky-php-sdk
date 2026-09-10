@@ -277,10 +277,10 @@ final class OfferInputValidationTest extends TestCase
         self::assertArrayHasKey('batchNumber', $serialized);
         self::assertArrayHasKey('ceMarking', $serialized);
         self::assertArrayHasKey('manuals', $serialized);
-        self::assertSame(str_repeat('M', 500), $gpsr->manufacturer?->name);
-        self::assertSame('+481234567890123', $gpsr->manufacturer?->phone);
-        self::assertSame(str_repeat('A', 300), $gpsr->manufacturer?->unstructuredAddress);
-        self::assertSame(str_repeat('P', 500), $gpsr->manufacturer?->responsiblePersonDetails?->name);
+        self::assertSame(str_repeat('M', 500), $gpsr->manufacturer->name);
+        self::assertSame('+481234567890123', $gpsr->manufacturer->phone);
+        self::assertSame(str_repeat('A', 300), $gpsr->manufacturer->unstructuredAddress);
+        self::assertSame(str_repeat('P', 500), $gpsr->manufacturer->responsiblePersonDetails?->name);
         self::assertSame('PL', $serialized['manufacturer']['countryCode']);
         self::assertSame(str_repeat('P', 500), $serialized['manufacturer']['responsiblePersonDetails']['name']);
         self::assertSame(str_repeat('U', 300), $serialized['manufacturer']['responsiblePersonDetails']['unstructuredAddress']);

@@ -1,6 +1,6 @@
 {
-    "contractVersion": "1.6.3",
-    "generatedFromSha256": "3458b7f7f1b8ea5213eafcbcb61ecc2fcd3809bf3f9e277795ec3645d23ada7f",
+    "contractVersion": "1.6.9",
+    "generatedFromSha256": "24f4ef4698dca373678d60f4f00730d28396650263058373b8a0a6bc863eb278",
     "openApiVersion": "3.0.3",
     "operations": [
         {
@@ -746,6 +746,6 @@
             "6": 19,
             "7": 20
         },
-        "schemas": 173
+        "schemas": 174
     }
 }

@@ -1,5 +1,5 @@
 {
-    "productionContractVersion": "1.6.3",
+    "productionContractVersion": "1.6.9",
     "releaseVersion": "1.6.0",
     "rules": [
         {
@@ -302,10 +302,10 @@
         }
     ],
     "source": {
-        "checkedAt": "2026-09-04",
+        "checkedAt": "2026-09-10",
         "defaultForRulesWithoutSourceOverride": true,
         "productionStatus": "verified-by-production-contract",
-        "releaseVersion": "1.6.3",
+        "releaseVersion": "1.6.9",
         "url": "https://inpsa-api-portal.inpost-group.com/gokart-api.html"
     }
 }

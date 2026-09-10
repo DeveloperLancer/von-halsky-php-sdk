@@ -137,13 +137,35 @@ final class PhaseFiveResourcesTest extends TestCase
                     ],
                 ],
             ],
+            [
+                'id' => 'attribute-2',
+                'name' => 'Weight',
+                'type' => 'NUMERIC_FLOAT',
+                'expectedValue' => 'ONE',
+                'unitOfMeasureDetails' => [
+                    'code' => 'GRAM',
+                    'symbol' => 'g',
+                    'group' => 'MASS',
+                    'translation' => 'Gram',
+                    'future' => 'retained',
+                ],
+            ],
         ]));
 
-        $attribute = $sdk->categories()->attributes(CategoryId::fromString('leaf-1'))->data[0];
+        $attributes = $sdk->categories()->attributes(CategoryId::fromString('leaf-1'))->data;
+        $attribute = $attributes[0];
+        $measurable = $attributes[1];
 
         self::assertSame('FUTURE_TYPE', $attribute->type->value);
         self::assertFalse($attribute->type->isKnown());
         self::assertSame('First', $attribute->dictionary?->options[0]->value);
+        self::assertNull($attribute->unitOfMeasureDetails);
+        self::assertNotNull($measurable->unitOfMeasureDetails);
+        self::assertSame('GRAM', $measurable->unitOfMeasureDetails->code);
+        self::assertSame('g', $measurable->unitOfMeasureDetails->symbol);
+        self::assertSame('MASS', $measurable->unitOfMeasureDetails->group);
+        self::assertSame('Gram', $measurable->unitOfMeasureDetails->translation);
+        self::assertSame(['future' => 'retained'], $measurable->unitOfMeasureDetails->additionalData());
     }
 
     public function testBuildsProductValidatorFromOneAttributeRequest(): void

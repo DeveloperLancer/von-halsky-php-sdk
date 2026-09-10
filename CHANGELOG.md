@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Explicit category product validation from caller-supplied or API-fetched attribute definitions.
 - Local official-offer-form validation for product name and description, SKU, offer images, and manufacturer GPSR address data.
 - `Sku` value object and typed manufacturer address support in `GpsrInfo::required()`.
-- Reproducible production and upcoming API contract baseline.
+- Reproducible production and upcoming API contract baseline aligned with production API 1.6.9.
 - Dependency-free PHP 8.1 contract extraction, normalization, manifest, diff, and validation tools.
 - Composer library foundation with PHPUnit, PHPStan, PHP-CS-Fixer, and phpDocumentor.
 - Offline contract tests, documentation checks, and GitHub Actions workflows.
@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Typed product, GPSR, price, stock, batch, merge-patch, attribute-operation, command, event, hint, and attachment models.
 - Stream-first multipart uploads and downloads with explicit caller ownership, plus an opt-in Stage offer lifecycle suite.
 - Complete order, return, refund, and claim resources covering 18 current production operations (41 supported operations total).
+- Typed `ReturnStatus::NEW` for newly registered returns awaiting a merchant decision.
+- Typed `AttributeDefinition::$unitOfMeasureDetails` for measurable category attributes.
 - Typed order events/commands, UTC list filters, precise refund requests, post-sale actions, delivery methods v2, and recursive PII redaction.
 - Phase 8 reliability primitives: explicitly enabled, short GET-only retry with jitter, elapsed-time limits, `Retry-After` support, and double-retry detection.
 - One-call command and event endpoint access while leaving polling state, checkpoint age, scheduling, and persistence to the application.
@@ -36,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- GPSR manufacturer input now uses typed `Manufacturer` and `ResponsiblePerson` models for API 1.6.3. The flat `GpsrInfo::required()` signature and deprecated `responsiblePerson` field were removed; use `responsiblePersonDetails` instead.
+- GPSR manufacturer input now uses typed `Manufacturer` and `ResponsiblePerson` models for API 1.6.3. The flat `GpsrInfo::required()` signature and deprecated `responsiblePerson` field were removed; use `responsiblePersonDetails` instead. Production API 1.6.9 still documents the deprecated string and confirms the structured `responsiblePersonDetails` field; the SDK continues to omit the string.
 - Offer patch validation now rejects `null` for required offer/product members, applies the product text limits used during creation, and leaves one-time external ID/EAN assignment decisions to the API.
 - Local OAuth failures now use `AuthenticationFlowException`; `AuthenticationException` represents an HTTP 401 API response.
 - Attachment uploads validate the documented type/MIME combinations while accepting all documented image filename extensions.

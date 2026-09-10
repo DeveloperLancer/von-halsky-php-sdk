@@ -6,11 +6,11 @@ Zwraca definicje atrybutów dla kategorii.
 
 - Zakres: globalny.
 - Sygnatura: `attributes(CategoryId $categoryId, ?ResponseLanguage $language = null): ApiResponse<list<AttributeDefinition>>`.
-- Wynik: definicje, słowniki i oczekiwane wartości.
+- Wynik: definicje, słowniki, oczekiwane wartości i opcjonalna jednostka miary dla atrybutów mierzalnych.
 
 ## Zachowanie
 
-Przed utworzeniem oferty używaj `leaf category`. Nieznane wartości enumów są zachowywane, aby nowa wartość serwera nie zablokowała hydratacji.
+Przed utworzeniem oferty używaj `leaf category`. Nieznane wartości enumów są zachowywane, aby nowa wartość serwera nie zablokowała hydratacji. Jeśli definicja opisuje wartość mierzalną (na przykład masę lub objętość), odpowiedź zawiera `unitOfMeasureDetails` z polami `code`, `symbol`, `group` i zlokalizowanym `translation`; wartość atrybutu podawaj w tej jednostce.
 
 ## Przykład
 
