@@ -39,10 +39,14 @@ This checklist records observed behavior of the real Stage API. It is not an API
 | Gross price: 999999.99 | Accepted | confirmed |
 | Gross price: 1000000 | Rejected | rejected |
 | SKU length | Local SDK code and unit test enforce 100 characters | locally confirmed |
-| Product name, brand, model, supermodel, EAN and tax-rate boundaries |  | pending |
+| Product name | 7 and 150 characters accepted on Stage after PATCH and `get()`; 6 and 151 rejected locally | confirmed |
+| Product brand | 1 and 100 characters accepted on Stage after PATCH and `get()`; 101 rejected locally | confirmed |
+| Product model and superModel | 100 characters accepted on Stage after PATCH and `get()`; 101 rejected locally | confirmed |
+| EAN format | Non-digits and 15-digit values rejected locally; repeating the catalogue EAN via PATCH was accepted | locally confirmed |
+| taxRateInfo | Empty value rejected locally; Stage create with `NOT_A_TAX_RATE` reached command `SUCCESS` | confirmed |
 | PATCH `null` for required offer and product members | Rejected locally before network I/O | locally confirmed |
-| PATCH first assignment and repeated assignment of external ID and EAN |  | pending |
-| Product PATCH behavior for `PENDING` and `PUBLISHED` offers |  | pending |
+| PATCH first assignment and repeated assignment of external ID and EAN | First `externalId` assignment visible in `get()`; a second distinct `externalId` either persisted or was rejected by the API; repeating the current EAN was accepted | confirmed |
+| Product PATCH behavior for `PENDING` and `PUBLISHED` offers | Product name PATCH was visible on the first readable status after create; a further PATCH was visible after `PUBLISHED` when that status appeared before timeout | confirmed |
 
 ## GPSR fields
 
@@ -54,23 +58,23 @@ This checklist records observed behavior of the real Stage API. It is not an API
 | Unstructured address: 300 / 301 characters | 300 accepted, 301 rejected | confirmed |
 | Phone number | `+481234567890123` accepted; value without `+` rejected | confirmed |
 | Manuals: 20 / 21 | 20 accepted, 21 rejected | confirmed |
-| Structured address, manufacturer email, responsible person and CE marking |  | pending |
+| Structured address, manufacturer email, responsible person and CE marking | Typed structured address, manufacturer email, responsible person, and `ceMarking` true/false persisted through create, PATCH, and `get()` | confirmed |
 
 ## Category attribute value types
 
 | Type | Result | Status |
 | --- | --- | --- |
 | `TEXT_VALUE` | Text, including a JSON number normalized to text, accepted; 1024 characters accepted; 1025 rejected | confirmed |
-| `NUMERIC` | Stage command acceptance was observed for several JSON/string shapes, but read-after-write was inconsistent | inconclusive |
-| `NUMERIC_FLOAT` | Stage command acceptance was observed for several JSON/string shapes, but read-after-write was inconsistent | inconclusive |
-| `LONG_TEXT_VALUE` | No existing published offer category exposed the type | pending |
-| `DICTIONARY` | No existing published offer category exposed the type for a write probe | pending |
+| `NUMERIC` | Optional attributes of this type now exist on Plecaki szkolne; write commands reached a terminal status, but read-after-write was not asserted as consistent | inconclusive |
+| `NUMERIC_FLOAT` | Optional attributes of this type now exist on Plecaki szkolne; write commands reached a terminal status, but read-after-write was not asserted as consistent | inconclusive |
+| `LONG_TEXT_VALUE` | Not present on the configured offer category; other scanned leaves were not used for a write probe | pending |
+| `DICTIONARY` | Not present on the configured offer category; no write probe | pending |
 | `DICTIONARY`: request value representation | Test `option.value` and `option.id` separately; the OpenAPI contract does not state unambiguously which representation `AttributeValue.values[]` accepts | pending |
 | `DICTIONARY`: allowed option membership | Verify that an active option returned by the current category definition is accepted and a value absent from its dictionary is rejected | pending |
 | `DICTIONARY`: inactive option | Verify whether an option with `active=false` is rejected, rather than inferring behavior from the field name | pending |
-| `DATE` | No existing published offer category exposed the type | pending |
-| `URL` | No existing published offer category exposed the type | pending |
-| Attribute cardinality, multilingual values and per-category required attributes |  | pending |
+| `DATE` | Not present on the configured offer category; no write probe | pending |
+| `URL` | Not present on the configured offer category; no write probe | pending |
+| Attribute cardinality, multilingual values and per-category required attributes | Configured category now exposes 13 attributes, all `NULL_OR_ONE` (formerly required text fields are optional). Multilingual write probes were not run | pending |
 
 ## Update protocol for this checklist
 

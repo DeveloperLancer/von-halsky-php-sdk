@@ -400,15 +400,38 @@ function validatePendingStage(array $document, array &$errors): void
             $errors[] = sprintf('Expected %s at pending-stage-verifications.items[%d].', $expectedId, $index);
             continue;
         }
-        if (($item['status'] ?? null) !== 'pending-stage'
+        $status = $item['status'] ?? null;
+        if (!in_array($status, ['pending-stage', 'verified-stage', 'rejected-stage'], true)
             || !is_string($item['owner'] ?? null)
             || !in_array($item['priority'] ?? null, ['critical', 'high', 'medium', 'low'], true)
             || !is_array($item['blocks'] ?? null)
             || $item['blocks'] === []) {
             $errors[] = sprintf('%s has incomplete status, owner, priority, or blocks.', $expectedId);
         }
-        if (($item['evidence'] ?? null) !== null) {
-            $errors[] = sprintf('%s must not have evidence before Stage execution.', $expectedId);
+        $evidence = $item['evidence'] ?? null;
+        if ($status === 'pending-stage') {
+            if ($evidence !== null) {
+                $errors[] = sprintf('%s must not have evidence while still pending-stage.', $expectedId);
+            }
+            continue;
+        }
+        if (!is_array($evidence) || array_is_list($evidence)) {
+            $errors[] = sprintf('%s requires anonymized evidence after Stage execution.', $expectedId);
+            continue;
+        }
+        if (!is_string($evidence['executedAt'] ?? null) || $evidence['executedAt'] === '') {
+            $errors[] = sprintf('%s evidence.executedAt must be a non-empty timestamp.', $expectedId);
+        }
+        $observed = $evidence['observed'] ?? null;
+        if (!is_array($observed) || $observed === [] || !array_is_list($observed)) {
+            $errors[] = sprintf('%s evidence.observed must be a non-empty list of sanitized notes.', $expectedId);
+            continue;
+        }
+        foreach ($observed as $note) {
+            if (!is_string($note) || $note === '') {
+                $errors[] = sprintf('%s evidence.observed must contain only non-empty strings.', $expectedId);
+                break;
+            }
         }
     }
 }

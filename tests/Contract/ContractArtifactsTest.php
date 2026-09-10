@@ -162,7 +162,7 @@ final class ContractArtifactsTest extends TestCase
     }
 
     #[Test]
-    public function deferredStageChecklistIsCompleteAndContainsNoEvidence(): void
+    public function deferredStageChecklistIsCompleteAndEvidenceMatchesStatus(): void
     {
         $document = self::readObject('pending-stage-verifications.json');
         self::assertFalse(self::nestedValue($document, ['environment', 'credentialsAvailable']));
@@ -174,10 +174,22 @@ final class ContractArtifactsTest extends TestCase
         foreach ($items as $index => $itemValue) {
             $item = self::objectValue($itemValue, 'Stage checklist item');
             self::assertSame(sprintf('STAGE-%03d', $index + 1), $item['id'] ?? null);
-            self::assertSame('pending-stage', $item['status'] ?? null);
-            self::assertNull($item['evidence'] ?? null);
+            $status = self::requiredString($item, 'status');
+            self::assertContains($status, ['pending-stage', 'verified-stage', 'rejected-stage']);
             self::assertNotSame('', self::requiredString($item, 'owner'));
             self::assertNotEmpty($item['blocks'] ?? null);
+            if ($status === 'pending-stage') {
+                self::assertNull($item['evidence'] ?? null);
+                continue;
+            }
+            $evidence = self::objectValue($item['evidence'] ?? null, $item['id'] . ' evidence');
+            self::assertNotSame('', self::requiredString($evidence, 'executedAt'));
+            $observed = self::listValue($evidence, 'observed');
+            self::assertNotEmpty($observed);
+            foreach ($observed as $note) {
+                self::assertIsString($note);
+                self::assertNotSame('', $note);
+            }
         }
     }
 

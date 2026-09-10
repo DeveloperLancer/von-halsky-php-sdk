@@ -37,11 +37,20 @@
         },
         {
             "blocks": ["1.0.0", "phase-03-oauth-integration"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-10T17:40:00Z",
+                "observed": [
+                    "Client Credentials returned a bearer access token.",
+                    "The token response did not include a refresh token.",
+                    "Requested merchant scopes were usable for catalogue and offer writes."
+                ],
+                "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
+                "writeOperationsEnabled": true
+            },
             "id": "STAGE-002",
             "owner": "SDK maintainers",
             "priority": "critical",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Client Credentials for a merchant"
         },
         {
@@ -55,11 +64,20 @@
         },
         {
             "blocks": ["1.0.0", "phase-03-authorization"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-10T17:40:00Z",
+                "observed": [
+                    "A token without api:offers:write was denied on offer create with HTTP 401 or 403.",
+                    "A token without api:orders:read was denied on order list with HTTP 401 or 403.",
+                    "An invalid client secret was rejected by the token endpoint without echoing the secret."
+                ],
+                "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
+                "writeOperationsEnabled": true
+            },
             "id": "STAGE-004",
             "owner": "SDK maintainers",
             "priority": "critical",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Scopes and organization access boundaries"
         },
         {
@@ -73,11 +91,20 @@
         },
         {
             "blocks": ["1.0.0", "phase-08-async"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-10T17:40:00Z",
+                "observed": [
+                    "Offer create returned HTTP 200, 201, or 202 with a command ID.",
+                    "command() reached SUCCESS.",
+                    "An offer event referenced the created offer and get() returned the same offer identity."
+                ],
+                "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
+                "writeOperationsEnabled": true
+            },
             "id": "STAGE-006",
             "owner": "SDK maintainers",
             "priority": "critical",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Correlation of HTTP 201, command ID, event, and final offer"
         },
         {
@@ -100,38 +127,73 @@
         },
         {
             "blocks": ["phase-06-attachments"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-10T17:40:00Z",
+                "observed": [
+                    "A one-pixel PNG streamed as image/png reached a terminal upload command.",
+                    "A MIME type not allowed for IMAGE was rejected locally before network I/O."
+                ],
+                "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
+                "writeOperationsEnabled": true
+            },
             "id": "STAGE-009",
             "owner": "SDK maintainers",
             "priority": "high",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Attachment MIME types, limits, and streaming"
         },
         {
             "blocks": ["1.0.0", "phase-04-errors"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-10T17:40:00Z",
+                "observed": [
+                    "An invalid access token mapped to AuthenticationException with HTTP 401.",
+                    "An unknown offer ID mapped to NotFoundException with HTTP 404.",
+                    "Both responses exposed Content-Type application/problem+json or application/json."
+                ],
+                "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
+                "writeOperationsEnabled": true
+            },
             "id": "STAGE-010",
             "owner": "SDK maintainers",
             "priority": "critical",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "application/problem+json behavior for representative 4xx responses"
         },
         {
             "blocks": ["phase-07-post-sale"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-10T17:40:00Z",
+                "observed": [
+                    "Organization claim and return list endpoints were callable without logging payloads.",
+                    "The claim-types dictionary response was not a JSON object, so the typed SDK decoder could not map it.",
+                    "Refund command endpoints were not exercised; collections may be empty."
+                ],
+                "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
+                "writeOperationsEnabled": false
+            },
             "id": "STAGE-011",
             "owner": "SDK maintainers",
             "priority": "high",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Availability of return, refund, and claim data"
         },
         {
             "blocks": ["1.0.0", "phase-08-retry"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-10T17:40:00Z",
+                "observed": [
+                    "A second create with the same externalId reached a terminal command or a 4xx API exception.",
+                    "Repeating the same daysToShip PATCH did not require a client-generated idempotency key.",
+                    "Stage does not document an idempotency-key guarantee for these writes."
+                ],
+                "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
+                "writeOperationsEnabled": true
+            },
             "id": "STAGE-012",
             "owner": "SDK maintainers",
             "priority": "critical",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Idempotency guarantees or their absence for write operations"
         }
     ],
