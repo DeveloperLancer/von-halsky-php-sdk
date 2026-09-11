@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-11
+
 ### Added
 
 - Complete typed offer merge-patch support, including partial product, dimensions, affiliation URL, post-sale policies, required-member safeguards, and one-time external ID/EAN safeguards.
@@ -45,4 +47,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Attachment uploads validate the documented type/MIME combinations while accepting all documented image filename extensions.
 - Empty offer-attribute operation lists are accepted as documented no-op requests.
 
-[Unreleased]: https://github.com/DeveloperLancer/von-halsky-php-sdk/commits/HEAD
+[Unreleased]: https://github.com/DeveloperLancer/von-halsky-php-sdk/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/DeveloperLancer/von-halsky-php-sdk/releases/tag/1.0.0

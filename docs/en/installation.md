@@ -4,13 +4,13 @@ The SDK requires PHP 8.1+, Composer 2, and the JSON extension. It is a library: 
 
 ## Install the released package
 
-After a tagged release is published to Packagist, install it in an application:
+Install 1.0.0 from a GitHub tag, or from Packagist after that listing exists:
 
 ```bash
 composer require dev-lancer/von-halsky-php-sdk
 ```
 
-The repository currently represents an unreleased development snapshot. For development, clone it and install the locked toolchain:
+The 1.0.0 line is locked to production API 1.6.9. Packagist publication is still pending. To work from source, clone the repository and install the locked toolchain:
 
 ```bash
 git clone https://github.com/DeveloperLancer/von-halsky-php-sdk.git

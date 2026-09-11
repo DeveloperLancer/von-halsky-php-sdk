@@ -6,7 +6,7 @@ This is not an official InPost product and is not affiliated with or endorsed by
 
 ## Status
 
-The SDK implements 41 current operations across organizations, categories, offers, attachments, orders, returns, and claims. It intentionally excludes two deprecated upstream operations. The 1.0.0 line is locked to production API 1.6.9. It is not yet published on Packagist, so the repository is a development snapshot rather than a release promise.
+The SDK implements 41 current operations across organizations, categories, offers, attachments, orders, returns, and claims. It intentionally excludes two deprecated upstream operations. The first tagged release is 1.0.0, locked to production API 1.6.9. Publication on Packagist is still pending.
 
 ## Requirements
 
@@ -16,13 +16,13 @@ The SDK implements 41 current operations across organizations, categories, offer
 
 ## Install
 
-After the first tagged release is published, install the package with:
+Install 1.0.0 from a GitHub tag, or from Packagist after that listing exists:
 
 ```bash
 composer require dev-lancer/von-halsky-php-sdk
 ```
 
-Until then, use a Composer VCS repository or clone this repository for development. See [Installation and first client](./docs/en/installation.md).
+Until Packagist is available, require the VCS repository or clone this repository. See [Installation and first client](./docs/en/installation.md).
 
 ## First API call
 
