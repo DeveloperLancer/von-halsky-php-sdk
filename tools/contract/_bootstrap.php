@@ -302,7 +302,7 @@ function contractOperations(array $document): array
             $result[] = [
                 'method' => strtoupper($method),
                 'path' => $path,
-                'operation' => $operation,
+                'operation' => contractObject($operation, sprintf('%s %s', strtoupper($method), $path)),
             ];
         }
     }

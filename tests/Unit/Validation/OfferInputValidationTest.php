@@ -277,14 +277,23 @@ final class OfferInputValidationTest extends TestCase
         self::assertArrayHasKey('batchNumber', $serialized);
         self::assertArrayHasKey('ceMarking', $serialized);
         self::assertArrayHasKey('manuals', $serialized);
+
+        self::assertNotNull($gpsr->manufacturer);
         self::assertSame(str_repeat('M', 500), $gpsr->manufacturer->name);
         self::assertSame('+481234567890123', $gpsr->manufacturer->phone);
         self::assertSame(str_repeat('A', 300), $gpsr->manufacturer->unstructuredAddress);
-        self::assertSame(str_repeat('P', 500), $gpsr->manufacturer->responsiblePersonDetails?->name);
-        self::assertSame('PL', $serialized['manufacturer']['countryCode']);
-        self::assertSame(str_repeat('P', 500), $serialized['manufacturer']['responsiblePersonDetails']['name']);
-        self::assertSame(str_repeat('U', 300), $serialized['manufacturer']['responsiblePersonDetails']['unstructuredAddress']);
-        self::assertArrayNotHasKey('responsiblePerson', $serialized['manufacturer']);
+        self::assertNotNull($gpsr->manufacturer->responsiblePersonDetails);
+        self::assertSame(str_repeat('P', 500), $gpsr->manufacturer->responsiblePersonDetails->name);
+
+        $manufacturer = $serialized['manufacturer'];
+        self::assertIsArray($manufacturer);
+        self::assertSame('PL', $manufacturer['countryCode']);
+        self::assertArrayNotHasKey('responsiblePerson', $manufacturer);
+
+        $responsiblePersonDetails = $manufacturer['responsiblePersonDetails'] ?? null;
+        self::assertIsArray($responsiblePersonDetails);
+        self::assertSame(str_repeat('P', 500), $responsiblePersonDetails['name']);
+        self::assertSame(str_repeat('U', 300), $responsiblePersonDetails['unstructuredAddress']);
         self::assertSame(str_repeat('B', 500), $gpsr->batchNumber);
         self::assertTrue($gpsr->ceMarking);
         self::assertSame(2048, strlen($gpsr->manuals[0]['url']));
@@ -435,7 +444,9 @@ final class OfferInputValidationTest extends TestCase
         $gpsr = GpsrInfo::required(new Manufacturer('Example manufacturer', 'manufacturer@example.com'), 'Safe product.');
 
         self::assertFalse(property_exists($gpsr, 'manufacturerResponsiblePerson'));
-        self::assertArrayNotHasKey('responsiblePerson', $gpsr->jsonSerialize()['manufacturer']);
+        $manufacturer = $gpsr->jsonSerialize()['manufacturer'] ?? null;
+        self::assertIsArray($manufacturer);
+        self::assertArrayNotHasKey('responsiblePerson', $manufacturer);
         $parameters = (new \ReflectionMethod(GpsrInfo::class, 'required'))->getParameters();
         $type = $parameters[0]->getType();
         if (!$type instanceof \ReflectionNamedType) {
