@@ -28,11 +28,21 @@
     "items": [
         {
             "blocks": ["1.0.0", "phase-03-oauth-integration"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-11T13:00:39Z",
+                "observed": [
+                    "Authorization Code with PKCE S256 exchanged for a bearer access token after interactive Stage login.",
+                    "The token response included a refresh token.",
+                    "The registered client accepted openid, categories read, offers read/write, and orders read.",
+                    "api:orders:write was rejected as invalid_scope on this client, so it was not requested."
+                ],
+                "sdkRevision": "6deb6febc7b4938ea0ff3b81325b0b1905a51363",
+                "writeOperationsEnabled": false
+            },
             "id": "STAGE-001",
             "owner": "SDK maintainers",
             "priority": "critical",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Authorization Code with PKCE for an integrator"
         },
         {
@@ -55,11 +65,20 @@
         },
         {
             "blocks": ["1.0.0", "phase-03-token-refresh"],
-            "evidence": null,
+            "evidence": {
+                "executedAt": "2026-09-11T13:00:39Z",
+                "observed": [
+                    "Refreshing the new Authorization Code token set returned a new bearer access token.",
+                    "The token endpoint replaced the refresh token during rotation.",
+                    "Reusing the previous refresh token was rejected."
+                ],
+                "sdkRevision": "6deb6febc7b4938ea0ff3b81325b0b1905a51363",
+                "writeOperationsEnabled": false
+            },
             "id": "STAGE-003",
             "owner": "SDK maintainers",
             "priority": "critical",
-            "status": "pending-stage",
+            "status": "verified-stage",
             "title": "Refresh token rotation and reuse of the previous token"
         },
         {
