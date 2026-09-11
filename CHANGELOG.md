@@ -38,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- The 1.0.0 contract lock was rechecked against the official portal on 2026-09-11 and remains production API 1.6.9; the Next document stays monitoring-only.
 - GPSR manufacturer input now uses typed `Manufacturer` and `ResponsiblePerson` models for API 1.6.3. The flat `GpsrInfo::required()` signature and deprecated `responsiblePerson` field were removed; use `responsiblePersonDetails` instead. Production API 1.6.9 still documents the deprecated string and confirms the structured `responsiblePersonDetails` field; the SDK continues to omit the string.
 - Offer patch validation now rejects `null` for required offer/product members, applies the product text limits used during creation, and leaves one-time external ID/EAN assignment decisions to the API.
 - Local OAuth failures now use `AuthenticationFlowException`; `AuthenticationException` represents an HTTP 401 API response.

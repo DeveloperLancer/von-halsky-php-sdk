@@ -42,6 +42,17 @@ final class JsonResponseDecoder
         return $decoded;
     }
 
+    /** @return array<mixed> */
+    public function decodeRoot(ResponseInterface $response, string $operationId): array
+    {
+        $decoded = $this->decode($response, $operationId);
+        if ($decoded === null) {
+            throw new ResponseMappingException('$', 'response cannot be empty');
+        }
+
+        return $decoded;
+    }
+
     /** @return array<mixed>|null */
     private function decode(ResponseInterface $response, string $operationId): ?array
     {

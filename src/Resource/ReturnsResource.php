@@ -86,7 +86,7 @@ final class ReturnsResource
         /** @var array<string, scalar|list<scalar>|null> $query */
         $query = ['limit' => $options->limit, 'offset' => $options->offset];
         if ($options->statuses !== []) {
-            $query['status'] = $options->statuses;
+            $query['status'] = implode(',', $options->statuses);
         }
         $response = $this->executor->execute('GET', $path, $query, self::language($options->language));
 

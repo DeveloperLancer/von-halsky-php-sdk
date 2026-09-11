@@ -8,6 +8,6 @@ Symfony HttpClient `6.4`, `7.4`, and `8.1` are allowed by Composer. Guzzle is op
 
 ## API baseline
 
-The SDK implementation and its resource documentation are aligned with the current contract baseline stored in this repository. It exposes all 41 non-deprecated production operations; two deprecated upstream operations are intentionally excluded. The repository is not a statement that an unreleased SDK version, a future upstream API version, or any endpoint availability is guaranteed.
+The SDK implementation and its resource documentation are aligned with the current contract baseline stored in this repository. It exposes all 41 non-deprecated production operations; two deprecated upstream operations are intentionally excluded. SDK 1.0.0 is locked to production API 1.6.9; the Next document is monitored only and is not part of this line. The repository is not a statement that an unreleased SDK version, a future upstream API version, or any endpoint availability is guaranteed.
 
 Use Stage for development and controlled verification. Keep Stage and Production credentials, URLs, token storage, and organization data isolated. The deferred integration procedure is documented in [Stage verification](https://github.com/DeveloperLancer/von-halsky-php-sdk/blob/main/tools/contract/STAGE.md).

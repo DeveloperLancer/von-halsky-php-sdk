@@ -82,6 +82,24 @@ final class ApiExceptionFactoryTest extends TestCase
         $decoder->decodeObject(new Response(200), 'invalid');
     }
 
+    public function testDecodeRootAcceptsObjectAndListAndRejectsEmptyOrScalar(): void
+    {
+        $decoder = new JsonResponseDecoder();
+
+        self::assertSame(['data' => []], $decoder->decodeRoot(new Response(200, [], '{"data":[]}'), 'object'));
+        self::assertSame([['id' => '1']], $decoder->decodeRoot(new Response(200, [], '[{"id":"1"}]'), 'list'));
+
+        try {
+            $decoder->decodeRoot(new Response(204), 'empty');
+            self::fail('Expected an empty-body mapping exception.');
+        } catch (ResponseMappingException $exception) {
+            self::assertSame('$', $exception->fieldPath);
+        }
+
+        $this->expectException(ResponseMappingException::class);
+        $decoder->decodeRoot(new Response(200, [], '"scalar"'), 'scalar');
+    }
+
     public function testParsesRateLimitDatesAndSeconds(): void
     {
         $rateLimit = RateLimit::fromResponse(new Response(429, [

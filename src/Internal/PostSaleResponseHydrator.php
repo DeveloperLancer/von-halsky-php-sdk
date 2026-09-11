@@ -204,19 +204,38 @@ final class PostSaleResponseHydrator
         return new PageResult($items, self::page(self::object($data['page'] ?? null, '$.page')));
     }
 
-    /** @param array<string, mixed> $data
-     *  @return list<ClaimType>
+    /**
+     * @param array<mixed> $data
+     * @return list<ClaimType>
      */
     public static function claimTypes(array $data): array
     {
         $items = [];
+        if (array_is_list($data)) {
+            foreach ($data as $index => $value) {
+                $path = '$[' . $index . ']';
+                $items[] = self::claimType(self::object($value, $path), $path);
+            }
+
+            return $items;
+        }
+
         foreach (self::list($data, 'data', '$') as $index => $value) {
             $path = '$.data[' . $index . ']';
-            $item = self::object($value, $path);
-            $items[] = new ClaimType(ClaimId::fromString(self::string($item, 'id', $path)), self::string($item, 'description', $path));
+            $items[] = self::claimType(self::object($value, $path), $path);
         }
 
         return $items;
+    }
+
+    /** @param array<string, mixed> $item */
+    private static function claimType(array $item, string $path): ClaimType
+    {
+        return new ClaimType(
+            ClaimId::fromString(self::string($item, 'id', $path)),
+            self::string($item, 'description', $path),
+            ResponseHydrator::additionalData($item, ['id', 'description']),
+        );
     }
 
     /** @param array<string, mixed> $data */

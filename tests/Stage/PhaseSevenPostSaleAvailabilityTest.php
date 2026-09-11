@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DevLancer\VonHalsky\Tests\Stage;
 
 use DevLancer\VonHalsky\Exception\ApiException;
-use DevLancer\VonHalsky\Exception\ResponseMappingException;
 use DevLancer\VonHalsky\Request\ClaimListOptions;
 use DevLancer\VonHalsky\Request\ReturnListOptions;
 use DevLancer\VonHalsky\ValueObject\OrderId;
@@ -16,13 +15,9 @@ final class PhaseSevenPostSaleAvailabilityTest extends StageTestCase
 {
     public function testClaimAndReturnCollectionsAreReadableWithoutLoggingPayloads(): void
     {
-        try {
-            $types = $this->stageOrganization()->claims()->types();
-            self::assertSame(200, $types->statusCode);
-            self::assertGreaterThanOrEqual(0, count($types->data));
-        } catch (ResponseMappingException) {
-            self::addToAssertionCount(1);
-        }
+        $types = $this->stageOrganization()->claims()->types();
+        self::assertSame(200, $types->statusCode);
+        self::assertGreaterThanOrEqual(0, count($types->data));
 
         try {
             $claims = $this->stageOrganization()->claims()->list(new ClaimListOptions(limit: 1));

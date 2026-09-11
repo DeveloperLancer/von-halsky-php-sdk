@@ -48,6 +48,6 @@ The SDK does not implement ShipX shipment creation, labels, manifests, or tracki
 
 ## Returns and claims
 
-Returns support list, per-order list, detail, accept, and reject operations. Known return statuses in this SDK are `NEW`, `ACCEPTED`, and `REJECTED`. Claims support a global type dictionary, organization list and detail operations, and reject, partial-refund, and refund actions. Known claim states in this SDK are `APPROVED`, `REJECTED`, and `RESOLUTION_IN_PROGRESS`; response models preserve an unknown future state, while list filters remain raw strings and can still be rejected by the server.
+Returns support list, per-order list, detail, accept, and reject operations. Known return statuses in this SDK are `NEW`, `ACCEPTED`, and `REJECTED`. Claims support a global type dictionary, organization list and detail operations, and reject, partial-refund, and refund actions. Known claim states in this SDK are `APPROVED`, `REJECTED`, and `RESOLUTION_IN_PROGRESS`; response models preserve an unknown future state, while list filters remain raw strings and can still be rejected by the server. The claim-type dictionary has a confirmed Stage versus OpenAPI envelope mismatch; see [`types()`](./reference/claims/types.md).
 
 Post-sale actions are customer-visible and can be financial. Before each call, fetch current details, apply authorization and business checks in the application, record the actor and reason in an audit trail, and avoid automatic replay. See [returns](./reference/returns/README.md) and [claims](./reference/claims/README.md).

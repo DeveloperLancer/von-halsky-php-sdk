@@ -9,14 +9,18 @@ use DevLancer\VonHalsky\ValueObject\ClaimId;
 
 final class ClaimType implements ResponseDtoInterface
 {
+    /**
+     * @param array<string, mixed> $additionalData
+     */
     public function __construct(
         public readonly ClaimId $id,
         public readonly string $description,
+        public readonly array $additionalData = [],
     ) {
     }
 
     public function additionalData(): array
     {
-        return [];
+        return $this->additionalData;
     }
 }

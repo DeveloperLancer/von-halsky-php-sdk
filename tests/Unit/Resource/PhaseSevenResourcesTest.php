@@ -86,11 +86,28 @@ final class PhaseSevenResourcesTest extends TestCase
         self::assertSame('Parcel locker', $sdk->orders()->deliveryMethods()->data[0]->name);
 
         self::assertCount(19, $http->requests());
+        self::assertStringContainsString('states=APPROVED', (string) $http->requestAt(1)->getUri());
+        self::assertStringNotContainsString('state[', urldecode((string) $http->requestAt(1)->getUri()));
         self::assertStringContainsString('paymentStatus%5B0%5D=PAID', (string) $http->requestAt(2)->getUri());
         self::assertStringContainsString('updatedAtGte=2026-08-04T20%3A00%3A00%2B00%3A00', (string) $http->requestAt(2)->getUri());
         self::assertSame('/inpsa/v1/organizations/organization%2F1/orders/order%2F1/refund', $http->requestAt(12)->getUri()->getPath());
         self::assertSame(['amount' => ['amount' => 12.34, 'currency' => 'PLN']], json_decode((string) $http->requestAt(12)->getBody(), true, 512, JSON_THROW_ON_ERROR));
+        self::assertStringContainsString('status=ACCEPTED', (string) $http->requestAt(13)->getUri());
+        self::assertStringNotContainsString('status%5B0%5D', (string) $http->requestAt(13)->getUri());
         self::assertSame('/inpsa/v2/orders/delivery-methods', $http->requestAt(18)->getUri()->getPath());
+    }
+
+    public function testHydratesStageClaimTypesArrayAndRetainsCode(): void
+    {
+        [$sdk] = $this->client($this->json([
+            ['id' => 'claim-type-1', 'description' => 'Damaged', 'code' => 'DAMAGED'],
+        ]));
+
+        $type = $sdk->claims()->types()->data[0];
+
+        self::assertSame('claim-type-1', $type->id->value);
+        self::assertSame('Damaged', $type->description);
+        self::assertSame('DAMAGED', $type->additionalData()['code']);
     }
 
     public function testHydratesNewReturnStatusAsKnown(): void

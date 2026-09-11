@@ -23,6 +23,7 @@ This checklist records observed behavior of the real Stage API. It is not an API
 | Orders | `events()` and paginated `list()` | confirmed |
 | Orders | `get()` for a marketplace-created order | conditional; skipped when Stage has no orders |
 | Orders | Create an order through the SDK | not applicable; orders originate in the marketplace |
+| Claims | `types()` dictionary envelope | confirmed; Stage returns a JSON array `[{id, description, code}]` while OpenAPI 1.6.9 documents `{data:[{id, description}]}`. Platform drift, not an SDK contract invention. SDK accepts both; `code` is retained in `additionalData`. |
 
 ## Product and offer request fields
 
@@ -64,17 +65,18 @@ This checklist records observed behavior of the real Stage API. It is not an API
 
 | Type | Result | Status |
 | --- | --- | --- |
-| `TEXT_VALUE` | Text, including a JSON number normalized to text, accepted; 1024 characters accepted; 1025 rejected | confirmed |
-| `NUMERIC` | Optional attributes of this type now exist on Plecaki szkolne; write commands reached a terminal status, but read-after-write was not asserted as consistent | inconclusive |
-| `NUMERIC_FLOAT` | Optional attributes of this type now exist on Plecaki szkolne; write commands reached a terminal status, but read-after-write was not asserted as consistent | inconclusive |
-| `LONG_TEXT_VALUE` | Not present on the configured offer category; other scanned leaves were not used for a write probe | pending |
-| `DICTIONARY` | Not present on the configured offer category; no write probe | pending |
-| `DICTIONARY`: request value representation | Test `option.value` and `option.id` separately; the OpenAPI contract does not state unambiguously which representation `AttributeValue.values[]` accepts | pending |
-| `DICTIONARY`: allowed option membership | Verify that an active option returned by the current category definition is accepted and a value absent from its dictionary is rejected | pending |
-| `DICTIONARY`: inactive option | Verify whether an option with `active=false` is rejected, rather than inferring behavior from the field name | pending |
-| `DATE` | Not present on the configured offer category; no write probe | pending |
-| `URL` | Not present on the configured offer category; no write probe | pending |
+| `TEXT_VALUE` | Create persists `lang=pl_PL`. `updateAttributes` upsert of a new TEXT field reaches command `SUCCESS` with empty errors, but `get()` usually still omits it. Stage offer `lang` is `pl_PL`, not the SDK `ResponseLanguage` value `pl`. | confirmed on create; inconclusive on PATCH |
+| `NUMERIC` | `updateAttributes` `SUCCESS` and the value is visible in `get()` (`lang` is null). Invalid `10.5` does not replace the accepted integer. | confirmed |
+| `NUMERIC_FLOAT` | `updateAttributes` `SUCCESS` and the value is visible in `get()`. Invalid `abc` does not replace the accepted float. | confirmed |
+| `LONG_TEXT_VALUE` | Absent from the entire Stage tree in both `pl` and `en` (9155 categories, 8076 leaves; identical type counts). Only `TEXT_VALUE`, `NUMERIC`, and `NUMERIC_FLOAT` appear. No write probe is possible on Stage. | pending |
+| `DICTIONARY` | Absent from the entire Stage tree in both `pl` and `en`. No write probe is possible on Stage. | pending |
+| `DICTIONARY`: request value representation | Blocked: no Stage leaf exposes `DICTIONARY`. | pending |
+| `DICTIONARY`: allowed option membership | Blocked: no Stage leaf exposes `DICTIONARY`. | pending |
+| `DICTIONARY`: inactive option | Blocked: no Stage leaf exposes `DICTIONARY`. | pending |
+| `DATE` | Absent from the entire Stage tree in both `pl` and `en`. No write probe is possible on Stage. | pending |
+| `URL` | Absent from the entire Stage tree in both `pl` and `en`. No write probe is possible on Stage. | pending |
 | Attribute cardinality, multilingual values and per-category required attributes | Configured category now exposes 13 attributes, all `NULL_OR_ONE` (formerly required text fields are optional). Multilingual write probes were not run | pending |
+| HTTP 429 / `X-RateLimit-*` | Sequential attribute GETs for the full tree in `pl` and `en` (9155 unique categories each) plus earlier bursts all returned HTTP 200. No `X-RateLimit-*` or `Retry-After` on success. STAGE-005 remains unconfirmed. | inconclusive |
 
 ## Update protocol for this checklist
 

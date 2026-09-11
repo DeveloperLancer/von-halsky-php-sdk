@@ -39,7 +39,10 @@ final class ClaimsResource
     {
         $response = $this->executor->execute('GET', '/v1/orders/claim-types', [], self::language($language));
 
-        return ApiResponse::fromResponse(PostSaleResponseHydrator::claimTypes($this->requiredObject($response, 'getOrdersClaimTypesDictionaryV1')), $response);
+        return ApiResponse::fromResponse(
+            PostSaleResponseHydrator::claimTypes($this->decoder->decodeRoot($response, 'getOrdersClaimTypesDictionaryV1')),
+            $response,
+        );
     }
 
     /**
@@ -62,7 +65,7 @@ final class ClaimsResource
             $query['resolution'] = $options->resolutions;
         }
         if ($options->states !== []) {
-            $query['state'] = $options->states;
+            $query['states'] = implode(',', $options->states);
         }
         if ($options->submissionDateFrom !== null) {
             $query['submissionDateFrom'] = $options->submissionDateFrom->toAtomString();

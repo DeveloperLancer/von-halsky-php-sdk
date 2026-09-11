@@ -182,10 +182,11 @@
         {
             "blocks": ["phase-07-post-sale"],
             "evidence": {
-                "executedAt": "2026-09-10T17:40:00Z",
+                "executedAt": "2026-09-11T16:03:00Z",
                 "observed": [
                     "Organization claim and return list endpoints were callable without logging payloads.",
-                    "The claim-types dictionary response was not a JSON object, so the typed SDK decoder could not map it.",
+                    "GET /v1/orders/claim-types on Stage returned HTTP 200 with a JSON array of {id, description, code}. Official OpenAPI 1.6.9 documents an object {data:[{id, description}]}. This is a Stage versus published-spec envelope mismatch, not an SDK modeling error.",
+                    "After the SDK accepted both envelopes, typed claims()->types() mapped the Stage array without ResponseMappingException. Extra code is retained on ClaimType additionalData. Production was not compared.",
                     "Refund command endpoints were not exercised; collections may be empty."
                 ],
                 "sdkRevision": "94ffe1500e029e14cc587f33edb987c0f5bb56ff",
